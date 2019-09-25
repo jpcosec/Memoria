@@ -13,7 +13,6 @@ def train(net,train_loader,optimizer,device,n_epochs=100):
     for epoch in range(n_epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
             # Get Samples
-            data, target = Variable(data.cuda()), Variable(target.cuda())
             data=data.to(device)
             target=target.to(device)
             # Init

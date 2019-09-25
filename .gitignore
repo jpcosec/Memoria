@@ -1,6 +1,10 @@
 */.idea/*
 *.idea/
+default*
+Mnist/raw/*
+Mnist/processed/*
 data/*
 Mnist/.idea/vcs.xml
 */data/*
 **.pyc
+**.ipynb_checkpoints**  
