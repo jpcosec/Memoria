@@ -2,3 +2,5 @@
 *.idea/
 data/*
 Mnist/.idea/vcs.xml
+*/data/*
+**.pyc
