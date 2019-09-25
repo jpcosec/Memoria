@@ -1,23 +1,16 @@
 
 import numpy as np
-import torch
-import torch.nn as nn
 import torch.nn.functional as F
-import torch.utils.data.dataloader as dataloader
-import torch.optim as optim
 from torch.autograd import Variable
-from torchvision import transforms
-from torchvision.datasets import MNIST
-
-from Teacher_model import Net
 
 
-def train_net(net,train_loader):
+
+def train(net,train_loader,optimizer,device,n_epochs=100):
 
 
     net.train()
     losses = []
-    for epoch in range(100):
+    for epoch in range(n_epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
             # Get Samples
             data, target = Variable(data.cuda()), Variable(target.cuda())
@@ -47,9 +40,6 @@ def train_net(net,train_loader):
                     100. * batch_idx / len(train_loader),
                     loss),
                     end='')
-    save_model=True
-    if (save_model):
-        torch.save(net.state_dict(),PATH)
 
 
 

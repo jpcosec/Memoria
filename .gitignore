@@ -1,2 +1,4 @@
-.idea/*
+*/.idea/*
+*.idea/
 data/*
+Mnist/.idea/vcs.xml
