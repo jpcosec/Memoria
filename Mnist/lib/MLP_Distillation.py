@@ -1,34 +1,19 @@
+from argparse import ArgumentParser
 import numpy as np
 import pandas as pd
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.utils.data.dataloader as dataloader
-import torch.optim as optim
-
-from torch.utils.data import TensorDataset
 from torch.autograd import Variable
-from torchvision import transforms
-from torchvision.datasets import MNIST
+from lib.dist_model import linear_model
+from lib.dist_utils import dist_loss_gen
+from lib.utils import sample, get_dataloaders, test
+from lib.teacher_model import Net as TeacherNet
 
 
-def dist_loss_gen(T=8):
-  def dist_loss(student_scores, teacher_scores, T=T):
-    return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
-
-  return dist_loss
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, train_loader, test_loader):
+  train_loader, test_loader = get_dataloaders()
 
 
-def sample(loader):
-  data, target = next(iter(loader))
-  data, target = Variable(data.cuda()), Variable(target.cuda())
-  return data, target
-
-
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
-  global train_loader, test_loader
-  # train_loader, x_test,y_test = experiment_data()
   history = {"epoch": [],
              "train": [],
              "test": [],
@@ -58,6 +43,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
 
     if epoch % 1 == 0:
       x_train, y_train = sample(train_loader)
+
       y_pred = S_model(x_train.view(-1, 784))
       train_stats = eval_criterion(y_pred, y_train)
 
@@ -67,6 +53,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
       y_predT = T_model(x_test)
       test_statsT = eval_criterion(y_predT.squeeze(), y_test)
 
+      # todo JSONEAR O ALGO
       history["epoch"].append(epoch)
       history["loss"].append(loss.item())
       history["test"].append(test_stats.item())
@@ -78,7 +65,8 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
   return history
 
 
-def distillation_experiment(neuronas, epochs, temp, teacher, experiments=2):
+def distillation_experiment(neuronas, epochs, temp, teacher, experiments=2, ):
+  global device  # todo: ojo
   exps = {}
   dist_models = {}
 
@@ -112,59 +100,46 @@ def distillation_experiment(neuronas, epochs, temp, teacher, experiments=2):
                }
     # models[i] = student_model
 
-  plot_exp(exps)
+  # plot_exp(exps)
   return exps
 
 
-def linear_model(hidden_size, input_size=784, out_size=10):
-  layers = [input_size] + hidden_size + [out_size]
-  mod_lays = []
-  for i in range(len(layers) - 2):
-    mod_lays.append(nn.Linear(layers[i], layers[i + 1]))
-    mod_lays.append(torch.nn.ReLU())
-  mod_lays.append(nn.Linear(layers[-2], layers[-1]))
-
-  return nn.Sequential(*mod_lays)
-
-if __name__ == '__main__':
-
-  PATH = "mnist_cnn.pt"
-  data_folder = './data'
-  train_model = False
-
+def main(params, neuronas):
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   print('Using device:', device)
 
-  # Load MNIST
+  # Get data
+  train_loader, test_loader = get_dataloaders(params.data_folder)
 
-  train = MNIST(data_folder, train=True, download=True, transform=transforms.Compose([
-    transforms.ToTensor(),  # ToTensor does min-max normalization.
-  ]), )
+  teacher = TeacherNet().to(device)
+  print("loading teacher")
+  teacher.load_state_dict(torch.load(params.model_path))
 
-  test = MNIST(data_folder, train=False, download=True, transform=transforms.Compose([
-    transforms.ToTensor(),  # ToTensor does min-max normalization.
-  ]), )
-
-  # Create DataLoader
-  dataloader_args = dict(shuffle=True, batch_size=64, num_workers=1, pin_memory=True)
-  train_loader = dataloader.DataLoader(train, **dataloader_args)
-  test_loader = dataloader.DataLoader(test, **dataloader_args)
-
-  neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
-
-  epochs = 50
-  temp = 3.5
-
-  teacher = net
   for param in teacher.parameters():
     param.requires_grad = False
 
-  ex = distillation_experiment(neuronas, epochs, temp, teacher, experiments=1)
+  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, experiments=1)
 
   p = pd.DataFrame.from_dict(ex)
 
-  with open("expDist%f.csv" % temp, "w") as text_file:
+  with open("expDist%f.csv" % params.temp, "w") as text_file:
     text_file.write(p.to_csv(index=True))
+
+
+if __name__ == '__main__':
+  neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
+
+  parser = ArgumentParser()
+  parser.add_argument("--save_model", type=bool, default=True)
+  parser.add_argument("--train_model", type=bool, default=False)
+  parser.add_argument("--model_path", type=str, default="mnist_cnn.pt")
+  parser.add_argument("--data_folder", type=str, default="./data")
+  parser.add_argument("--epochs", type=int, default=50)
+  parser.add_argument("--temp", type=float, default=3.5)
+
+  hparams = parser.parse_args()
+
+  main(hparams, neuronas)
