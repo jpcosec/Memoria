@@ -10,7 +10,7 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, train_loader, test_loader):
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
   train_loader, test_loader = get_dataloaders()
 
 
@@ -65,8 +65,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, t
   return history
 
 
-def distillation_experiment(neuronas, epochs, temp, teacher, experiments=2, ):
-  global device  # todo: ojo
+def distillation_experiment(neuronas, epochs, temp, teacher, device,experiments=2):
   exps = {}
   dist_models = {}
 
@@ -121,7 +120,7 @@ def main(params, neuronas):
   for param in teacher.parameters():
     param.requires_grad = False
 
-  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, experiments=1)
+  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher,device, experiments=1)
 
   p = pd.DataFrame.from_dict(ex)
 
