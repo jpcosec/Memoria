@@ -12,7 +12,7 @@ from lib.teacher_utils import train, test
 
 model_path = "mnist_cnn.pt"
 data_folder = './data'
-train_model = False
+train_model = True
 
 
 
