@@ -10,8 +10,8 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer):
-  train_loader, test_loader = get_dataloaders()
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer,params):
+  train_loader, test_loader = get_dataloaders(params.data_folder)
 
 
   history = {"epoch": [],
@@ -83,7 +83,7 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device,experiments=
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
 
-      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer)
+      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer,params)
       trains.append(history["train"])
       tests.append(history["test"])
       losses.append(history["loss"])
