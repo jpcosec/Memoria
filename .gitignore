@@ -7,4 +7,6 @@ data/*
 Mnist/.idea/vcs.xml
 */data/*
 **.pyc
-**.ipynb_checkpoints**  
+**.ipynb_checkpoints**
+*.pt  
+*.pt
