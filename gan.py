@@ -324,7 +324,7 @@ def main(hparams):
 
     # fit trainer on CPU
 
-    trainer = pl.Trainer(experiment=exp, max_nb_epochs=200)
+    trainer = pl.Trainer(experiment=exp, max_nb_epochs=200,gpus=-1)
 
     trainer.fit(model)
 
