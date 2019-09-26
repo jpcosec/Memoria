@@ -10,3 +10,4 @@ Mnist/.idea/vcs.xml
 **.ipynb_checkpoints**
 *.pt  
 *.pt
+*.pt
