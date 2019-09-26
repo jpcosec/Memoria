@@ -10,9 +10,8 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer,params):
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params):
   train_loader, test_loader = get_dataloaders(params.data_folder)
-
 
   history = {"epoch": [],
              "train": [],
@@ -65,7 +64,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer,pa
   return history
 
 
-def distillation_experiment(neuronas, epochs, temp, teacher, device,experiments=2):
+def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
   exps = {}
   dist_models = {}
 
@@ -76,14 +75,14 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device,experiments=
     acc_train = []
     acc_test = []
 
-    for x in range(experiments):
+    for x in range(params.experiments):
       print("\r", i, x, end='')
       student_model = linear_model([i]).to(device)
       criterion = dist_loss_gen(temp)
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
 
-      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer,params)
+      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params)
       trains.append(history["train"])
       tests.append(history["test"])
       losses.append(history["loss"])
@@ -120,7 +119,7 @@ def main(params, neuronas):
   for param in teacher.parameters():
     param.requires_grad = False
 
-  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher,device, experiments=1)
+  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, device, params)
 
   p = pd.DataFrame.from_dict(ex)
 
@@ -138,6 +137,7 @@ if __name__ == '__main__':
   parser.add_argument("--data_folder", type=str, default="./data")
   parser.add_argument("--epochs", type=int, default=50)
   parser.add_argument("--temp", type=float, default=3.5)
+  parser.add_argument("--experiments", type=int, default=2)
 
   hparams = parser.parse_args()
 
