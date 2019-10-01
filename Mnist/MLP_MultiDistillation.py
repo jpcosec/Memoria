@@ -68,7 +68,7 @@ def create_distiller(neuronas,params,device):
 
 
 def main(params):
-    loaders, teacher, device = initialize()
+    loaders, teacher, device = initialize(params)
     distiller=create_distiller(100, params, device)
 
     num_processes = 4
