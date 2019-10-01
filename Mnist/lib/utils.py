@@ -46,7 +46,7 @@ def teacher_train(net, train_loader, optimizer, device, n_epochs=100):
 
 
 
-def test(net, loader, lim=10):
+def test(net, loader, lim=15):
   d = []
   for batch_idx, (data, target) in enumerate(loader):
     data, target = Variable(data.cuda()), Variable(target.cuda())
@@ -81,3 +81,9 @@ def get_dataloaders(data_folder):
 
 
   return train_loader, test_loader
+
+
+def sample(loader):
+  data, target = next(iter(loader))
+  data, target = Variable(data.cuda()), Variable(target.cuda())
+  return data, target
