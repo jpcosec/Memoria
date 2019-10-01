@@ -75,7 +75,7 @@ def main(params):
 
     # NOTE: this is required for the ``fork`` method to work
     teacher.share_memory()
-    distiller.student_model.share_memory()
+    distiller["student_model"].share_memory()
     processes = []
     for rank in range(num_processes):
         p = mp.Process(target=train, args=(distiller,teacher,loaders,device,))
