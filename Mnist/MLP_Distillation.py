@@ -113,7 +113,7 @@ def main(params, neuronas):
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-  logger.info('Using device:', device)
+  logger.info('Using device:' + str(device))
 
   # Get data
   train_loader, test_loader = get_dataloaders(params.data_folder)
