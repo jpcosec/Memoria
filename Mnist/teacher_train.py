@@ -10,7 +10,7 @@ from lib.utils import teacher_train, test, get_dataloaders
 
 def main(params):
 
-  torch.set_default_tensor_type('torch.cuda.FloatTensor')
+  #torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   print('Using device:', device)
