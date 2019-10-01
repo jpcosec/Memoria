@@ -22,7 +22,7 @@ def train(distiller,teacher,loaders,device):
     for data, labels in train_loader:
         x_train = data.to(device)
         y_train = labels.to(device)
-        logger.debug("lasorra")
+        logger.debug("lasorr")
 
         distiller.optimizer.zero_grad()
         # Forward pass
