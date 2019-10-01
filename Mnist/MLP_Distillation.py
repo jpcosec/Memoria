@@ -84,11 +84,13 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
     for x in range(params.experiments):
       print("\r", i, x, end='')
       logger.debug("experimento ")
+
       student_model = linear_model([i]).to(device)
       criterion = dist_loss_gen(temp)
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
       logger.debug("problemon")
+
       history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device)
       trains.append(history["train"])
       tests.append(history["test"])
