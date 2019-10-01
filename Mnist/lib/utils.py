@@ -46,12 +46,14 @@ def teacher_train(net, train_loader, optimizer, device, n_epochs=100):
 
 
 
-def test(net, loader, lim=15):
+def test(net, loader, lim=15,flatten=False):
   d = []
   for batch_idx, (data, target) in enumerate(loader):
     data, target = Variable(data.cuda()), Variable(target.cuda())
-
-    output = net(data)
+    if flatten:
+      output = net(data.view(-1, 784))
+    else:
+      output = net(data)
     pred = output.data.max(1)[1]
     d.extend(pred.eq(target).cpu())
     if batch_idx > lim:
