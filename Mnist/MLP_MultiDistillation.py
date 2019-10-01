@@ -14,7 +14,6 @@ from lib.utils import get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 import torch.multiprocessing as mp
-from model import MyModel
 
 def train(distiller,teacher,loaders,device):
     # Construct data_loader, optimizer, etc.
