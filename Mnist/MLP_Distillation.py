@@ -55,10 +55,7 @@ def dist_model(teacher, distiller, eval_criterion, params, device, loaders,write
 
 def distillation_experiment(neuronas, teacher, device, loaders, params):
 
-
   for i in neuronas:
-
-
     for x in range(params.experiments):
 
       # Lambdear
