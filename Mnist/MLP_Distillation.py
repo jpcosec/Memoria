@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 from argparse import ArgumentParser
 import numpy as np
 import pandas as pd
@@ -77,6 +80,7 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
 
     for x in range(params.experiments):
       print("\r", i, x, end='')
+      logger.debug("experimento")
       student_model = linear_model([i]).to(device)
       criterion = dist_loss_gen(temp)
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
@@ -104,7 +108,6 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
 
 def main(params, neuronas):
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
-
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   print('Using device:', device)
