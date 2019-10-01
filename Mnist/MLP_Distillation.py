@@ -59,9 +59,10 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
     for x in range(params.experiments):
 
       # Lambdear
-      stexp=""
-      for neurona in i:
-        stexp+=str(neurona)+"-"
+      stexp=str(i)
+      #for neurona in i:
+      #  stexp+=str(neurona)+"-"
+
       stexp+="_exp"+x
       #stexp =str(i) + str(x)#"\r"
       logger.info("experimento " + stexp)
