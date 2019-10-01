@@ -10,7 +10,7 @@ import torch
 from torch.autograd import Variable
 from lib.dist_model import linear_model
 from lib.dist_utils import dist_loss_gen
-from lib.utils import sample, get_dataloaders, test
+from lib.utils import get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 import torch.multiprocessing as mp
@@ -76,7 +76,7 @@ def main(params):
 
     # NOTE: this is required for the ``fork`` method to work
     teacher.share_memory()
-    distller.share_memory()
+    distiller.share_memory()
     processes = []
     for rank in range(num_processes):
         p = mp.Process(target=train, args=(distiller,teacher,loaders,device,))
