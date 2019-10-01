@@ -9,13 +9,14 @@ import pandas as pd
 import torch
 from torch.autograd import Variable
 from lib.dist_model import linear_model
-from lib.dist_utils import dist_loss_gen
+from lib.dist_utils import dist_loss_gen, train_op
 from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params, device, loaders):
+def dist_model(teacher, distiller, epochs,  eval_criterion, params, device, loaders):
   train_loader, test_loader = loaders
+
 
   history = {"epoch": [],
              "train": [],
@@ -28,34 +29,21 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
 
   for epoch in range(epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
-      x_train = data.to(device)
-      y_train = target.to(device)
-      logger.debug("lasorra")
+      loss = train_op(distiller,teacher,data,target,device)
+      logger.debug(str(loss))
 
-      optimizer.zero_grad()
-      # Forward pass
-
-      # Predecir
-      S_y_pred = S_model(x_train.view(-1, 784))
-      T_y_pred = T_model(x_train)
-
-      # Compute Loss
-      loss = criterion(S_y_pred, T_y_pred)
-      # Backward pass
-      loss.backward()
-      optimizer.step()
 
     if epoch % 1 == 0:
       x_train, y_train = sample(train_loader)
 
-      y_pred = S_model(x_train.view(-1, 784))
+      y_pred = distiller["model"](x_train.view(-1, 784))
       train_stats = eval_criterion(y_pred, y_train)
 
       x_test, y_test = sample(test_loader)
-      y_pred = S_model(x_test.view(-1, 784))
+      y_pred = distiller["model"](x_test.view(-1, 784))
       test_stats = eval_criterion(y_pred.squeeze(), y_test)
 
-      y_predT = T_model(x_test)
+      y_predT = teacher(x_test)
       test_statsT = eval_criterion(y_predT.squeeze(), y_test)
 
       # todo JSONEAR O ALGO
@@ -63,8 +51,8 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
       history["loss"].append(loss.item())
       history["test"].append(test_stats.item())
       history["train"].append(train_stats.item())
-      history["acc_test"].append(test(S_model, train_loader, flatten=True))
-      history["acc_train"].append(test(S_model, test_loader, flatten=True))
+      history["acc_test"].append(test(distiller["model"], train_loader, flatten=True))
+      history["acc_train"].append(test(distiller["model"], test_loader, flatten=True))
       # print('Epoch {}: train loss: {}, test loss: {}'.format(epoch, loss.item(), test_stats.item()) )
 
   return history
