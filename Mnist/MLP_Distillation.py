@@ -39,7 +39,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
 
       # Predecir
       S_y_pred = S_model(x_train.view(-1, 784))
-      T_y_pred = T_model(x_train)
+      T_y_pred = T_model(x_train.view(-1, 784))
 
       # Compute Loss
       loss = criterion(S_y_pred, T_y_pred)
