@@ -13,7 +13,7 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params):
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params, device):
   train_loader, test_loader = get_dataloaders(params.data_folder)
 
   history = {"epoch": [],
@@ -29,7 +29,9 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
 
   for epoch in range(epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
-      x_train, y_train = Variable(data.cuda()), Variable(target.cuda())
+      x_train = data.to(device)
+      y_train = target.to(device)
+
       optimizer.zero_grad()
       # Forward pass
 
@@ -86,7 +88,7 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
       logger.debug("problemon")
-      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params)
+      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device)
       trains.append(history["train"])
       tests.append(history["test"])
       losses.append(history["loss"])
