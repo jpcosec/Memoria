@@ -14,8 +14,8 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params, device):
-  train_loader, test_loader = get_dataloaders(params.data_folder)
+def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, params, device, loaders):
+  train_loader, test_loader = loaders
 
   history = {"epoch": [],
              "train": [],
@@ -71,7 +71,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
   return history
 
 
-def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
+def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, params):
   exps = {}
   dist_models = {}
 
@@ -93,7 +93,7 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
       logger.debug("problemon")
 
 
-      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device)
+      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device, loaders)
 
       trains.append(history["train"])
       tests.append(history["test"])
@@ -121,7 +121,7 @@ def main(params, neuronas):
   logger.info('Using device:' + str(device))
 
   # Get data
-  #train_loader, test_loader = get_dataloaders(params.data_folder)
+  loaders= get_dataloaders(params.data_folder)
 
   teacher = TeacherNet().to(device)
   logger.info("loading teacher")
@@ -130,7 +130,7 @@ def main(params, neuronas):
   for param in teacher.parameters():
     param.requires_grad = False
 
-  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, device, params)
+  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, device, loaders, params)
 
   p = pd.DataFrame.from_dict(ex)
 
