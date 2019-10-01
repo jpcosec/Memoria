@@ -25,7 +25,7 @@ def dist_model(teacher, distiller, eval_criterion, params, device, loaders,write
   for epoch in range(params.epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
       loss = train_op(distiller, teacher, data, target, device)
-      logger.debug(str(loss))
+      #logger.debug(str(loss))
 
 
     if epoch % 1 == 0:
