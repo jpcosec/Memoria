@@ -22,7 +22,7 @@ def train(distiller,teacher,loaders,device):
     for data, labels in train_loader:
         x_train = data.to(device)
         y_train = labels.to(device)
-        logger.debug("lasorra")
+        logger.debug("lasorr")
 
         distiller.optimizer.zero_grad()
         # Forward pass
@@ -75,7 +75,7 @@ def main(params):
 
     # NOTE: this is required for the ``fork`` method to work
     teacher.share_memory()
-    distiller.share_memory()
+    distiller.student_model.share_memory()
     processes = []
     for rank in range(num_processes):
         p = mp.Process(target=train, args=(distiller,teacher,loaders,device,))
