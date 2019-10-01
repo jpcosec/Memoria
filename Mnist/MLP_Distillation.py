@@ -76,7 +76,7 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
 
-      distiller=dict(student_model=student_model,criterion=criterion,optimizer=optimizer)
+      distiller=dict(model=student_model,criterion=criterion,optimizer=optimizer)
 
       history = dist_model(teacher, distiller, eval_criterion, params, device,
                            loaders)
