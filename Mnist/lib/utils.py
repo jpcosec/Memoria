@@ -75,7 +75,7 @@ def get_dataloaders(data_folder):
   ]), )
 
   # Create DataLoader
-  dataloader_args = dict(shuffle=True, batch_size=64, num_workers=1, pin_memory=True)
+  dataloader_args = dict(shuffle=True, batch_size=64, num_workers=0, pin_memory=True)
   train_loader = dataloader.DataLoader(train_data, **dataloader_args)
   test_loader = dataloader.DataLoader(test_data, **dataloader_args)
 
