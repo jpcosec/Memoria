@@ -46,7 +46,7 @@ def teacher_train(net, train_loader, optimizer, device, n_epochs=100):
 
 
 
-def test(net, loader, lim=15,flatten=False):
+def acc_test(net, loader, lim=15, flatten=False):
   d = []
   for batch_idx, (data, target) in enumerate(loader):
     data, target = Variable(data.cuda()), Variable(target.cuda())

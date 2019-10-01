@@ -3,7 +3,7 @@ import torch
 import torch.optim as optim
 
 from lib.teacher_model import Net
-from lib.utils import teacher_train, test, get_dataloaders
+from lib.utils import teacher_train, acc_test, get_dataloaders
 
 
 
@@ -34,7 +34,7 @@ def main(params):
 
   net.eval()
 
-  print("net_accuracy", test(net, test_loader))
+  print("net_accuracy", acc_test(net, test_loader))
 
 if __name__ == '__main__':
 
