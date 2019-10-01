@@ -1,6 +1,7 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 from argparse import ArgumentParser
 import numpy as np
 import pandas as pd
@@ -112,13 +113,13 @@ def main(params, neuronas):
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-  print('Using device:', device)
+  logger.info('Using device:', device)
 
   # Get data
   train_loader, test_loader = get_dataloaders(params.data_folder)
 
   teacher = TeacherNet().to(device)
-  print("loading teacher")
+  logger.info("loading teacher")
   teacher.load_state_dict(torch.load(params.model_path))
 
   for param in teacher.parameters():
