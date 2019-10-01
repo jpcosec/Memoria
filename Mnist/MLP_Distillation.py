@@ -94,6 +94,7 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, params):
 
 
       history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device)
+
       trains.append(history["train"])
       tests.append(history["test"])
       losses.append(history["loss"])
@@ -120,7 +121,7 @@ def main(params, neuronas):
   logger.info('Using device:' + str(device))
 
   # Get data
-  train_loader, test_loader = get_dataloaders(params.data_folder)
+  #train_loader, test_loader = get_dataloaders(params.data_folder)
 
   teacher = TeacherNet().to(device)
   logger.info("loading teacher")
