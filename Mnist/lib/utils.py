@@ -81,3 +81,9 @@ def get_dataloaders(data_folder):
 
 
   return train_loader, test_loader
+
+
+def sample(loader):
+  data, target = next(iter(loader))
+  data, target = Variable(data.cuda()), Variable(target.cuda())
+  return data, target
