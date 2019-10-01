@@ -114,7 +114,9 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, pa
   return exps
 
 
-def main(params, neuronas):
+def main(params):
+  neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
+
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -139,7 +141,7 @@ def main(params, neuronas):
 
 
 if __name__ == '__main__':
-  neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
+
 
   parser = ArgumentParser()
   parser.add_argument("--save_model", type=bool, default=True)
@@ -152,4 +154,4 @@ if __name__ == '__main__':
 
   hparams = parser.parse_args()
 
-  main(hparams, neuronas)
+  main(hparams)
