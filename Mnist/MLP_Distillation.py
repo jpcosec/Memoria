@@ -25,8 +25,6 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
              "acc_test": []
              }
 
-  S_model.train()
-  T_model.eval()
 
   for epoch in range(epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
@@ -39,7 +37,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
 
       # Predecir
       S_y_pred = S_model(x_train.view(-1, 784))
-      T_y_pred = T_model(x_train.view(-1, 784))
+      T_y_pred = T_model(x_train)
 
       # Compute Loss
       loss = criterion(S_y_pred, T_y_pred)
@@ -56,6 +54,7 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
       x_test, y_test = sample(test_loader)
       y_pred = S_model(x_test.view(-1, 784))
       test_stats = eval_criterion(y_pred.squeeze(), y_test)
+
       y_predT = T_model(x_test)
       test_statsT = eval_criterion(y_predT.squeeze(), y_test)
 
@@ -117,10 +116,13 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, pa
 def main(params):
   neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
 
+
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   logger.info('Using device:' + str(device))
+
+
 
   # Get data
   loaders= get_dataloaders(params.data_folder)
