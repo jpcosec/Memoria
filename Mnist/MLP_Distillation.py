@@ -1,4 +1,5 @@
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,8 @@ from lib.utils import sample, get_dataloaders, test
 from lib.teacher_model import Net as TeacherNet
 
 
-def dist_model(teacher, distiller, epochs,  eval_criterion, params, device, loaders):
+def dist_model(teacher, distiller, eval_criterion, params, device, loaders):
   train_loader, test_loader = loaders
-
 
   history = {"epoch": [],
              "train": [],
@@ -26,12 +26,10 @@ def dist_model(teacher, distiller, epochs,  eval_criterion, params, device, load
              "acc_test": []
              }
 
-
-  for epoch in range(epochs):
+  for epoch in range(params.epochs):
     for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
-      loss = train_op(distiller,teacher,data,target,device)
+      loss = train_op(distiller, teacher, data, target, device)
       logger.debug(str(loss))
-
 
     if epoch % 1 == 0:
       x_train, y_train = sample(train_loader)
@@ -58,7 +56,7 @@ def dist_model(teacher, distiller, epochs,  eval_criterion, params, device, load
   return history
 
 
-def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, params):
+def distillation_experiment(neuronas, teacher, device, loaders, params):
   exps = {}
   dist_models = {}
 
@@ -70,17 +68,18 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, pa
     acc_test = []
 
     for x in range(params.experiments):
-      print("\r", i, x, end='')
-      logger.debug("experimento ")
+      stexp = "\r" + str(i) + str(x)
+      logger.info("experimento " + stexp)
 
       student_model = linear_model([i]).to(device)
-      criterion = dist_loss_gen(temp)
+      criterion = dist_loss_gen(params.temp)
       optimizer = torch.optim.SGD(student_model.parameters(), lr=0.01)
       eval_criterion = torch.nn.CrossEntropyLoss()
-      logger.debug("problemon")
 
+      distiller=dict(student_model=student_model,criterion=criterion,optimizer=optimizer)
 
-      history = dist_model(teacher, student_model, epochs, criterion, eval_criterion, optimizer, params,device, loaders)
+      history = dist_model(teacher, distiller, eval_criterion, params, device,
+                           loaders)
 
       trains.append(history["train"])
       tests.append(history["test"])
@@ -104,16 +103,13 @@ def distillation_experiment(neuronas, epochs, temp, teacher, device, loaders, pa
 def main(params):
   neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
 
-
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
   torch.cuda.current_device()
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
   logger.info('Using device:' + str(device))
 
-
-
   # Get data
-  loaders= get_dataloaders(params.data_folder)
+  loaders = get_dataloaders(params.data_folder)
 
   teacher = TeacherNet().to(device)
   logger.info("loading teacher")
@@ -122,7 +118,7 @@ def main(params):
   for param in teacher.parameters():
     param.requires_grad = False
 
-  ex = distillation_experiment(neuronas, params.epochs, params.temp, teacher, device, loaders, params)
+  ex = distillation_experiment(neuronas, teacher, device, loaders, params)
 
   p = pd.DataFrame.from_dict(ex)
 
@@ -131,8 +127,6 @@ def main(params):
 
 
 if __name__ == '__main__':
-
-
   parser = ArgumentParser()
   parser.add_argument("--save_model", type=bool, default=True)
   parser.add_argument("--train_model", type=bool, default=False)
