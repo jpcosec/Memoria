@@ -63,7 +63,7 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
       #for neurona in i:
       #  stexp+=str(neurona)+"-"
 
-      stexp+="_exp"+x
+      stexp+="_exp"+str(x)
       #stexp =str(i) + str(x)#"\r"
       logger.info("experimento " + stexp)
 
