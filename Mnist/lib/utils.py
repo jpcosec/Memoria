@@ -50,6 +50,7 @@ def test(net, loader, lim=15,flatten=False):
   d = []
   for batch_idx, (data, target) in enumerate(loader):
     data, target = Variable(data.cuda()), Variable(target.cuda())
+
     if flatten:
       output = net(data.view(-1, 784))
     else:
