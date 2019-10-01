@@ -24,18 +24,18 @@ def train(distiller,teacher,loaders,device):
         y_train = labels.to(device)
         logger.debug("lasorr")
 
-        distiller.optimizer.zero_grad()
+        distiller["optimizer"].zero_grad()
         # Forward pass
 
         # Predecir
-        S_y_pred = distiller.student_model(x_train.view(-1, 784))
+        S_y_pred = distiller["student_model"](x_train.view(-1, 784))
         T_y_pred = teacher(x_train)
 
         # Compute Loss
-        loss = distiller.criterion(S_y_pred, T_y_pred)
+        loss = distiller["criterion"](S_y_pred, T_y_pred)
         # Backward pass
         loss.backward()
-        distiller.optimizer.step()
+        distiller["optimizer"].step()
 
 
 def initialize(params):
