@@ -63,8 +63,8 @@ def dist_model(T_model, S_model, epochs, criterion, eval_criterion, optimizer, p
       history["loss"].append(loss.item())
       history["test"].append(test_stats.item())
       history["train"].append(train_stats.item())
-      history["acc_test"].append(test(S_model, train_loader))
-      history["acc_train"].append(test(S_model, test_loader))
+      history["acc_test"].append(test(S_model, train_loader, flatten=True))
+      history["acc_train"].append(test(S_model, test_loader, flatten=True))
       # print('Epoch {}: train loss: {}, test loss: {}'.format(epoch, loss.item(), test_stats.item()) )
 
   return history
