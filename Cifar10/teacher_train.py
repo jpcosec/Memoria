@@ -13,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 import os
 import argparse
 
-from lib.teacher_models.preact_resnet import ResNet18 as teacherNetGenerator
+from lib.teacher_models.resnet import ResNet18 as teacherNetGenerator
 # net = VGG('VGG19')
 # net = ResNet18()
 # net = PreActResNet18()
