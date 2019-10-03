@@ -8,6 +8,8 @@ import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
 
+from torch.utils.tensorboard import SummaryWriter
+
 import os
 import argparse
 
@@ -28,8 +30,8 @@ from lib.utils import progress_bar
 
 
 # Training
-def train(epoch):
-    print('\nEpoch: %d' % epoch)
+def train(epoch,writer):
+    print('\rEpoch: %d' % epoch)
     net.train()
     train_loss = 0
     correct = 0
@@ -49,8 +51,9 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        writer.add_scalar('train/loss', train_loss)
 
-def test(epoch):
+def test(epoch,writer):
     global best_acc
     net.eval()
     test_loss = 0
@@ -66,12 +69,13 @@ def test(epoch):
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
-
+            writer.add_scalar('test/loss', test_loss)
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                 % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
     # Save checkpoint.
     acc = 100.*correct/total
+    writer.add_scalar('train/acc', acc)
     if acc > best_acc:
         print('Saving..')
         state = {
@@ -128,6 +132,8 @@ if __name__ == '__main__':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
+  writer = SummaryWriter(comment="teacher_trainer")
+
   if args.resume:
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
@@ -137,8 +143,9 @@ if __name__ == '__main__':
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+
   criterion = nn.CrossEntropyLoss()
   optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
   for epoch in range(start_epoch, start_epoch+200):
-      train(epoch)
-      test(epoch)
+      train(epoch,writer)
+      test(epoch,writer)
