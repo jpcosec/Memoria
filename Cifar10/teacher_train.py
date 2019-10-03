@@ -17,7 +17,7 @@ import lib
 
 
 def get_model(model_name):
-  model_list = dict(VGG=lib.teacher_models.vgg.VGG('VGG19'),
+  model_list = dict(#VGG=lib.teacher_models.vgg.VGG('VGG19'),
                         ResNet18=lib.teacher_models.resnet.ResNet18(),
                         ResNet50=lib.teacher_models.resnet.ResNet50(),
                         ResNet101=lib.teacher_models.resnet.ResNet101(),
