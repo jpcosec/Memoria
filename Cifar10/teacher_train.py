@@ -12,21 +12,8 @@ from torch.utils.tensorboard import SummaryWriter
 
 import os
 import argparse
+from lib.teacher_models.teacher_model import get_model
 
-from lib.teacher_models.resnet import ResNet18 as teacherNetGenerator
-# net = VGG('VGG19')
-# net = ResNet18()
-# net = PreActResNet18()
-# net = GoogLeNet()
-# net = DenseNet121()
-# net = ResNeXt29_2x64d()
-# net = MobileNet()
-# net = MobileNetV2()
-# net = DPN92()
-# net = ShuffleNetG2()
-# net = SENet18()
-# net = ShuffleNetV2(1)
-# EfficientNetB0
 from lib.utils import progress_bar
 
 
@@ -97,7 +84,9 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
   parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint',)
-  parser.add_argument('--epochs', default=500, action='store_true', help='total number of epochs to train', )
+  parser.add_argument('--epochs', default=500, action='store_true', help='total number of epochs to train')
+  parser.add_argument('--model',default="resnet18",help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2,")
+
   args = parser.parse_args()
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -128,7 +117,7 @@ if __name__ == '__main__':
   # Model
   print('==> Building model..')
 
-  net = teacherNetGenerator()
+  net = get_model(args.model)
   net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -136,10 +125,14 @@ if __name__ == '__main__':
 
 
 
+
   if args.resume:
+    assert os.path.isdir(args.model), 'Error: model not initialized'
+    os.chdir(args.model)
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+
     checkpoint = torch.load('./checkpoint/ckpt.pth')
     net.load_state_dict(checkpoint['net'])
     best_acc = checkpoint['acc']
@@ -147,9 +140,12 @@ if __name__ == '__main__':
 
     if start_epoch >= args.epochs:
       print("Number of epochs")
+  else:
+    os.makedir(args.model)
+    os.chdir(args.model)
 
 
-  writer = SummaryWriter(comment="teacher_trainer")
+  writer = SummaryWriter("teacher_trainer")
 
   criterion = nn.CrossEntropyLoss()
   #optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)

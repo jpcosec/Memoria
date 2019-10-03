@@ -3,7 +3,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-from argparse import ArgumentParser
+from argparse
 import numpy as np
 import pandas as pd
 
@@ -12,7 +12,7 @@ from torch.autograd import Variable
 from lib.dist_model import linear_model
 from lib.dist_utils import dist_loss_gen, train_op
 from lib.utils import sample, get_dataloaders, acc_test
-from lib.teacher_model import Net as TeacherNet
+from lib.teacher_models.resnet import ResNet18 as teacherNetGenerator
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -52,7 +52,6 @@ def dist_model(teacher, distiller, eval_criterion, params, device, loaders,write
 
 
 
-
 def distillation_experiment(neuronas, teacher, device, loaders, params):
 
   for i in neuronas:
@@ -78,8 +77,7 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
 
       dist_model(teacher, distiller, eval_criterion, params, device, loaders, writer)
 
-
-
+def
 
 def main(params):
   neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]

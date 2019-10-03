@@ -29,6 +29,25 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 \left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
 \end{cases}$$
 
+
+
+### Distilling Object Detectors with Fine-grained Feature Imitation
+
+Año: 2019
+
+Autores: Tao Wang, Li Yuan, Xiaopeng Zhang, Jiashi Feng
+
+En: CVPR
+
+El estudio se centra en destilacion en el contexto de deteccion de objetos. Ya que a diferencia de la clasificion, en la cual se obtiene una sola etiqueta de clase para toda la imagen, en deteccion el objetivo es diferenciar los objetos del fondo y clasificar cada uno por separado (paralela o secuencialmente). De partida esto introduce dos diferencias importantisimas con respecto a la clasificacion, las cuales tienen consecuencias importantes al momento de destilar;
+
+1. Los fondos en las imagenes pueden ser mucho mas variados que los objetos de primer plano, de esta manera en deteccion gran parte de la informacion de la imagen es o inutil o ruido que puede condicionar al detector a obtener respuestas falsas.
+2. La destilacion propuesta por hinton debe ser completamente modificada ya que la etiqueta deja de ser solo un valor de clase, si no de bounding box y clase por cada objeto presente en la imagen.
+
+
+
+
+
 ### An Embarrassingly Simple Approach for Knowledge Distillation
 
 Año: 2019
