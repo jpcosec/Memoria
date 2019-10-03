@@ -15,6 +15,7 @@ import argparse
 from lib.utils import progress_bar
 import lib
 
+
 def get_model(model_name):
   model_list = dict(VGG=lib.teacher_models.vgg.VGG('VGG19'),
                         ResNet18=lib.teacher_models.resnet.ResNet18(),
