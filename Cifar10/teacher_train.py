@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
-  parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', default=True)
+  parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint',)
   args = parser.parse_args()
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  writer = SummaryWriter(comment="teacher_trainer")
+
 
   if args.resume:
     # Load checkpoint.
@@ -144,9 +144,11 @@ if __name__ == '__main__':
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+  writer = SummaryWriter(comment="teacher_trainer")
 
   criterion = nn.CrossEntropyLoss()
-  optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+  #optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+  optimizer = optim.Adam(net.parameters() , lr=args.lr)
   for epoch in range(start_epoch, start_epoch+200):
       train(epoch,writer)
       test(epoch,writer)
