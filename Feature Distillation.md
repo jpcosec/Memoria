@@ -4,17 +4,7 @@
 
 
 
-Dado el problema planteado se pasará a detallar algunas investigaciones que comparten en comun el hacer uso de los features para 
-
-
-
-## Review
-
-### A comprehensive overhaul of Feature Distillation
-
-Se comienza por un review de distintas técnicas aplicadas anteriormente, en las cuales uniforman el test usando cada tecnica con una arquitectura tutora (ResNet50) y un dataset común (ImageNet). Comparten el codigo implementado en tensorflow. 
-
-**Review**
+Dado el problema planteado se pasará a detallar algunas investigaciones que comparten en comun el hacer uso de los features para transferencia de conocimiento.
 
 ### A Comprehensive Overhaul of Feature Distillation 
 
@@ -39,9 +29,44 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 \left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
 \end{cases}$$
 
+### An Embarrassingly Simple Approach for Knowledge Distillation
+
+Año: 2019
+
+Autores: Mengya Gao, Yujun Shen, Quanquan Li, Junjie Yan, Liang Wan, Dahua Lin, Chen Change Loy, Xiao Tang 
+
+En: Arxiv, aun no publicado.
+
+En general en los aprendizajes multi-task es necesario usar varias perdidas distintas, cada una de ellas ponderada por un hiperparametro $\lambda$ para ponderar cuanto afecta cada una de las perdidas al momento de realizar backpropagation. La eleccion de estos hiperparametros puede ser una tarea dificil, especialmente considerando que el valor optimo suele cambiar de dataset a dataset sin otra forma de encontrarlo que el uso de varias instancias de prueba y error. El paper postula una manera simple y eficiente de evitar este problema desacoplando las etapas de aprendizaje en el caso de destilacion de features.
+
+En general, la mayoria de las redes puede separarse entre una etapa de extraccion de features llamada backbone y una de clasificacion llamada task-head. Como se puede ver en How transferable are features in deep neural networks? estas suelen ser bastante independientes del task, cosa que se aprovecha en este paper para separar los entrenamientos en una etapa de aprendizaje "greedy" de las features de una red tutora y una etapa de aprendizaje de las labels finales usando ground truth y el backbone fijo.
+
+Para la primera etapa se hace uso de un entrenamiento bloque por bloque, es decir, se toma cierta profundidad de capa a reproducir y se reproducen las features de la red tutora en la red estudiante, luego se fijan los pesos en la red estudiante y se aprenden los features a una profundidad un poco mayor y asi sucesivamente hasta destilar el backbone completo. Finalmente se reproduce la ultima capa usando solo la red estudiante y el ground truth del task a entrenarse. El aprendijaze de los features se realiza usando una perdida de distancia L2 entre los features de la red tutora y estudiante.
+
+$$L_{SSKD}= \|f_t^2-f_s^2 \|_2$$
+
+### Learning Student Networks via Feature Embedding
+
+Año: 2018
+
+Autores: Hanting Chen, Yunhe Wang, Chang Xu, Chao Xu and Dacheng Tao
+
+En: IEEE (submited)
+
+Los autores realizan transferencia del conocimiento de los features de una manera un poco distinta a la vista hasta el momento ya que lejos de intentar acercar la respuesta de la red estudiante a la de la red tutora según alguna forma, buscan replicar la distancia relativa entre las respuestas de la red estudiante a dos samples $x_j$,$x_{i}$ del dataset arbitrarios. De esta forma introducen una perdida llama local preserving loss, la cual toma la siguiente forma:
+
+$$\mathcal{L}_{\text{LP}}=\frac{1}{m}\sum_{i,j}\alpha_{i,j} \|f_{s}^i-f_s^j\|_2^2$$
+
+Donde $m$ es el tamaño del minibatch, y $\alpha_{i,j}$ es un coeficiente que toma un valor positivo en caso que las features del sample $j$ en la red tutora, $f_T^j$ sea el vecino mas cercano de las features del sample $i$, $f_T^i$ y toma valor 0 en cualquier otro caso, es decir:
+
+$$\alpha_{i,j}=\left\{\begin{matrix}
+ exp(\|f_{T}^i-f_T^j\|_2^2) & \text{si } j \in N(i) \\ 
+ 0 &  \text{en otro caso}
+\end{matrix}\right.$$
 
 
-## Aplicaciones
+
+
 
 ### FD-GAN: Pose-guided Feature Distilling GAN for Robust Person Re-identification
 
@@ -51,7 +76,11 @@ Autores:  Yixiao Ge, Zhuowan Li, Haiyu Zhao, Guojun Yin, Shuai Yi, Xiaogang Wang
 
 En: Nips
 
+El problema de la re-identificacion de personas consiste en la comparacion de alguna representacion de dos imagenes para dilucidar si se trata del mismo sujeto. Para esto suele hacerse uso de una arquitectura llama red siamesa, la cual basicamente consiste en instanciar una red dos o mas veces y entrenar reduciendo la distancia entre las representaciones obtenidas de las distintas instancias para una misma persona o alejandola para personas distintas. 
 
+El paper mezcla 4 tasks distintas en una misma arquitectura siamesa para lograr un aprendizaje de una representacion consistente de identidad entre individuos, desacoplada de la pose (orientacion de cuerpo y posicion de extremidades con respecto al cuerpo). La base es un encoder basado en resnet que recibe una imagen, una pose y ruido.  Sobre esta cual se acopla un generador que crea imagenes falsas del sujeto en la pose especificada. Estas imagenes son luego pasadas por un discriminador de pose y de identidad para comparar con el dato de entrada. La parte siamesa viene por replicar toda esta arquitectura usando dos imagenes de entrada que pueden tratarse de un mismo sujeto o no. Al momento de evaluar se usa solamente el encoder basado en resnet.
+
+El resultado es bastante bueno, sin embargo la tecnica no corresponde mucho al concepto de destilacion como hemos visto en el resto de los  ya que en vez de usarse una red estudiante para aprender lo sabido por una red tutora lo que se hace es sumar mas tasks a una estructura ya entrenada para realizar fine-tuning. De todas maneras el trabajo es bastante cercano y hace uso de transfer learning, junto con features de algo ya entrenado. 
 
 
 
