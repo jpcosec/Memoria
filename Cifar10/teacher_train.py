@@ -139,7 +139,7 @@ if __name__ == '__main__':
     start_epoch = checkpoint['epoch']
 
     if start_epoch >= args.epochs:
-      print("Number of epochs")
+      print("Number of epochs already trained")
   else:
     os.makedir(args.model)
     os.chdir(args.model)
