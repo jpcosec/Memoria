@@ -24,8 +24,6 @@ from lib.teacher_models.dpn import DPN92
 from lib.teacher_models.senet import SENet18
 from lib.teacher_models.efficientnet import EfficientNetB0
 from lib.teacher_models.googlenet import GoogLeNet
-from lib.teacher_models.shufflenet import ShuffleNetG2
-from lib.teacher_models.shufflenetv2 import ShuffleNetV2
 
 def get_model(model_name):
   model_list = dict(VGG=VGG('VGG19'),
@@ -40,9 +38,7 @@ def get_model(model_name):
                         DPN92=DPN92(),
                         SENet18=SENet18(),
                         EfficientNetB0=EfficientNetB0(),
-                        GoogLeNet=GoogLeNet(),
-                        ShuffleNetG2=ShuffleNetG2(),
-                        ShuffleNetV2=ShuffleNetV2(1))
+                        GoogLeNet=GoogLeNet())
   try:
     return model_list[model_name]
   except:
