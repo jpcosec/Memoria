@@ -133,7 +133,7 @@ if __name__ == '__main__':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  writer = SummaryWriter(comment="teacher_trainer")
+
 
   if args.resume:
     # Load checkpoint.
@@ -144,6 +144,7 @@ if __name__ == '__main__':
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+  writer = SummaryWriter(comment="teacher_trainer")
 
   criterion = nn.CrossEntropyLoss()
   #optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
