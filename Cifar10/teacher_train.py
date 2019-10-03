@@ -84,7 +84,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
   parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint',)
-  parser.add_argument('--epochs',type=int, default=500, action='store_true', help='total number of epochs to train')
+  parser.add_argument('--epochs', default=500,type=int, help='total number of epochs to train')
   parser.add_argument('--model',default="ResNet18",help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2,")
 
   args = parser.parse_args()
