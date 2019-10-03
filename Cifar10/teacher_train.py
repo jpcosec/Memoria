@@ -2,7 +2,6 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 
 import torchvision
@@ -12,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 import os
 import argparse
-from lib.teacher_models.teacher_model import get_model
+from lib.teacher_model import get_model
 
 from lib.utils import progress_bar
 
