@@ -13,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 import os
 import argparse
 
-from lib.teacher_models.efficientnet import EfficientNetB0 as teacherNetGenerator
+from lib.teacher_models.preact_resnet import PreActResNet18 as teacherNetGenerator
 # net = VGG('VGG19')
 # net = ResNet18()
 # net = PreActResNet18()
@@ -26,6 +26,7 @@ from lib.teacher_models.efficientnet import EfficientNetB0 as teacherNetGenerato
 # net = ShuffleNetG2()
 # net = SENet18()
 # net = ShuffleNetV2(1)
+# EfficientNetB0
 from lib.utils import progress_bar
 
 
