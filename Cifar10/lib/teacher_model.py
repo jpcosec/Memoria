@@ -1,4 +1,4 @@
-import lib.teacher_models as models
+import .teacher_models as models
 
 def get_model(model_name):
   teacher_models = dict(VGG=models.vgg.VGG('VGG19'),
