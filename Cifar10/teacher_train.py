@@ -13,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 import os
 import argparse
 
-from lib.teacher_models.preact_resnet import PreActResNet18 as teacherNetGenerator
+from lib.teacher_models.resnet import ResNet18 as teacherNetGenerator
 # net = VGG('VGG19')
 # net = ResNet18()
 # net = PreActResNet18()
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
-  parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
+  parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', default=True)
   args = parser.parse_args()
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
