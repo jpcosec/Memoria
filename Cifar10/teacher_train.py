@@ -49,10 +49,11 @@ def train(epoch,writer):
         _, predicted = outputs.max(1)
         total += targets.size(0)
         correct += predicted.eq(targets).sum().item()
-
+        train_acc=100.*correct/total
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+            % (train_loss/(batch_idx+1), train_acc, correct, total))
         writer.add_scalar('train/loss', train_loss)
+        writer.add_scalar('train/acc', train_acc)
 
 def test(epoch,writer):
     global best_acc
@@ -76,13 +77,13 @@ def test(epoch,writer):
 
     # Save checkpoint.
     acc = 100.*correct/total
-    writer.add_scalar('train/acc', acc)
+    writer.add_scalar('test/acc', acc)
     if acc > best_acc:
         print('Saving..')
         state = {
             'net': net.state_dict(),
             'acc': acc,
-            'epoch': epoch,
+            'epoch': epoch
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
@@ -96,12 +97,12 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
   parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint',)
+  parser.add_argument('--epochs', default=500, action='store_true', help='total number of epochs to train', )
   args = parser.parse_args()
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
   best_acc = 0  # best test accuracy
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-
   # Data
   print('==> Preparing data..')
   transform_train = transforms.Compose([
@@ -144,11 +145,15 @@ if __name__ == '__main__':
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
+    if start_epoch >= args.epochs:
+      print("Number of epochs")
+
+
   writer = SummaryWriter(comment="teacher_trainer")
 
   criterion = nn.CrossEntropyLoss()
   #optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
   optimizer = optim.Adam(net.parameters() , lr=args.lr)
-  for epoch in range(start_epoch, start_epoch+200):
+  for epoch in range(start_epoch, args.epochs):
       train(epoch,writer)
       test(epoch,writer)
