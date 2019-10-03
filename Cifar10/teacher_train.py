@@ -11,7 +11,19 @@ import torchvision.transforms as transforms
 import os
 import argparse
 
-from lib.teacher_models import *
+from lib.teacher_models.efficientnet import EfficientNetB0 as teacherNetGenerator
+# net = VGG('VGG19')
+# net = ResNet18()
+# net = PreActResNet18()
+# net = GoogLeNet()
+# net = DenseNet121()
+# net = ResNeXt29_2x64d()
+# net = MobileNet()
+# net = MobileNetV2()
+# net = DPN92()
+# net = ShuffleNetG2()
+# net = SENet18()
+# net = ShuffleNetV2(1)
 from lib.utils import progress_bar
 
 
@@ -109,19 +121,8 @@ if __name__ == '__main__':
 
   # Model
   print('==> Building model..')
-  # net = VGG('VGG19')
-  # net = ResNet18()
-  # net = PreActResNet18()
-  # net = GoogLeNet()
-  # net = DenseNet121()
-  # net = ResNeXt29_2x64d()
-  # net = MobileNet()
-  # net = MobileNetV2()
-  # net = DPN92()
-  # net = ShuffleNetG2()
-  # net = SENet18()
-  # net = ShuffleNetV2(1)
-  net = EfficientNetB0()
+
+  net = teacherNetGenerator()
   net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
