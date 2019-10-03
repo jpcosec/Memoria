@@ -13,25 +13,36 @@ import os
 import argparse
 
 from lib.utils import progress_bar
-import lib
-
+from lib.teacher_models.resnet import ResNet18,ResNet101,ResNet50
+from lib.teacher_models.mobilenet import MobileNet
+from lib.teacher_models.mobilenetv2 import MobileNetV2
+from lib.teacher_models.resnext import ResNeXt29_32x4d
+from lib.teacher_models.vgg import VGG
+from lib.teacher_models.densenet import DenseNet121
+from lib.teacher_models.preact_resnet import PreActResNet18
+from lib.teacher_models.dpn import DPN92
+from lib.teacher_models.senet import SENet18
+from lib.teacher_models.efficientnet import EfficientNetB0
+from lib.teacher_models.googlenet import GoogLeNet
+from lib.teacher_models.shufflenet import ShuffleNetG2
+from lib.teacher_models.shufflenetv2 import ShuffleNetV2
 
 def get_model(model_name):
-  model_list = dict(#VGG=lib.teacher_models.vgg.VGG('VGG19'),
-                        ResNet18=lib.teacher_models.resnet.ResNet18(),
-                        ResNet50=lib.teacher_models.resnet.ResNet50(),
-                        ResNet101=lib.teacher_models.resnet.ResNet101(),
-                        MobileNet=lib.teacher_models.mobilenet.MobileNet(),
-                        MobileNetV2=lib.teacher_models.mobilenetv2.MobileNetV2(),
-                        ResNeXt29=lib.teacher_models.resnext.ResNeXt29_32x4d(),
-                        DenseNet=lib.teacher_models.densenet.DenseNet121(),
-                        PreActResNet18=lib.teacher_models.preact_resnet.PreActResNet18(),
-                        DPN92=lib.teacher_models.dpn.DPN92(),
-                        SENet18=lib.teacher_models.senetSENet18(),
-                        EfficientNetB0=lib.teacher_models.efficientnet.EfficientNetB0(),
-                        GoogLeNet=lib.teacher_models.googlenet.GoogLeNet(),
-                        ShuffleNetG2=lib.teacher_models.shufflenet.ShuffleNetG2(),
-                        ShuffleNetV2=lib.teacher_models.shufflenetv2.ShuffleNetV2(1))
+  model_list = dict(VGG=VGG('VGG19'),
+                        ResNet18=ResNet18(),
+                        ResNet50=ResNet50(),
+                        ResNet101=ResNet101(),
+                        MobileNet=MobileNet(),
+                        MobileNetV2=MobileNetV2(),
+                        ResNeXt29=ResNeXt29_32x4d(),
+                        DenseNet=DenseNet121(),
+                        PreActResNet18=PreActResNet18(),
+                        DPN92=DPN92(),
+                        SENet18=SENet18(),
+                        EfficientNetB0=EfficientNetB0(),
+                        GoogLeNet=GoogLeNet(),
+                        ShuffleNetG2=ShuffleNetG2(),
+                        ShuffleNetV2=ShuffleNetV2(1))
   try:
     return model_list[model_name]
   except:
