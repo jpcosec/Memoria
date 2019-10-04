@@ -44,7 +44,7 @@ def dist_model(teacher, distiller, eval_criterion, params, device, loaders,write
 
       # todo JSONEAR O ALGO
 
-      writer.add_scalar('dist-loss/train',loss.detach().numpy())
+      writer.add_scalar('dist-loss/train',loss.item())
       writer.add_scalar('CE/train',train_stats)
       writer.add_scalar('CE/test', test_stats)
       writer.add_scalar('Acc/train', acc_test(distiller["model"], train_loader, flatten=True))

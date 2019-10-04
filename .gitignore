@@ -1,13 +1,25 @@
 */.idea/*
-*.idea/
-default*
-Mnist/raw/*
-Mnist/processed/*
-data/*
-Mnist/.idea/vcs.xml
-*/data/*
-**.pyc
-**.ipynb_checkpoints**
-*.pt  
-*.pt
-*.pt
+ *.idea/
+ default*
+ Mnist/raw/*
+ Mnist/processed/*
+ data/*
+ Mnist/.idea/vcs.xml
+ */data/*
+ **.pyc
+ **.ipynb_checkpoints**
+ *.pt
+ *.pt
+ *.pt
+ ..gitignore.swp
+ Cifar10/MobileNetV2/
+ Cifar10/checkpoint/
+ Cifar10/eficcientnet/
+ Cifar10/linear_100,50,10/
+ Cifar10/linear_1000,1000,1000,100/
+ Cifar10/linear_10000,1000,1000/
+ Cifar10/linear_10000,10000,10000,10000,10000,10000/
+ Cifar10/linear_10000,10000,10000,10000,10000/
+ Cifar10/runs/
+ Mnist/runs/
+
