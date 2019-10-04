@@ -41,7 +41,7 @@ Autores: Wei-Chun Chen, Chia-Che Chang, Chien-Yu Lu, and Che-Rung Lee
 
 En: ACCV
 
-Usan una mezcla de Fitnets y GAN para entrenar redes que reproducen features. El sistema completo se compone de un generador $G$ que se usa para imitar los features, un discriminador $D$ que sirve para entrenar el generador y un clasificador $C$ mediante el cual se clasifica y que toma como entrada las features generadas por G. 
+Usan GAN para entrenar redes que reproducen features. El sistema completo se compone de un generador $G$ que se usa para imitar los features, un discriminador $D$ que sirve para entrenar el generador y un clasificador $C$ mediante el cual se clasifica y que toma como entrada las features generadas por G. 
 
 $$L_{\text{adv}D}=\frac{1}{2}\left[D(G(x))	\right]^2-\frac{1}{2}\left[D(F_T(x))-1	\right]^2$$
 
