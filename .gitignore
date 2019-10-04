@@ -23,3 +23,6 @@
  Cifar10/runs/
  Mnist/runs/
 
+*.xml
+Cifar10/lib/.DS_Store
+*.iml
