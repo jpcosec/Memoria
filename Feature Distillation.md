@@ -29,6 +29,10 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 \left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
 \end{cases}$$
 
+
+
+
+
 ### Knowledge Distillation with Feature Maps for Image Classification
 
 Año: 2019
@@ -37,7 +41,15 @@ Autores: Wei-Chun Chen, Chia-Che Chang, Chien-Yu Lu, and Che-Rung Lee
 
 En: ACCV
 
+Usan una mezcla de Fitnets y GAN para entrenar redes que reproducen features. El sistema completo se compone de un generador $G$ que se usa para imitar los features, un discriminador $D$ que sirve para entrenar el generador y un clasificador $C$ mediante el cual se clasifica y que toma como entrada las features generadas por G. 
 
+$$L_{\text{adv}D}=\frac{1}{2}\left[D(G(x))	\right]^2-\frac{1}{2}\left[D(F_T(x))-1	\right]^2$$
+
+$$L_{\text{adv}G}=\frac{1}{2}\left[D(G(x))	\right]^2$$
+
+La perdida total para el generador es, esta se entrena de forma separada a la del discriminador.
+
+$$L_G=L_{\text{adv}G}+\alpha L_{KD}$$
 
 ### Distilling Object Detectors with Fine-grained Feature Imitation
 
