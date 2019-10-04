@@ -44,7 +44,7 @@ El estudio se centra en destilacion en el contexto de deteccion de objetos. Ya q
 1. Los fondos en las imagenes pueden ser mucho mas variados que los objetos de primer plano, de esta manera en deteccion gran parte de la informacion de la imagen es o inutil o ruido que puede condicionar al detector a obtener respuestas falsas.
 2. La destilacion propuesta por hinton debe ser completamente modificada ya que la etiqueta deja de ser solo un valor de clase, si no de bounding box y clase por cada objeto presente en la imagen.
 
-
+ 
 
 
 
