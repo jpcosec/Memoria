@@ -183,6 +183,8 @@ if __name__ == '__main__':
         os.chdir(args.model)
 
     writer = SummaryWriter("teacher_trainer")
+    if args.model.split("_")[0] == "linear":
+        print(lasorra)
 
     criterion = nn.CrossEntropyLoss()
     # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
