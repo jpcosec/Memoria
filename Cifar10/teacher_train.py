@@ -185,10 +185,11 @@ if __name__ == '__main__':
     for epoch in range(start_epoch, args.epochs):
         train(epoch, writer)
         test(epoch, writer)
+
     print('Saving..')
     state = {
       'net': net.state_dict(),
-      'acc': acc,
+      'acc': best_acc,
       'epoch': epoch
     }
     if not os.path.isdir('checkpoint'):
