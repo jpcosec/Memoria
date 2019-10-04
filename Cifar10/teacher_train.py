@@ -52,7 +52,7 @@ def get_model(model_name):
 
 
 # Training
-def train(epoch, writer):
+def train(epoch, writer,flatten=False):
     print('\rEpoch: %d' % epoch)
     net.train()
     train_loss = 0
@@ -61,8 +61,10 @@ def train(epoch, writer):
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
-        #outputs = net(inputs)
-        outputs = net(inputs )
+        if flatten:
+            outputs = net(inputs.view(-1,3072))
+        else:
+            outputs = net(inputs )
         loss = criterion(outputs, targets)
         loss.backward()
         optimizer.step()
@@ -78,7 +80,7 @@ def train(epoch, writer):
         writer.add_scalar('train/acc', train_acc)
 
 
-def test(epoch, writer):
+def test(epoch, writer,flatten=False):
     global best_acc
     net.eval()
     test_loss = 0
@@ -87,7 +89,10 @@ def test(epoch, writer):
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
-            outputs = net(inputs)
+            if flatten:
+                outputs = net(inputs.view(-1, 3072))
+            else:
+                outputs = net(inputs)
             loss = criterion(outputs, targets)
 
             test_loss += loss.item()
@@ -183,15 +188,6 @@ if __name__ == '__main__':
     # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
     optimizer = optim.Adam(net.parameters(), lr=args.lr)
     for epoch in range(start_epoch, args.epochs):
-        train(epoch, writer)
-        test(epoch, writer)
+        train(epoch, writer,flatten=args.model.split("_")[0]=="linear")
+        test(epoch, writer,flatten=args.model.split("_")[0]=="linear")
 
-    print('Saving..')
-    state = {
-      'net': net.state_dict(),
-      'acc': best_acc,
-      'epoch': epoch
-    }
-    if not os.path.isdir('checkpoint'):
-      os.mkdir('checkpoint')
-    torch.save(state, './checkpoint/ckpt.pth')

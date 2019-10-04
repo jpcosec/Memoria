@@ -29,6 +29,14 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 \left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
 \end{cases}$$
 
+### Knowledge Distillation with Feature Maps for Image Classification
+
+Año: 2019
+
+Autores: Wei-Chun Chen, Chia-Che Chang, Chien-Yu Lu, and Che-Rung Lee
+
+En: ACCV
+
 
 
 ### Distilling Object Detectors with Fine-grained Feature Imitation
@@ -44,11 +52,17 @@ El estudio se centra en destilacion en el contexto de deteccion de objetos. Ya q
 1. Los fondos en las imagenes pueden ser mucho mas variados que los objetos de primer plano, de esta manera en deteccion gran parte de la informacion de la imagen es o inutil o ruido que puede condicionar al detector a obtener respuestas falsas.
 2. La destilacion propuesta por hinton debe ser completamente modificada ya que la etiqueta deja de ser solo un valor de clase, si no de bounding box y clase por cada objeto presente en la imagen.
 
- $$l=\sum_{c=1}^C \left ( r \left ( F_s \right )_{ijc} - F_{T_{ijc}} \right )^2 $$
+El metodo de destilacion propuesto imita las features de una manera no muy distinta a como se imitan las features en Fitnets, pero lo hace solamente en una region particular. Es decir, para una posicion $i$,$j$ en el feature map se define la perdida local $l$ como.
 
-$$L_{\text{FGFI}} = \frac{1}{2N_p}  \sum_{i,j  \in W,H} \mathbb{I}_{ij}l $$
+ $$l_{ij}=\sum_{c=1}^C \left ( r \left ( F_s \right )_{ijc} - F_{T_{ijc}} \right )^2 $$
 
+Así la perdida completa del metodo es la siguiente.
 
+$$L_{\text{FGFI}} = \frac{1}{2N_p}  \sum_{i,j  \in W,H} \mathbb{I}_{ij}*l_{ij} $$
+
+Donde $\mathbb{I}_{i,j}$ es un valor binario que es 1 cuando la posicion pertenece a la mascara de imitacion y 1 cuando no pertenece y $N_p=\sum_{i,j  \in W,H} \mathbb{I}_{ij}$ es el area de la mascara.
+
+La mascara de imitacion se calcula combiando mediante OR todos los anchors que tienen un iou mayor que algun threshold con el bounding box.
 
 ### An Embarrassingly Simple Approach for Knowledge Distillation
 
