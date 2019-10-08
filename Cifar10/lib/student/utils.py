@@ -1,7 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.backends.cudnn as cudnn
+
 import os
+from lib.utils import experiment
+from lib.teacher.utils import load_model, get_model
 
 def dist_loss_gen(T=8):
   def dist_loss(student_scores, teacher_scores, T=T):
@@ -10,7 +14,71 @@ def dist_loss_gen(T=8):
   return dist_loss
 
 
+
+class distillation_experiment(experiment):
+  def __init__(self,**kwargs):
+    super().__init__(kwargs)
+    self.net = None
+    self.student=kwargs["student"]
+    self.teacher=kwargs["teacher"]
+    self.eval_criterion=kwargs["eval_criterion"]
 # class distiller()
+
+def load_teacher(args,device):
+
+  print('==> Building teacher model..')
+  net = get_model(args.model)
+  net = net.to(device)
+
+  for param in net.parameters():
+    param.requires_grad = False
+
+  if device == 'cuda':
+    net = torch.nn.DataParallel(net)
+    cudnn.benchmark = True
+
+
+  assert os.path.isdir(args.model), 'Error: model not initialized'
+  os.chdir(args.model)
+  # Load checkpoint.
+  print('==> Resuming from checkpoint..')
+  assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+
+  checkpoint = torch.load('./checkpoint/ckpt.pth')
+  net.load_state_dict(checkpoint['net'])
+
+  return net
+
+def load_student(args,device):
+  best_acc = 0  # best test accuracy
+  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+  # Model
+  print('==> Building model..')
+  net = get_model(args.model)
+  net = net.to(device)
+  if device == 'cuda':
+    net = torch.nn.DataParallel(net)
+    cudnn.benchmark = True
+
+  if args.resume:
+    assert os.path.isdir("student/"+args.model), 'Error: model not initialized'
+    os.chdir("student/"+args.model)
+    # Load checkpoint.
+    print('==> Resuming from checkpoint..')
+    assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+
+    checkpoint = torch.load('./checkpoint/ckpt.pth')
+    net.load_state_dict(checkpoint['net'])
+    best_acc = checkpoint['acc']
+    start_epoch = checkpoint['epoch']
+
+    if start_epoch >= args.epochs:
+      print("Number of epochs already trained")
+  else:
+    os.mkdir("student/"+args.model)
+    os.chdir("student/"+args.model)
+  return net, best_acc, start_epoch
+
 
 def train_epoch(exp,epoch):
   print('\rEpoch: %d' % epoch)

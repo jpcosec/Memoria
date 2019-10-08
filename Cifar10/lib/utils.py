@@ -10,24 +10,16 @@ import torch
 
 class experiment():
 
-  def __init__(self, device,
-               net,
-               optimizer,
-               criterion,
-               linear,
-               writer,
-               testloader,
-               trainloader,
-               best_acc):
-    self.device = device
-    self.net = net
-    self.optimizer = optimizer
-    self.criterion = criterion
-    self.flatten = linear
-    self.writer = writer
-    self.testloader = testloader
-    self.trainloader = trainloader
-    self.best_acc = best_acc
+  def __init__(self, **kwargs):
+    self.device = kwargs["device"]
+    self.net = kwargs["net"]
+    self.optimizer = kwargs["optimizer"]
+    self.criterion = kwargs["criterion"]
+    self.flatten = kwargs["linear"]
+    self.writer = kwargs["writer"]
+    self.testloader = kwargs["testloader"]
+    self.trainloader = kwargs["trainloader"]
+    self.best_acc = kwargs["best_acc"]
 
 
 def load_dataset(args):

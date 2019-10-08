@@ -12,7 +12,7 @@ from lib.utils import experiment, load_dataset
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-from lib.teacher.utils import *
+from lib.student.utils import *
 
 
 
@@ -24,7 +24,9 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', default=500, type=int, help='total number of epochs to train')
   parser.add_argument('--train_batch_size', default=128, type=int, help='total number of epochs to train')
   parser.add_argument('--test_batch_size', default=100, type=int, help='total number of epochs to train')
-  parser.add_argument('--model', default="ResNet18",
+  parser.add_argument('--student_model', default="ResNet101",
+                      help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
+  parser.add_argument('--teacher_model', default="ResNet18",
                       help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
 
   args = parser.parse_args()
@@ -32,8 +34,11 @@ if __name__ == '__main__':
 
 
   trainloader, testloader, classes = load_dataset(args)
-
+  teacher=load_teacher(args,device)
   net, best_acc, start_epoch = load_model(args,device)
+  teacher
+
+
 
   writer = SummaryWriter("teacher_trainer")
   criterion = nn.CrossEntropyLoss()
@@ -42,10 +47,10 @@ if __name__ == '__main__':
 
   flatten=args.model.split("_")[0] == "linear"
   exp=experiment(device=device,
-           net=net,
+           student=student,
+           teacher=teacher,
            optimizer=optimizer,
            criterion=criterion,
-
            linear=args.model.split("_")[0] == "linear",
            writer=writer,
            testloader=testloader,
