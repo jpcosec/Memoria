@@ -76,9 +76,10 @@ if __name__ == '__main__':
            flatten=args.model.split("_")[0] == "linear",
            writer=writer,
            testloader=testloader,
-           trainloader=trainloader
+           trainloader=trainloader,
+           best_acc=best_acc
            )
 
   for epoch in range(start_epoch, args.epochs):
-    train(exp)
-    test(exp)
+    train(exp,epoch)
+    test(exp,epoch)

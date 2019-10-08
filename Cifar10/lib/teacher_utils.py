@@ -45,11 +45,11 @@ def get_model(model_name):
 
 
 # Training
-def train(exp):# TODO: CAMBIAR TODO A DICT
+def train(exp,epoch):# TODO: CAMBIAR TODO A DICT
   
   #global best_acc, trainloader, device, criterion, optimizer
 
-  print('\rEpoch: %d' % exp.epoch)
+  print('\rEpoch: %d' % epoch)
   exp.net.train()
   train_loss = 0
   correct = 0
@@ -76,7 +76,7 @@ def train(exp):# TODO: CAMBIAR TODO A DICT
     exp.writer.add_scalar('train/acc', train_acc)
 
 
-def test(exp):
+def test(exp,epoch):
 
   exp.net.eval()
   test_loss = 0
@@ -107,7 +107,7 @@ def test(exp):
     state = {
       'net': exp.net.state_dict(),
       'acc': acc,
-      'epoch': exp.epoch
+      'epoch': epoch
     }
     if not os.path.isdir('checkpoint'):
       os.mkdir('checkpoint')
