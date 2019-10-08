@@ -44,6 +44,11 @@ if __name__ == '__main__':
   # Model
   print('==> Building model..')
   net = get_model(args.model)
+  net = net.to(device)
+  if device == 'cuda':
+    net = torch.nn.DataParallel(net)
+    cudnn.benchmark = True
+
   if args.resume:
     assert os.path.isdir(args.model), 'Error: model not initialized'
     os.chdir(args.model)
@@ -64,10 +69,7 @@ if __name__ == '__main__':
 
   #net, best_acc, start_epoch = load_model(args)
 
-  net = net.to(device)
-  if device == 'cuda':
-    net = torch.nn.DataParallel(net)
-    cudnn.benchmark = True
+
 
 
 
