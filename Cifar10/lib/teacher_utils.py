@@ -140,5 +140,3 @@ def load_dataset(args):
   return trainloader, testloader, classes
 
 
-
-c

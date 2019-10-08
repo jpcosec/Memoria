@@ -6,7 +6,26 @@ import torch.utils.data.dataloader as dataloader
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
 
+class experiment():
 
+  def __init__(self, device,
+               net,
+               optimizer,
+               criterion,
+               linear,
+               writer,
+               testloader,
+               trainloader,
+               best_acc):
+    self.device = device
+    self.net = net
+    self.optimizer = optimizer
+    self.criterion = criterion
+    self.flatten = linear
+    self.writer = writer
+    self.testloader = testloader
+    self.trainloader = trainloader
+    self.best_acc = best_acc
 
 def teacher_train(net, train_loader, optimizer, device, n_epochs=100):
 
