@@ -138,11 +138,8 @@ def load_dataset(args):
   return trainloader, testloader, classes
 
 
-def load_model(args):
+def load_model(args,net):
 
-
-
-  net = get_model(args.model)
   # Model
   print('==> Building model..')
 

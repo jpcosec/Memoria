@@ -30,8 +30,10 @@ if __name__ == '__main__':
   #args=device
 
   trainloader, testloader, classes = load_dataset(args)
-  net, best_acc, start_epoch = load_model(args)
 
+
+  net = get_model(args.model)
+  net, best_acc, start_epoch = load_model(args, load)
   net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
