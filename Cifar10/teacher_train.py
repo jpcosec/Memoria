@@ -66,7 +66,6 @@ if __name__ == '__main__':
   else:
     os.mkdir(args.model)
     os.chdir(args.model)
-
   #net, best_acc, start_epoch = load_model(args)
 
 
