@@ -5,18 +5,14 @@ logger = logging.getLogger(__name__)
 
 from argparse
 import numpy as np
-import pandas as pd
 
 import torch
-from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
 
 
-from lib.dist_model import linear_model
-from lib.dist_utils import dist_loss_gen, train_epoch, test_sample
-from lib.utils import sample, get_dataloaders, acc_test
-from teacher_train import get_model
-
+from lib.models.linear import linear_model
+from lib.student.utils import dist_loss_gen, train_epoch, test_sample
+from lib.utils import get_dataloaders
 
 
 def distillation_experiment(neuronas, teacher, device, loaders, params):

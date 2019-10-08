@@ -3,19 +3,18 @@ import os
 import torch
 import torch.backends.cudnn as cudnn
 
-from lib.utils import progress_bar
-from lib.teacher_models.resnet import ResNet18, ResNet101, ResNet50
-from lib.teacher_models.mobilenet import MobileNet
-from lib.teacher_models.mobilenetv2 import MobileNetV2
-from lib.teacher_models.resnext import ResNeXt29_32x4d
-from lib.teacher_models.vgg import VGG
-from lib.teacher_models.densenet import DenseNet121
-from lib.teacher_models.preact_resnet import PreActResNet18
-from lib.teacher_models.dpn import DPN92
-from lib.teacher_models.senet import SENet18
-from lib.teacher_models.efficientnet import EfficientNetB0
-from lib.teacher_models.googlenet import GoogLeNet
-from lib.dist_model import linear_model
+from lib.models.resnet import ResNet18, ResNet101, ResNet50
+from lib.models.mobilenet import MobileNet
+from lib.models.mobilenetv2 import MobileNetV2
+from lib.models.resnext import ResNeXt29_32x4d
+from lib.models.vgg import VGG
+from lib.models.densenet import DenseNet121
+from lib.models.preact_resnet import PreActResNet18
+from lib.models.dpn import DPN92
+from lib.models.senet import SENet18
+from lib.models.efficientnet import EfficientNetB0
+from lib.models.googlenet import GoogLeNet
+from lib.models.linear import linear_model
 
 
 def get_model(model_name):
@@ -43,31 +42,37 @@ def get_model(model_name):
 
 
 # Training
-def train(exp,epoch):# TODO: CAMBIAR TODO A DICT
+def train(exp,epoch):# TODO: meter writer y weas en clase EXP
 
   print('\rEpoch: %d' % epoch)
   exp.net.train()
-  train_loss = 0
+  total_loss = 0
   correct = 0
   total = 0
   for batch_idx, (inputs, targets) in enumerate(exp.trainloader):
     inputs, targets = inputs.to(exp.device), targets.to(exp.device)
     exp.optimizer.zero_grad()
+
     if exp.flatten:
       outputs = exp.net(inputs.view(-1, 3072))
     else:
       outputs = exp.net(inputs)
+
     loss = exp.criterion(outputs, targets)
     loss.backward()
     exp.optimizer.step()
 
-    train_loss += loss.item()
+    total_loss += loss.item()
     _, predicted = outputs.max(1)
     total += targets.size(0)
     correct += predicted.eq(targets).sum().item()
-    train_acc = 100. * correct / total
-    progress_bar(batch_idx, len(exp.trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                 % (train_loss / (batch_idx + 1), train_acc, correct, total))
+
+    train_acc  = 100. * correct / total
+    train_loss =  total_loss / (batch_idx + 1)
+
+    #progress_bar(batch_idx, len(exp.trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+    #             % (train_loss / (batch_idx + 1), train_acc, correct, total))
+
     exp.writer.add_scalar('train/loss', train_loss)
     exp.writer.add_scalar('train/acc', train_acc)
 
@@ -92,12 +97,13 @@ def test(exp,epoch):
       total += targets.size(0)
       correct += predicted.eq(targets).sum().item()
       exp.writer.add_scalar('test/loss', test_loss)
-      progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                   % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
+      #progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+      #             % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
-  # Save checkpoint.
-  acc = 100. * correct / total
-  exp.writer.add_scalar('test/acc', acc)
+      # Save checkpoint.
+      acc = 100. * correct / total
+      exp.writer.add_scalar('test/acc', acc)
+
   if acc > exp.best_acc:
     print('Saving..')
     state = {

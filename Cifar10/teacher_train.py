@@ -12,7 +12,7 @@ from lib.utils import experiment, load_dataset
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-from lib.teacher_utils import *
+from lib.teacher.utils import *
 
 
 
