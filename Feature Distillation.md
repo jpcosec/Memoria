@@ -31,6 +31,24 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 
 
 
+### Structured Knowledge Distillation for Semantic Segmentation
+
+Autores: Yifan Liu, Ke Chen, Chris Liu, Zengchang Qin, Zhenbo Luo, Jingdong Wang
+
+Año: 2019
+
+En: CVPR
+
+El problema de segmentacion semántica consiste en la prediccion de un mapa $Q$ score de clases para cada uno de los pixeles de una imagen, cosa que hace no a lugar el uso de cualquier tecnica usada en clasificacion o detección. Sin embargo, suele partirse desde un backbone ya entrenado en algun otro task. El paper usa varias perdidas distintas, una de destilacion en feature map y en la predicción, una de segmentacion y otra discriminativa para destilar un modelo de segmentacion semantica basado en un backbone preentrenado en un modelo mas pequeño. 
+
+**Destilacion de Ground truth**, se usa simplemente cross entropy entre la salida de la red y el ground truth para cada uno de los pixeles.
+
+**Destilacion a nivel de pixel**, se usa un promedio a nivel de imagen de clasificacion de Hinton, es decir, la divergencia KL entre los logits de la red tutora y la red estudiante. $L_{\text{pi}}=\frac{1}{N_wN_H} \sum_{i,j \in W,H} KL \left( q_{i,j}^S \| q_{i,j}^T \right)$.
+
+**Pairwise distillation**, se usa una medida de similaridad entre dos pixeles calculada como $a_{ij}=f_i^\top f_j /\left ( \left \| f_i \right \|_2 \left \| f_j \right \|_2 \right )$, la cual luego es comparada para cada uno de los pixeles de los feature maps de ambas redes. $L_{\text{pa}}=\frac{1}{(N_wN_H )^2} \sum_{i \in W,H}\sum_{j \in W,H} \left (  a_{ij}^S - a_{ij}^T \right)^2$
+
+**Hollistic (Adversarial) distillation**, consiste en el uso de un discriminador $D$ que actúa a modo de red de embeding usando a la red de segmentación como si fuese un generador. Luego, usando la distancia wasserstein se compara la distribución de ambas salidas. $L_{\text{ho}} = \mathbb{E}[D(Q^{S})]-\mathbb{E}[D(Q^T)]$
+
 
 
 ### Knowledge Distillation with Feature Maps for Image Classification
