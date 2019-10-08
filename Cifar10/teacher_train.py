@@ -29,14 +29,11 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  ###global best_acc, trainloader, testloader, criterion, optimizer, writer
 
-
-  #args=device
 
   trainloader, testloader, classes = load_dataset(args)
 
-  net, best_acc, start_epoch = load_model(args)
+  net, best_acc, start_epoch = load_model(args,device)
 
   writer = SummaryWriter("teacher_trainer")
   criterion = nn.CrossEntropyLoss()
