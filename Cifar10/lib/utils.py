@@ -2,9 +2,11 @@
 import numpy as np
 import torch.nn.functional as F
 from torch.autograd import Variable
-import torch.utils.data.dataloader as dataloader
 from torchvision import transforms
-from torchvision.datasets import CIFAR10
+import torchvision
+import torchvision.transforms as transforms
+import torch
+
 
 class experiment():
 
@@ -83,26 +85,31 @@ def acc_test(net, loader, lim=15, flatten=False,):#Todo, generalizar
   accuracy = float(np.sum(d)) / float(d.shape[0])
   return accuracy
 
+def load_dataset(args):
+  # Data
+  print('==> Preparing data..')
+  transform_train = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+  ])
+
+  transform_test = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+  ])
+
+  trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
+  trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=2)
+
+  testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
+  testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
+
+  classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+  return trainloader, testloader, classes
 
 
-def get_dataloaders(data_folder):
-  # Load CIFAR10
-
-  train_data = CIFAR10(data_folder, train=True, download=True, transform=transforms.Compose([
-    transforms.ToTensor(),  # ToTensor does min-max normalization.
-  ]), )
-
-  test_data = CIFAR10(data_folder, train=False, download=True, transform=transforms.Compose([
-    transforms.ToTensor(),  # ToTensor does min-max normalization.
-  ]), )
-
-  # Create DataLoader
-  dataloader_args = dict(shuffle=True, batch_size=64, num_workers=1, pin_memory=True)
-  train_loader = dataloader.DataLoader(train_data, **dataloader_args)
-  test_loader = dataloader.DataLoader(test_data, **dataloader_args)
-
-
-  return train_loader, test_loader
 
 
 def sample(loader):
