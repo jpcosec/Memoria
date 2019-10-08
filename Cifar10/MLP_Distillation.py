@@ -9,51 +9,18 @@ import pandas as pd
 
 import torch
 from torch.autograd import Variable
-from lib.dist_model import linear_model
-from lib.dist_utils import dist_loss_gen, train_op
-from lib.utils import sample, get_dataloaders, acc_test
-from lib.teacher_models.resnet import ResNet18 as teacherNetGenerator
-
 from torch.utils.tensorboard import SummaryWriter
 
 
-
-def dist_model(teacher, distiller, eval_criterion, params, device, loaders,writer):
-  train_loader, test_loader = loaders
-
-
-  for epoch in range(params.epochs):
-    for batch_idx, (data, target) in enumerate(train_loader):  # 784= 28*28
-      loss = train_op(distiller, teacher, data, target, device)
-      #logger.debug(str(loss))
-
-
-    if epoch % 1 == 0:
-
-      x_train, y_train = sample(train_loader)
-
-      y_pred = distiller["model"](x_train.view(-1, 784))
-      train_stats = eval_criterion(y_pred, y_train)
-
-      x_test, y_test = sample(test_loader)
-      y_pred = distiller["model"](x_test.view(-1, 784))
-      test_stats = eval_criterion(y_pred.squeeze(), y_test)
-
-      y_predT = teacher(x_test)
-      test_statsT = eval_criterion(y_predT.squeeze(), y_test)
-
-      # todo JSONEAR O ALGO
-
-      writer.add_scalar('dist-loss/train',loss.detach().numpy())
-      writer.add_scalar('CE/train',train_stats)
-      writer.add_scalar('CE/test', test_stats)
-      writer.add_scalar('Acc/train', acc_test(distiller["model"], train_loader, flatten=True))
-      writer.add_scalar('Acc/test', acc_test(distiller["model"], test_loader, flatten=True))
+from lib.dist_model import linear_model
+from lib.dist_utils import dist_loss_gen, train_epoch, test_sample
+from lib.utils import sample, get_dataloaders, acc_test
+from teacher_train import get_model
 
 
 
 def distillation_experiment(neuronas, teacher, device, loaders, params):
-
+  train_loader, test_loader = loaders
   for i in neuronas:
     for x in range(params.experiments):
 
@@ -75,9 +42,11 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
 
       distiller=dict(model=student_model,criterion=criterion,optimizer=optimizer)
 
-      dist_model(teacher, distiller, eval_criterion, params, device, loaders, writer)
+      for epoch in range(params.epochs):
+        train_epoch(distiller, teacher, train_loader, device,writer)
+        test_sample(distiller, teacher, loaders,device, eval_criterion, writer)
 
-def
+
 
 def main(params):
   neuronas = [int(i) for i in np.exp2(np.arange(0, 10))]
@@ -92,9 +61,9 @@ def main(params):
   # Get data
   loaders = get_dataloaders(params.data_folder)
 
-  teacher = TeacherNet().to(device)
-  logger.info("loading teacher")
-  teacher.load_state_dict(torch.load(params.model_path))
+
+
+
 
   for param in teacher.parameters():
     param.requires_grad = False
