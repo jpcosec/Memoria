@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  global best_acc, trainloader, testloader, criterion, optimizer
+  global best_acc, trainloader, testloader, criterion, optimizer, writer
 
 
   #args=device
@@ -68,11 +68,6 @@ if __name__ == '__main__':
     os.chdir(args.model)
   #net, best_acc, start_epoch = load_model(args)
 
-
-
-
-
-
   writer = SummaryWriter("teacher_trainer")
   criterion = nn.CrossEntropyLoss()
   # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
@@ -80,5 +75,5 @@ if __name__ == '__main__':
 
   for epoch in range(start_epoch, args.epochs):
     flatten_input = args.model.split("_")[0] == "linear"
-    train(epoch, writer, flatten=flatten_input)
-    test(epoch, writer, flatten=flatten_input)
+    train(net, epoch, writer, flatten=flatten_input)
+    test(net, epoch, writer, flatten=flatten_input)
