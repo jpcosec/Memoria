@@ -141,3 +141,4 @@ def load_model(args,device):
   else:
     os.mkdir(args.model)
     os.chdir(args.model)
+  return net, best_acc, start_epoch
