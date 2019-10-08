@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+import torch.backends.cudnn as cudnn
 
 global best_acc, trainloader, testloader, device, criterion, optimizer
 
@@ -30,6 +31,15 @@ if __name__ == '__main__':
 
   trainloader, testloader, classes = load_dataset(args)
   net, best_acc, start_epoch = load_model(args)
+
+  net = net.to(device)
+  if device == 'cuda':
+    net = torch.nn.DataParallel(net)
+    cudnn.benchmark = True
+
+  best_acc = 0  # best test accuracy
+  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
 
   writer = SummaryWriter("teacher_trainer")
   criterion = nn.CrossEntropyLoss()

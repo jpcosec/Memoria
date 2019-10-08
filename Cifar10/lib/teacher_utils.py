@@ -1,7 +1,6 @@
 import os
 
 import torch
-import torch.backends.cudnn as cudnn
 
 import torchvision
 import torchvision.transforms as transforms
@@ -140,19 +139,12 @@ def load_dataset(args):
 
 
 def load_model(args):
-  global device, best_acc, start_epoch
 
-  best_acc = 0  # best test accuracy
-  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
 
   net = get_model(args.model)
   # Model
   print('==> Building model..')
-
-  net = net.to(device)
-  if device == 'cuda':
-    net = torch.nn.DataParallel(net)
-    cudnn.benchmark = True
 
   if args.resume:
     assert os.path.isdir(args.model), 'Error: model not initialized'
