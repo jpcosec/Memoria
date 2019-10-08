@@ -115,8 +115,6 @@ def test(net, epoch, writer, flatten=False):
 
 
 def load_dataset(args):
-  best_acc = 0  # best test accuracy
-  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
   # Data
   print('==> Preparing data..')
   transform_train = transforms.Compose([
@@ -138,11 +136,15 @@ def load_dataset(args):
   testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
 
   classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-  return trainloader, trainset, classes
+  return trainloader, testloader, classes
 
 
 def load_model(args):
-  global device
+  global device, best_acc, start_epoch
+
+  best_acc = 0  # best test accuracy
+  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
   net = get_model(args.model)
   # Model
   print('==> Building model..')
