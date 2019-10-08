@@ -6,6 +6,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
+global best_acc, trainloader, testloader, device, criterion, optimizer
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 from lib.teacher_utils import *
 
 if __name__ == '__main__':
@@ -21,9 +25,7 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  global best_acc, trainloader, testloader, device, criterion, optimizer
 
-  device = 'cuda' if torch.cuda.is_available() else 'cpu'
   #args=device
 
   trainloader, testloader, classes = load_dataset(args)
