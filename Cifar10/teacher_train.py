@@ -21,8 +21,9 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
+  global device
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
-  args[device]=device
+  #args=device
 
   trainloader, trainset, classes = load_dataset(args)
   net, best_acc, start_epoch = load_model(args)
