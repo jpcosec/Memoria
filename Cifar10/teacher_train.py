@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import torch.backends.cudnn as cudnn
+from lib.dist_utils import experiment
 
 ###global device
 
@@ -69,11 +70,12 @@ if __name__ == '__main__':
   # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
   optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
-  exp=dict(device=device,
+  flatten=args.model.split("_")[0] == "linear"
+  exp=experiment(device=device,
            net=net,
            optimizer=optimizer,
            criterion=criterion,
-           flatten=args.model.split("_")[0] == "linear",
+           linear=args.model.split("_")[0] == "linear",
            writer=writer,
            testloader=testloader,
            trainloader=trainloader,

@@ -54,3 +54,25 @@ def test_sample(distiller, teacher, loaders, device, eval_criterion, writer):
   writer.add_scalar('CE/teacher', test_statsT)
   writer.add_scalar('Acc/train', acc_test(distiller["model"], train_loader, flatten=True))
   writer.add_scalar('Acc/test', acc_test(distiller["model"], test_loader, flatten=True))
+
+
+class experiment():
+
+  def __init__(self, device,
+               net,
+               optimizer,
+               criterion,
+               linear,
+               writer,
+               testloader,
+               trainloader,
+               best_acc):
+    self.device = device
+    self.net = net
+    self.optimizer = optimizer
+    self.criterion = criterion
+    self.flatten = linear
+    self.writer = writer
+    self.testloader = testloader
+    self.trainloader = trainloader
+    self.best_acc = best_acc
