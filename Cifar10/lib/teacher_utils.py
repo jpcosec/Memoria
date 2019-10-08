@@ -142,6 +142,7 @@ def load_dataset(args):
 
 
 def load_model(args):
+  global device
   net = get_model(args.model)
   # Model
   print('==> Building model..')
