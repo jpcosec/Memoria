@@ -7,17 +7,13 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import torch.backends.cudnn as cudnn
 
-global device
+###global device
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 from lib.teacher_utils import *
 
-def load_model(args):
 
-
-
-  return net, best_acc, start_epoch
 
 if __name__ == '__main__':
 
@@ -32,7 +28,7 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
-  global best_acc, trainloader, testloader, criterion, optimizer, writer
+  ###global best_acc, trainloader, testloader, criterion, optimizer, writer
 
 
   #args=device
@@ -73,7 +69,16 @@ if __name__ == '__main__':
   # optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
   optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
+  exp=dict(device=device,
+           net=net,
+           optimizer=optimizer,
+           criterion=criterion,
+           flatten=args.model.split("_")[0] == "linear",
+           writer=writer,
+           testloader=testloader,
+           trainloader=trainloader
+           )
+
   for epoch in range(start_epoch, args.epochs):
-    flatten_input = args.model.split("_")[0] == "linear"
-    train(net, epoch, writer, flatten=flatten_input)
-    test(net, epoch, writer, flatten=flatten_input)
+    train(exp)
+    test(exp)

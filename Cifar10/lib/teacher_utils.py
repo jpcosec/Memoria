@@ -45,72 +45,74 @@ def get_model(model_name):
 
 
 # Training
-def train(net, epoch, writer, flatten=False):
-  global best_acc, trainloader, device, criterion, optimizer
-  print('\rEpoch: %d' % epoch)
-  net.train()
+def train(exp):# TODO: CAMBIAR TODO A DICT
+  
+  #global best_acc, trainloader, device, criterion, optimizer
+
+  print('\rEpoch: %d' % exp.epoch)
+  exp.net.train()
   train_loss = 0
   correct = 0
   total = 0
-  for batch_idx, (inputs, targets) in enumerate(trainloader):
-    inputs, targets = inputs.to(device), targets.to(device)
-    optimizer.zero_grad()
-    if flatten:
-      outputs = net(inputs.view(-1, 3072))
+  for batch_idx, (inputs, targets) in enumerate(exp.trainloader):
+    inputs, targets = inputs.to(exp.device), targets.to(exp.device)
+    exp.optimizer.zero_grad()
+    if exp.flatten:
+      outputs = exp.net(inputs.view(-1, 3072))
     else:
-      outputs = net(inputs)
-    loss = criterion(outputs, targets)
+      outputs = exp.net(inputs)
+    loss = exp.criterion(outputs, targets)
     loss.backward()
-    optimizer.step()
+    exp.optimizer.step()
 
     train_loss += loss.item()
     _, predicted = outputs.max(1)
     total += targets.size(0)
     correct += predicted.eq(targets).sum().item()
     train_acc = 100. * correct / total
-    progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+    progress_bar(batch_idx, len(exp.trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                  % (train_loss / (batch_idx + 1), train_acc, correct, total))
-    writer.add_scalar('train/loss', train_loss)
-    writer.add_scalar('train/acc', train_acc)
+    exp.writer.add_scalar('train/loss', train_loss)
+    exp.writer.add_scalar('train/acc', train_acc)
 
 
-def test(net, epoch, writer, flatten=False):
-  global best_acc, testloader, device, criterion
-  net.eval()
+def test(exp):
+
+  exp.net.eval()
   test_loss = 0
   correct = 0
   total = 0
   with torch.no_grad():
-    for batch_idx, (inputs, targets) in enumerate(testloader):
-      inputs, targets = inputs.to(device), targets.to(device)
-      if flatten:
-        outputs = net(inputs.view(-1, 3072))
+    for batch_idx, (inputs, targets) in enumerate(exp.testloader):
+      inputs, targets = inputs.to(exp.device), targets.to(exp.device)
+      if exp.flatten:
+        outputs = exp.net(inputs.view(-1, 3072))
       else:
-        outputs = net(inputs)
-      loss = criterion(outputs, targets)
+        outputs = exp.net(inputs)
+      loss = exp.criterion(outputs, targets)
 
       test_loss += loss.item()
       _, predicted = outputs.max(1)
       total += targets.size(0)
       correct += predicted.eq(targets).sum().item()
-      writer.add_scalar('test/loss', test_loss)
-      progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+      exp.writer.add_scalar('test/loss', test_loss)
+      progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                    % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
   # Save checkpoint.
   acc = 100. * correct / total
-  writer.add_scalar('test/acc', acc)
-  if acc > best_acc:
+  exp.writer.add_scalar('test/acc', acc)
+  if acc > exp.best_acc:
     print('Saving..')
     state = {
-      'net': net.state_dict(),
+      'net': exp.net.state_dict(),
       'acc': acc,
-      'epoch': epoch
+      'epoch': exp.epoch
     }
     if not os.path.isdir('checkpoint'):
       os.mkdir('checkpoint')
     torch.save(state, './checkpoint/ckpt.pth')
-    best_acc = acc
+    exp.best_acc = acc
 
 
 def load_dataset(args):
