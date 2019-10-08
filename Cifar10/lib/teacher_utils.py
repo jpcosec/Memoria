@@ -147,13 +147,13 @@ def load_model(args):
   # Model
   print('==> Building model..')
 
-  net = net.to(args.device)
+  net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
   if args.resume:
-    assert os.path.isdir(device), 'Error: model not initialized'
+    assert os.path.isdir(args.model), 'Error: model not initialized'
     os.chdir(args.model)
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
