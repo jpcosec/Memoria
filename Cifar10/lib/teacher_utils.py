@@ -147,7 +147,7 @@ def load_model(args):
   # Model
   print('==> Building model..')
 
-  net = net.to(device)
+  net = net.to(args.device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
