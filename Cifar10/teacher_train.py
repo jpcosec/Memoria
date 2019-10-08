@@ -13,6 +13,31 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 from lib.teacher_utils import *
 
+def load_model(args,net):
+
+  # Model
+  print('==> Building model..')
+
+  if args.resume:
+    assert os.path.isdir(args.model), 'Error: model not initialized'
+    os.chdir(args.model)
+    # Load checkpoint.
+    print('==> Resuming from checkpoint..')
+    assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+
+    checkpoint = torch.load('./checkpoint/ckpt.pth')
+    net.load_state_dict(checkpoint['net'])
+    best_acc = checkpoint['acc']
+    start_epoch = checkpoint['epoch']
+
+    if start_epoch >= args.epochs:
+      print("Number of epochs already trained")
+  else:
+    os.mkdir(args.model)
+    os.chdir(args.model)
+
+  return net, best_acc, start_epoch
+
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
