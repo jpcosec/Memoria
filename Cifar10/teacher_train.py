@@ -7,17 +7,17 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import torch.backends.cudnn as cudnn
 
-global best_acc, trainloader, testloader, device, criterion, optimizer
+global device
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 from lib.teacher_utils import *
 
-def load_model(args,net):
+def load_model(args):
 
   # Model
   print('==> Building model..')
-
+  net = get_model(args.model)
   if args.resume:
     assert os.path.isdir(args.model), 'Error: model not initialized'
     os.chdir(args.model)
@@ -51,21 +51,24 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
+  global best_acc, trainloader, testloader, criterion, optimizer
+
 
   #args=device
 
   trainloader, testloader, classes = load_dataset(args)
 
+  best_acc = 0  # best test accuracy
+  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
-  net = get_model(args.model)
-  net, best_acc, start_epoch = load_model(args, net)
+  net, best_acc, start_epoch = load_model(args)
+
   net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  best_acc = 0  # best test accuracy
-  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
 
 
   writer = SummaryWriter("teacher_trainer")
