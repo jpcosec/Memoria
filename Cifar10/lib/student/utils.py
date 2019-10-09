@@ -11,7 +11,6 @@ from lib.teacher.utils import load_model, get_model
 
 def dist_loss_gen(T=8):
   def dist_loss(student_scores, teacher_scores, T=T):
-    print("student_scores\n",student_scores)
     print("teacher_scores\n", teacher_scores)
 
     return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
