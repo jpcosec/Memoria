@@ -93,7 +93,7 @@ def load_student(args,device):
 def train(exp, epoch):
   print('\rEpoch: %d' % epoch)
   exp.student.train()
-  exp.trainer.train()
+  exp.teacher.eval()
   total_loss = 0
   correct = 0
   total = 0
