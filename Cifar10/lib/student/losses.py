@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-def get_distilation(st):
+def parse_distillation_loss(st):
   fields=st.split(",")
   method=fields[0]
   args=dict([i.split("-") for i in fields[1:]])

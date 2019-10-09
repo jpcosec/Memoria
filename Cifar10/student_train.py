@@ -13,13 +13,12 @@ from lib.utils import experiment, load_dataset
 
 
 from lib.student.utils import *
-from lib.student.losses import soft, composed
+from lib.student.losses import parse_distillation_loss
 
 
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
-  parser.add_argument("--temp", type=float, default=3.5)
   parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
   parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )
   parser.add_argument('--epochs', default=500, type=int, help='total number of epochs to train')
@@ -41,7 +40,7 @@ if __name__ == '__main__':
   student, best_acc, start_epoch = load_student(args,device)
   writer = SummaryWriter(args.distillation)
 
-  criterion = soft(args.temp)
+  criterion = parse_distillation_loss(args.distillation)
   eval_criterion = torch.nn.CrossEntropyLoss()
   optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
