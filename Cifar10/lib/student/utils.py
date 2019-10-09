@@ -123,15 +123,17 @@ def train(exp, epoch):
     total += targets.size(0)
     correct += predicted.eq(targets).sum().item()
 
-    train_acc = 100. * correct / total
-    train_loss = total_loss / (batch_idx + 1)
+    acc = 100. * correct / total
+    loss = total_loss / (batch_idx + 1)
 
-    train_EC = exp.eval_criterion(S_y_pred, targets).item()
+    EC = exp.eval_criterion(S_y_pred, targets).item()
 
-    exp.writer.add_scalar('train/loss', train_loss)
-    exp.writer.add_scalar('train/acc', train_acc)
-    exp.writer.add_scalar("train/EvalCriterion",train_EC)
-  print()
+    exp.writer.add_scalar('train/loss', loss)
+    exp.writer.add_scalar('train/acc', acc)
+    exp.writer.add_scalar("train/EvalCriterion",EC)
+  print("loss=",loss)
+  print("EC=", EC)
+  print("Acc=", acc)
 
 
 
@@ -139,7 +141,7 @@ def test(exp, epoch):
   print('\rTesting epoch: %d' % epoch)
   exp.student.eval()
   exp.teacher.eval()
-  test_loss = 0
+  loss = 0
   correct = 0
   total = 0
 
@@ -159,19 +161,19 @@ def test(exp, epoch):
       student_eval = exp.eval_criterion(S_y_pred.squeeze(), targets)
       teacher_eval = exp.eval_criterion(T_y_pred.squeeze(), targets)
 
-      test_loss += loss.item()
+      loss += loss.item()
       _, predicted = S_y_pred.max(1)
       total += targets.size(0)
       correct += predicted.eq(targets).sum().item()
 
       #progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-      #             % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
+      #             % (loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
       # Save checkpoint.
       acc = 100. * correct / total
 
       exp.writer.add_scalar('test/acc', acc)
-      exp.writer.add_scalar('test/loss', test_loss)
+      exp.writer.add_scalar('test/loss', loss)
 
       exp.writer.add_scalar("test/student/eval",student_eval)
       exp.writer.add_scalar("test/teacher/eval", teacher_eval)
@@ -188,3 +190,8 @@ def test(exp, epoch):
       os.mkdir('checkpoint')
     torch.save(state, './checkpoint/ckpt.pth')
     exp.best_acc = acc
+
+  print("loss=",loss)
+  print("Student_EC=", student_eval)
+  print("Teacher_EC=", teacher_eval)
+  print("Acc=", acc)
