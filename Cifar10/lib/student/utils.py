@@ -43,7 +43,6 @@ def load_teacher(args,device):
   # Load checkpoint.
   print('==> Resuming from checkpoint..')
   assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
-
   checkpoint = torch.load('./checkpoint/ckpt.pth')
   net.load_state_dict(checkpoint['net'])
 
