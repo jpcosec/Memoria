@@ -80,7 +80,7 @@ def load_student(args,device):
   return net, best_acc, start_epoch
 
 
-def train_epoch(exp,epoch):
+def train(exp, epoch):
   print('\rEpoch: %d' % epoch)
   exp.student.train()
   exp.trainer.train()
@@ -122,7 +122,7 @@ def train_epoch(exp,epoch):
 
 
 
-def test_sample(exp,epoch):
+def test(exp, epoch):
   exp.student.eval()
   exp.teacher.eval()
   test_loss = 0

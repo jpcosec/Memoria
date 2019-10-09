@@ -11,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 from lib.models.linear import linear_model
-from lib.student.utils import dist_loss_gen, train_epoch, test_sample
+from lib.student.utils import dist_loss_gen, train, test
 from lib.utils import get_dataloaders
 
 
@@ -39,8 +39,8 @@ def distillation_experiment(neuronas, teacher, device, loaders, params):
       distiller=dict(model=student_model,criterion=criterion,optimizer=optimizer)
 
       for epoch in range(params.epochs):
-        train_epoch(distiller, teacher, train_loader, device,writer)
-        test_sample(distiller, teacher, loaders,device, eval_criterion, writer)
+        train(distiller, teacher, train_loader, device, writer)
+        test(distiller, teacher, loaders, device, eval_criterion, writer)
 
 
 

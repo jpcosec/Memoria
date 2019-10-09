@@ -49,7 +49,7 @@ if __name__ == '__main__':
   optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
   flatten=args.model.split("_")[0] == "linear"
-  exp=experiment(device=device,
+  exp=distillation_experiment(device=device,
            student=student,
            teacher=teacher,
            optimizer=optimizer,
