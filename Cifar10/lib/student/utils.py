@@ -82,7 +82,7 @@ def load_student(args,device):
     if not os.path.isdir("student/"+args.student):
       os.mkdir("student/"+args.student)
     os.mkdir(folder)
-    os.chdir("student/"+folder)
+    os.chdir(folder)
   return net, best_acc, start_epoch
 
 
