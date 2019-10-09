@@ -21,7 +21,7 @@ def dist_loss_gen(T=8):
 
 class distillation_experiment():# TODO: solucionar problemas de herencia
   def __init__(self,**kwargs):
-    self.net = None
+
     self.student=kwargs["student"]
     self.teacher=kwargs["teacher"]
     self.eval_criterion=kwargs["eval_criterion"]
@@ -33,6 +33,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
     self.testloader = kwargs["testloader"]
     self.trainloader = kwargs["trainloader"]
     self.best_acc = kwargs["best_acc"]
+    self.net = self.student
 # class distiller()
 
 def load_teacher(args,device):
