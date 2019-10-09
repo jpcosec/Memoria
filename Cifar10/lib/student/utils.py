@@ -11,7 +11,7 @@ from lib.teacher.utils import load_model, get_model
 
 def dist_loss_gen(T=8):
   def dist_loss(student_scores, teacher_scores, T=T):
-    print("teacher_scores\n", teacher_scores)
+    #print("teacher_scores\n", teacher_scores)
 
     return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
 
@@ -92,7 +92,7 @@ def load_student(args,device):
 
 
 def train(exp, epoch):
-  print('\rEpoch: %d' % epoch)
+  print('\rTraining epoch: %d' % epoch)
   exp.student.train()
   exp.teacher.eval()
   total_loss = 0
@@ -136,6 +136,7 @@ def train(exp, epoch):
 
 
 def test(exp, epoch):
+  print('\rTesting epoch: %d' % epoch)
   exp.student.eval()
   exp.teacher.eval()
   test_loss = 0
