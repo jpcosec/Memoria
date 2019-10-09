@@ -142,8 +142,13 @@ def test(exp, epoch):
   print('\rTesting epoch: %d' % epoch)
   exp.student.eval()
   exp.teacher.eval()
-  loss = 0
-  correct = 0
+
+
+
+
+  ac_loss = 0
+  student_correct = 0
+  teacher_correct = 0
   total = 0
 
   with torch.no_grad():
@@ -157,42 +162,54 @@ def test(exp, epoch):
 
 
       T_y_pred = exp.teacher(inputs)
-      loss = exp.criterion(S_y_pred, T_y_pred)
+      dist_loss = exp.criterion(S_y_pred, T_y_pred)
 
       student_eval = exp.eval_criterion(S_y_pred.squeeze(), targets)
       teacher_eval = exp.eval_criterion(T_y_pred.squeeze(), targets)
 
-      loss += loss.item()
+      ac_loss += dist_loss.item()
+
+
       _, predicted = S_y_pred.max(1)
       total += targets.size(0)
-      correct += predicted.eq(targets).sum().item()
+      student_correct += predicted.eq(targets).sum().item()
 
-      #progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-      #             % (loss / (batch_idx + 1), 100. * correct / total, correct, total))
+      _, predicted = T_y_pred.max(1)
+      teachert_correct += predicted.eq(targets).sum().item()
+
 
       # Save checkpoint.
-      acc = 100. * correct / total
+      student_acc = 100. * student_correct / total
+      teacher_acc = 100. * teacher_correct / total
+      loss=ac_loss/total
 
-      exp.writer.add_scalar('test/acc', acc)
-      exp.writer.add_scalar('test/loss', loss)
+      #progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+      #             % (ac_loss / (batch_idx + 1), 100. * student_correct / total, student_correct, total))
+
+
+
+      exp.writer.add_scalar('test/student/acc', student_acc)
+      exp.writer.add_scalar('test/teacher/acc', teacher_acc)
+      exp.writer.add_scalar('test/ac_loss', loss)
 
       exp.writer.add_scalar("test/student/eval",student_eval)
       exp.writer.add_scalar("test/teacher/eval", teacher_eval)
 
 
-  if acc > exp.best_acc:
+  if student_acc > exp.best_acc:
     print('Saving..')
     state = {
       'net': exp.net.state_dict(),
-      'acc': acc,
+      'student_acc': student_acc,
       'epoch': epoch
     }
     if not os.path.isdir('checkpoint'):
       os.mkdir('checkpoint')
     torch.save(state, './checkpoint/ckpt.pth')
-    exp.best_acc = acc
+    exp.best_acc = student_acc
 
-  print("loss=",loss)
+  print("ac_loss=",ac_loss)
   print("Student_EC=", student_eval)
   print("Teacher_EC=", teacher_eval)
-  print("Acc=", acc)
+  print("Student_Acc=", student_acc)
+  print("Teacher_Acc=", student_acc)
