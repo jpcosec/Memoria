@@ -17,7 +17,7 @@ def dist_loss_gen(T=8):
 
 class distillation_experiment(experiment):
   def __init__(self,**kwargs):
-    super().__init__(kwargs)
+    super().__init__()
     self.net = None
     self.student=kwargs["student"]
     self.teacher=kwargs["teacher"]
