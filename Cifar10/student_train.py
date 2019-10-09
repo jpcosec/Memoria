@@ -13,6 +13,7 @@ from lib.utils import experiment, load_dataset
 
 
 from lib.student.utils import *
+from lib.student.losses import soft, composed
 
 
 if __name__ == '__main__':
@@ -28,7 +29,8 @@ if __name__ == '__main__':
                       help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
   parser.add_argument('--teacher', default="ResNet101",
                       help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-
+  parser.add_argument('distillation',default="soft,T-3.5",
+                      help="default=soft,T-3.5, chose one method from lib.student an put the numerical params separated by , using - instead of =.")
   args = parser.parse_args()
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -37,9 +39,9 @@ if __name__ == '__main__':
   trainloader, testloader, classes = load_dataset(args)
   teacher=load_teacher(args,device)
   student, best_acc, start_epoch = load_student(args,device)
-  writer = SummaryWriter("student_trainer")
+  writer = SummaryWriter(args.distillation)
 
-  criterion = dist_loss_gen(args.temp)
+  criterion = soft(args.temp)
   eval_criterion = torch.nn.CrossEntropyLoss()
   optimizer = optim.Adam(student.parameters(), lr=args.lr)
 

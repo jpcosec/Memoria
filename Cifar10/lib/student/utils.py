@@ -1,21 +1,11 @@
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+
 import torch.backends.cudnn as cudnn
 
 import os
 from lib.utils import experiment
 from lib.teacher.utils import load_model, get_model
-
-
-def dist_loss_gen(T=8):
-  def dist_loss(student_scores, teacher_scores, T=T):
-    #print("teacher_scores\n", teacher_scores)
-
-    return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
-
-  return dist_loss
 
 
 
@@ -132,6 +122,7 @@ def train(exp, epoch):
     exp.writer.add_scalar('train/loss', loss)
     exp.writer.add_scalar('train/acc', acc)
     exp.writer.add_scalar("train/EvalCriterion",EC)
+
   print("loss=",loss)
   print("EC=", EC)
   print("Acc=", acc)
@@ -175,10 +166,10 @@ def test(exp, epoch):
       student_correct += predicted.eq(targets).sum().item()
 
       _, predicted = T_y_pred.max(1)
-      teacher+++_correct += predicted.eq(targets).sum().item()
+      teacher_correct += predicted.eq(targets).sum().item()
 
 
-      # Save checkpoint.
+
       student_acc = 100. * student_correct / total
       teacher_acc = 100. * teacher_correct / total
       loss=ac_loss/total
@@ -195,7 +186,7 @@ def test(exp, epoch):
       exp.writer.add_scalar("test/student/eval",student_eval)
       exp.writer.add_scalar("test/teacher/eval", teacher_eval)
 
-
+  # Early stoping, # Save checkpoint.
   if student_acc > exp.best_acc:
     print('Saving..')
     state = {

@@ -31,6 +31,18 @@ $$d_p(T,S)=\sum^{WHC}_i\begin{cases}
 
 
 
+### Mimicking Very Efficient Network for Object Detection
+
+Autores:  Quanquan Li, Shengying Jin, Junjie Yan
+
+Año: 2017
+
+En: CVPR
+
+
+
+
+
 ### Structured Knowledge Distillation for Semantic Segmentation
 
 Autores: Yifan Liu, Ke Chen, Chris Liu, Zengchang Qin, Zhenbo Luo, Jingdong Wang
