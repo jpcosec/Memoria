@@ -86,7 +86,7 @@ def train_epoch(exp,epoch):
   exp.trainer.train()
   total_loss = 0
   correct = 0
-  total = 0
+  total = 0 
   for batch_idx, (inputs, targets) in enumerate(exp.trainloader):  # 784= 28*28
     inputs, targets = inputs.to(exp.device), targets.to(exp.device)
     exp.optimizer.zero_grad()
