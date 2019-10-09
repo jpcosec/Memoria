@@ -147,7 +147,7 @@ def test(exp, epoch):
 
   with torch.no_grad():
     for batch_idx, (inputs, targets) in enumerate(exp.testloader):
-
+      inputs, targets = inputs.to(exp.device), targets.to(exp.device)
       # Predecir
       if exp.flatten:
         S_y_pred = exp.student(inputs.view(-1, 3072))
