@@ -22,6 +22,14 @@ class distillation_experiment(experiment):
     self.student=kwargs["student"]
     self.teacher=kwargs["teacher"]
     self.eval_criterion=kwargs["eval_criterion"]
+    self.device = kwargs["device"]
+    self.optimizer = kwargs["optimizer"]
+    self.criterion = kwargs["criterion"]
+    self.flatten = kwargs["linear"]
+    self.writer = kwargs["writer"]
+    self.testloader = kwargs["testloader"]
+    self.trainloader = kwargs["trainloader"]
+    self.best_acc = kwargs["best_acc"]
 # class distiller()
 
 def load_teacher(args,device):
@@ -52,7 +60,7 @@ def load_student(args,device):
   best_acc = 0  # best test accuracy
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
   # Model
-  print('==> Building model..')
+  print('==> Building student model..')
   net = get_model(args.student)
   net = net.to(device)
   if device == 'cuda':
