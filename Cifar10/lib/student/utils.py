@@ -23,7 +23,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
     self.testloader = kwargs["testloader"]
     self.trainloader = kwargs["trainloader"]
     self.best_acc = kwargs["best_acc"]
-    self.net = self.student)
+    self.net = self.student
 
 def load_teacher(args,device):
 
