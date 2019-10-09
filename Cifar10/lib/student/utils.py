@@ -28,7 +28,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
 
 def load_teacher(args,device):
 
-  print('==> Building teacher model..')
+  print('==> Building teacher model..', args.teacher)
   net = get_model(args.teacher)
   net = net.to(device)
 
@@ -55,7 +55,7 @@ def load_student(args,device):
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
   folder="student/"+args.student+"/"+args.distillation
   # Model
-  print('==> Building student model..')
+  print('==> Building student model..', args.student)
   net = get_model(args.student)
   net = net.to(device)
   if device == 'cuda':

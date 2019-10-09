@@ -34,6 +34,7 @@ if __name__ == '__main__':
 
   device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+  print("Using device", device)# todo: cambiar a logger
 
   trainloader, testloader, classes = load_dataset(args)
   teacher=load_teacher(args,device)
