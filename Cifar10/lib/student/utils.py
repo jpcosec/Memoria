@@ -175,7 +175,7 @@ def test(exp, epoch):
       student_correct += predicted.eq(targets).sum().item()
 
       _, predicted = T_y_pred.max(1)
-      teachert_correct += predicted.eq(targets).sum().item()
+      teacher_correct += predicted.eq(targets).sum().item()
 
 
       # Save checkpoint.
