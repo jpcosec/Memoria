@@ -27,7 +27,7 @@ class distillation_experiment(experiment):
 def load_teacher(args,device):
 
   print('==> Building teacher model..')
-  net = get_model(args.model)
+  net = get_model(args.teacher)
   net = net.to(device)
 
   for param in net.parameters():
@@ -38,8 +38,8 @@ def load_teacher(args,device):
     cudnn.benchmark = True
 
 
-  assert os.path.isdir(args.model), 'Error: model not initialized'
-  os.chdir(args.model)
+  assert os.path.isdir(args.teacehr), 'Error: model not initialized'
+  os.chdir(args.teacher)
   # Load checkpoint.
   print('==> Resuming from checkpoint..')
   assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
@@ -54,15 +54,15 @@ def load_student(args,device):
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
   # Model
   print('==> Building model..')
-  net = get_model(args.model)
+  net = get_model(args.student)
   net = net.to(device)
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
   if args.resume:
-    assert os.path.isdir("student/"+args.model), 'Error: model not initialized'
-    os.chdir("student/"+args.model)
+    assert os.path.isdir("student/"+args.student), 'Error: model not initialized'
+    os.chdir("student/"+args.student)
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
@@ -75,8 +75,8 @@ def load_student(args,device):
     if start_epoch >= args.epochs:
       print("Number of epochs already trained")
   else:
-    os.mkdir("student/"+args.model)
-    os.chdir("student/"+args.model)
+    os.mkdir("student/"+args.student)
+    os.chdir("student/"+args.student)
   return net, best_acc, start_epoch
 
 
