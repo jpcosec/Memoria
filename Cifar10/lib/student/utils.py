@@ -107,7 +107,8 @@ def train(exp, epoch):
     T_y_pred = exp.teacher(inputs)
 
     # Compute Loss
-    loss = exp.criterion(S_y_pred, T_y_pred)
+    #loss = exp.criterion(S_y_pred, T_y_pred)# dejar como *args
+    loss = exp.criterion(S_y_pred, T_y_pred,targets)
     # Backward pass
     loss.backward()
     exp.optimizer.step()
@@ -156,7 +157,8 @@ def test(exp, epoch):
 
 
       T_y_pred = exp.teacher(inputs)
-      dist_loss = exp.criterion(S_y_pred, T_y_pred)
+      #dist_loss = exp.criterion(S_y_pred, T_y_pred)
+      dist_loss = exp.criterion(S_y_pred, T_y_pred,targets)
 
       student_eval = exp.eval_criterion(S_y_pred.squeeze(), targets)
       teacher_eval = exp.eval_criterion(T_y_pred.squeeze(), targets)
