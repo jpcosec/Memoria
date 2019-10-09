@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,8 +8,12 @@ import os
 from lib.utils import experiment
 from lib.teacher.utils import load_model, get_model
 
+
 def dist_loss_gen(T=8):
   def dist_loss(student_scores, teacher_scores, T=T):
+    print("student_scores\n",student_scores)
+    print("teacher_scores\n", teacher_scores)
+
     return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
 
   return dist_loss
@@ -104,6 +109,8 @@ def train(exp, epoch):
     else:
       S_y_pred = exp.student(inputs)
 
+
+
     T_y_pred = exp.teacher(inputs)
 
     # Compute Loss
@@ -125,7 +132,7 @@ def train(exp, epoch):
     exp.writer.add_scalar('train/loss', train_loss)
     exp.writer.add_scalar('train/acc', train_acc)
     exp.writer.add_scalar("train/EvalCriterion",train_EC)
-
+  print()
 
 
 

@@ -35,9 +35,7 @@ if __name__ == '__main__':
 
 
   trainloader, testloader, classes = load_dataset(args)
-  print(os.listdir(path="."))
   teacher=load_teacher(args,device)
-  print(os.listdir(path="."))
   student, best_acc, start_epoch = load_student(args,device)
   writer = SummaryWriter("student_trainer")
 
