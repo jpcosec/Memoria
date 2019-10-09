@@ -47,11 +47,12 @@ if __name__ == '__main__':
 
   flatten=args.student.split("_")[0] == "linear"
 
-  exp=distillation_experiment( device=device,
+  exp=distillation_experiment( device=device,#Todo mover arriba
                                student=student,
                                teacher=teacher,
                                optimizer=optimizer,
                                criterion=criterion,
+                               eval_criterion=eval_criterion,
                                linear=flatten,
                                writer=writer,
                                testloader=testloader,
