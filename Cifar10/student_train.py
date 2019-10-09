@@ -25,9 +25,9 @@ if __name__ == '__main__':
   parser.add_argument('--epochs', default=500, type=int, help='total number of epochs to train')
   parser.add_argument('--train_batch_size', default=128, type=int, help='total number of epochs to train')
   parser.add_argument('--test_batch_size', default=100, type=int, help='total number of epochs to train')
-  parser.add_argument('--student_model', default="ResNet101",
+  parser.add_argument('--student', default="ResNet101",
                       help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-  parser.add_argument('--teacher_model', default="ResNet101",
+  parser.add_argument('--teacher', default="ResNet101",
                       help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
 
   args = parser.parse_args()
@@ -42,19 +42,20 @@ if __name__ == '__main__':
 
 
 
-  writer = SummaryWriter("teacher_trainer")
+  writer = SummaryWriter("student_trainer")
 
   criterion = dist_loss_gen(args.temp)
   eval_criterion = torch.nn.CrossEntropyLoss()
   optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
-  flatten=args.model.split("_")[0] == "linear"
+  flatten=args.student.split("_")[0] == "linear"
+
   exp=distillation_experiment(device=device,
            student=student,
            teacher=teacher,
            optimizer=optimizer,
            criterion=criterion,
-           linear=args.model.split("_")[0] == "linear",
+           linear=flatten,
            writer=writer,
            testloader=testloader,
            trainloader=trainloader,
