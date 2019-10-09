@@ -152,8 +152,9 @@ def test(exp, epoch):
       else:
         S_y_pred = exp.student(inputs)
 
-      loss = exp.criterion(S_y_pred, targets)
+
       T_y_pred = exp.teacher(inputs)
+      loss = exp.criterion(S_y_pred, T_y_pred)
 
       student_eval = exp.eval_criterion(S_y_pred.squeeze(), targets)
       teacher_eval = exp.eval_criterion(T_y_pred.squeeze(), targets)
