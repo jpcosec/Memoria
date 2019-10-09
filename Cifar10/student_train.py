@@ -36,12 +36,7 @@ if __name__ == '__main__':
 
   trainloader, testloader, classes = load_dataset(args)
   teacher=load_teacher(args,device)
-
   student, best_acc, start_epoch = load_student(args,device)
-
-
-
-
   writer = SummaryWriter("student_trainer")
 
   criterion = dist_loss_gen(args.temp)
