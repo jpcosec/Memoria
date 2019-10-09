@@ -17,7 +17,7 @@ def parse_distillation_loss(st):
     raise ModuleNotFoundError("Loss not found")
 
   try:
-    return loss(d)
+    return loss(**args)
   except:
     raise NameError("There is an argument error")
 
