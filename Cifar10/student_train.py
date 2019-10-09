@@ -10,7 +10,7 @@ from lib.utils import experiment, load_dataset
 
 ###global device
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 
 from lib.student.utils import *
 
@@ -31,6 +31,7 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
+  device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
   trainloader, testloader, classes = load_dataset(args)
@@ -46,17 +47,17 @@ if __name__ == '__main__':
 
   flatten=args.student.split("_")[0] == "linear"
 
-  exp=distillation_experiment(device=device,
-           student=student,
-           teacher=teacher,
-           optimizer=optimizer,
-           criterion=criterion,
-           linear=flatten,
-           writer=writer,
-           testloader=testloader,
-           trainloader=trainloader,
-           best_acc=best_acc
-           )
+  exp=distillation_experiment( device=device,
+                               student=student,
+                               teacher=teacher,
+                               optimizer=optimizer,
+                               criterion=criterion,
+                               linear=flatten,
+                               writer=writer,
+                               testloader=testloader,
+                               trainloader=trainloader,
+                               best_acc=best_acc
+                               )
 
   for epoch in range(start_epoch, args.epochs):
     train(exp,epoch)
