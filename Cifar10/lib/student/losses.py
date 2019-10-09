@@ -8,6 +8,7 @@ def parse_distillation_loss(st):
   for k, v in args.items():
     args[k] = float(v)
 
+  print(args)
   d=dict(soft=soft,
          composed=composed)
   try:
