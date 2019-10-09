@@ -38,7 +38,7 @@ def load_teacher(args,device):
     cudnn.benchmark = True
 
 
-  assert os.path.isdir(args.teacehr), 'Error: model not initialized'
+  assert os.path.isdir(args.teacher), 'Error: model not initialized'
   os.chdir(args.teacher)
   # Load checkpoint.
   print('==> Resuming from checkpoint..')
