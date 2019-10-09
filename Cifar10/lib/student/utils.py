@@ -53,6 +53,7 @@ def load_teacher(args,device):
 def load_student(args,device):
   best_acc = 0  # best test accuracy
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+  folder="student/"+args.student+"/"+args.distillation
   # Model
   print('==> Building student model..')
   net = get_model(args.student)
@@ -62,8 +63,8 @@ def load_student(args,device):
     cudnn.benchmark = True
 
   if args.resume:
-    assert os.path.isdir("student/"+args.student), 'Error: model not initialized'
-    os.chdir("student/"+args.student)
+    assert os.path.isdir(folder), 'Error: model not initialized'
+    os.chdir(folder)
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
@@ -76,10 +77,12 @@ def load_student(args,device):
     if start_epoch >= args.epochs:
       print("Number of epochs already trained")
   else:
-    if not os.path.isdir("student/" + args.student):
+    if not os.path.isdir("student/"):
       os.mkdir("student")
-    os.mkdir("student/"+args.student)
-    os.chdir("student/"+args.student)
+    if not os.path.isdir("student/"+args.student):
+      os.mkdir("student/"+args.student)
+    os.mkdir(folder)
+    os.chdir("student/"+folder)
   return net, best_acc, start_epoch
 
 
