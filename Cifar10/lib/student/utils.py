@@ -15,9 +15,8 @@ def dist_loss_gen(T=8):
 
 
 
-class distillation_experiment(experiment):
+class distillation_experiment():# TODO: solucionar problemas de herencia
   def __init__(self,**kwargs):
-    super().__init__()
     self.net = None
     self.student=kwargs["student"]
     self.teacher=kwargs["teacher"]
