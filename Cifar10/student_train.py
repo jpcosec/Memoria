@@ -15,7 +15,6 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 from lib.student.utils import *
 
 
-
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
