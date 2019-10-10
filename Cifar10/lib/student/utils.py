@@ -8,7 +8,7 @@ from lib.utils import Experiment, get_model
 from lib.teacher.utils import load_model
 
 
-class distillation_experiment(Experiment):  # TODO: solucionar problemas de herencia
+class DistillationExperiment(Experiment):  # TODO: solucionar problemas de herencia
   """
   Class created for classification supervised distillation problems
   """
