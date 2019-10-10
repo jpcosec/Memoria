@@ -4,84 +4,31 @@ import torch.backends.cudnn as cudnn
 
 import os
 import json
-from lib.utils import experiment, get_model
+from lib.utils import Experiment, get_model
 from lib.teacher.utils import load_model
 
 
-class distillation_experiment():  # TODO: solucionar problemas de herencia
+class distillation_experiment(Experiment):  # TODO: solucionar problemas de herencia
   """
   Class created for classification supervised distillation problems
   """
 
   def __init__(self, **kwargs):
+    super(Experiment, self).__init__(
+      device=kwargs["device"],
+      net=kwargs["student"],
+      optimizer=kwargs["optimizer"],
+      criterion=kwargs["criterion"],
+      linear=kwargs["linear"],
+      writer=kwargs["writer"],
+      testloader=kwargs["testloader"],
+      trainloader=kwargs["trainloader"],
+      best_acc=kwargs["best_acc"]
+    )
 
     self.student = kwargs["student"]
     self.teacher = kwargs["teacher"]
     self.eval_criterion = kwargs["eval_criterion"]
-    self.device = kwargs["device"]
-    self.optimizer = kwargs["optimizer"]
-    self.criterion = kwargs["criterion"]
-    self.flatten = kwargs["linear"]
-    self.writer = kwargs["writer"]
-    self.testloader = kwargs["testloader"]
-    self.trainloader = kwargs["trainloader"]
-    self.best_acc = kwargs["best_acc"]
-
-    self.net = self.student
-
-    try:
-      with open('record.json', 'w') as fp:
-        self.record = json.load(fp)
-        self.epoch = self.record["epoch"]
-        self.train_step = self.record["train_step"]
-        self.test_step = self.record["test_step"]
-
-    except:
-      self.record = {}
-      self.epoch = 0
-      self.train_step = 0
-      self.test_step = 0
-
-  def record_step(self, logs, test_phase=False):
-    if test_phase:
-      for field, value in logs.items():
-        self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
-      self.test_step += 1
-    else:
-      for field, value in logs.items():
-        self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
-      self.train_step += 1
-
-  def record_epoch(self, logs, acc, test=False):
-    phase = "test" if test else "train"
-    print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs)
-
-    self.record.update({self.epoch: {phase: logs}})
-
-    if test:
-      self.save_model(acc)
-      self.epoch += 1
-
-  def save_model(self, acc):
-    # Early stoping, # Save checkpoint.
-    if acc > self.best_acc:
-      print('Saving..')
-      state = {
-        'net': self.net.state_dict(),
-        'student_acc': acc,
-        'epoch': self.epoch
-      }
-      if not os.path.isdir('checkpoint'):
-        os.mkdir('checkpoint')
-      torch.save(state, './checkpoint/ckpt.pth')
-      self.best_acc = acc
-
-      self.record.update({"epoch": self.epoch})
-      self.record.update({"train_step": self.train_step})
-      self.record.update({"test_step": self.test_step})
-
-      with open('record.json', 'w') as fp:
-        json.dump(self.record, fp)
 
 
 def load_teacher(args, device):
