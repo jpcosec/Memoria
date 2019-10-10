@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.utils import experiment, load_dataset
+from lib.utils import Experiment, load_dataset
 
 ###global device
 
@@ -41,11 +41,10 @@ if __name__ == '__main__':
   optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
   flatten=args.model.split("_")[0] == "linear"
-  exp=experiment(device=device,
+  exp=Experiment(device=device,
            net=net,
            optimizer=optimizer,
            criterion=criterion,
-
            linear=args.model.split("_")[0] == "linear",
            writer=writer,
            testloader=testloader,
