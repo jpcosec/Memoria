@@ -64,7 +64,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
 
     self.record.update({self.epoch:{phase:logs}})
 
-    if not train:
+    if test:
       self.save_model(acc)
       self.epoch+=1
 
