@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.utils import experiment, load_dataset
+from lib.utils import load_dataset
 
 ###global device
 
@@ -63,3 +63,4 @@ if __name__ == '__main__':
   for epoch in range(start_epoch, args.epochs):
     train(exp,epoch)
     test(exp,epoch)
+    exp.update_epoch()

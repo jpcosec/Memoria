@@ -4,12 +4,16 @@ import torch
 import torch.backends.cudnn as cudnn
 
 import os
+import json
 from lib.utils import experiment
 from lib.teacher.utils import load_model, get_model
 
 
 
 class distillation_experiment():# TODO: solucionar problemas de herencia
+  """
+  Class created for classification supervised distillation problems
+  """
   def __init__(self,**kwargs):
 
     self.student=kwargs["student"]
@@ -23,7 +27,75 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
     self.testloader = kwargs["testloader"]
     self.trainloader = kwargs["trainloader"]
     self.best_acc = kwargs["best_acc"]
+
     self.net = self.student
+
+
+    try:
+      with open('record.json', 'w') as fp:
+        self.record=json.load(fp)
+        self.epoch=self.record["epoch"]
+        self.train_step = self.record["train_step"]
+        self.test_step = self.record["test_step"]
+
+    except:
+      self.record={}
+      self.epoch = 0
+      self.train_step = 0
+      self.test_step = 0
+
+
+
+
+
+  def record_step(self, logs, test_phase=False):
+    assert logs is dict
+    if test_phase:
+      for field,value in logs.items():
+        self.writer.add_scalar("test/"+field, value, step=self.test_step)
+      self.test_step += 1
+    else:
+      for field,value in logs.items():
+        self.writer.add_scalar("train/"+field, value, step=self.train_step)
+      self.train_step += 1
+
+  def record_epoch(self, logs, acc, test=False):
+    phase="test" if test else "train"
+    print("\rEpoch %i %s stats\n"%(self.epoch,phase),logs)
+
+    self.record.update({self.epoch:{phase:logs}})
+
+    if not train:
+      self.save_model(acc)
+      self.epoch+=1
+
+  def save_model(self,acc):
+    # Early stoping, # Save checkpoint.
+    if acc > self.best_acc:
+      print('Saving..')
+      state = {
+        'net': self.net.state_dict(),
+        'student_acc': acc,
+        'epoch': self.epoch
+      }
+      if not os.path.isdir('checkpoint'):
+        os.mkdir('checkpoint')
+      torch.save(state, './checkpoint/ckpt.pth')
+      self.best_acc = acc
+
+      self.record.update({"epoch":self.epoch})
+      self.record.update({"train_step": self.train_step})
+      self.record.update({"test_step": self.test_step})
+
+      with open('record.json', 'w') as fp:
+        json.dump(self.record, fp)
+
+
+
+
+
+
+
 
 def load_teacher(args,device):
 
@@ -97,23 +169,23 @@ def train(exp, epoch):
     exp.optimizer.zero_grad()
 
     # Predecir
-    if exp.flatten:
+    if exp.flatten:# meter en exp
       S_y_pred = exp.student(inputs.view(-1, 3072))
     else:
       S_y_pred = exp.student(inputs)
 
-
-
     T_y_pred = exp.teacher(inputs)
 
     # Compute Loss
-    #loss = exp.criterion(S_y_pred, T_y_pred)# dejar como *args
-    loss = exp.criterion(S_y_pred, T_y_pred,targets)
+    # loss = exp.criterion(S_y_pred, T_y_pred)# dejar como *args
+    loss = exp.criterion(S_y_pred, T_y_pred, targets)
+
     # Backward pass
     loss.backward()
     exp.optimizer.step()
 
     total_loss += loss.item()
+    # Accuracy
     _, predicted = S_y_pred.max(1)
     total += targets.size(0)
     correct += predicted.eq(targets).sum().item()
@@ -123,25 +195,28 @@ def train(exp, epoch):
 
     EC = exp.eval_criterion(S_y_pred, targets).item()
 
-    exp.writer.add_scalar('train/loss', loss)
-    exp.writer.add_scalar('train/acc', acc)
-    exp.writer.add_scalar("train/EvalCriterion",EC)
+    logs=dict([('loss', loss),
+              ('acc', acc),
+              ("EvalCriterion", EC)])
 
-  print("loss=",loss)
-  print("EC=", EC)
-  print("Acc=", acc)
+    exp.record_step(logs)
+
+
+  epoch_logs=dict([("loss=", loss),
+                  ("EC=", EC),
+                  ("Acc=", acc)])
+  exp.record_epoch(epoch_logs,acc)
+
 
 
 
 def test(exp, epoch):
+  assert exp is distillation_experiment
   print('\rTesting epoch: %d' % epoch)
   exp.student.eval()
   exp.teacher.eval()
 
-
-
-
-  ac_loss = 0
+  ac_loss = 0# acumular estos
   student_correct = 0
   teacher_correct = 0
   total = 0
@@ -155,16 +230,14 @@ def test(exp, epoch):
       else:
         S_y_pred = exp.student(inputs)
 
-
       T_y_pred = exp.teacher(inputs)
-      #dist_loss = exp.criterion(S_y_pred, T_y_pred)
-      dist_loss = exp.criterion(S_y_pred, T_y_pred,targets)
+      # dist_loss = exp.criterion(S_y_pred, T_y_pred)
+      dist_loss = exp.criterion(S_y_pred, T_y_pred, targets)
 
       student_eval = exp.eval_criterion(S_y_pred.squeeze(), targets)
       teacher_eval = exp.eval_criterion(T_y_pred.squeeze(), targets)
 
       ac_loss += dist_loss.item()
-
 
       _, predicted = S_y_pred.max(1)
       total += targets.size(0)
@@ -173,39 +246,25 @@ def test(exp, epoch):
       _, predicted = T_y_pred.max(1)
       teacher_correct += predicted.eq(targets).sum().item()
 
-
-
       student_acc = 100. * student_correct / total
       teacher_acc = 100. * teacher_correct / total
-      loss=ac_loss/total
+      loss = ac_loss / total
 
-      #progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+      # progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
       #             % (ac_loss / (batch_idx + 1), 100. * student_correct / total, student_correct, total))
 
+      logs=dict([('student/acc', student_acc),
+                ('teacher/acc', teacher_acc),
+                ('loss', loss),
+                ("student/eval", student_eval),
+                ("teacher/eval", teacher_eval)])
 
+      exp.record_step(logs, test_phase=True)
 
-      exp.writer.add_scalar('test/student/acc', student_acc)
-      exp.writer.add_scalar('test/teacher/acc', teacher_acc)
-      exp.writer.add_scalar('test/ac_loss', loss)
+    epoch_logs=dict([("ac_loss=", ac_loss),
+                    ("Student_EC=", student_eval),
+                    ("Teacher_EC=", teacher_eval),
+                    ("Student_Acc=", student_acc),
+                    ("Teacher_Acc=", student_acc)])
 
-      exp.writer.add_scalar("test/student/eval",student_eval)
-      exp.writer.add_scalar("test/teacher/eval", teacher_eval)
-
-  # Early stoping, # Save checkpoint.
-  if student_acc > exp.best_acc:
-    print('Saving..')
-    state = {
-      'net': exp.net.state_dict(),
-      'student_acc': student_acc,
-      'epoch': epoch
-    }
-    if not os.path.isdir('checkpoint'):
-      os.mkdir('checkpoint')
-    torch.save(state, './checkpoint/ckpt.pth')
-    exp.best_acc = student_acc
-
-  print("ac_loss=",ac_loss)
-  print("Student_EC=", student_eval)
-  print("Teacher_EC=", teacher_eval)
-  print("Student_Acc=", student_acc)
-  print("Teacher_Acc=", student_acc)
+    exp.record_epoch(epoch_logs,student_acc,test=True)

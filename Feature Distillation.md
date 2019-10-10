@@ -39,7 +39,7 @@ Año: 2017
 
 En: CVPR
 
-
+Parten desde la arquitectura de R-CNN, es decir una red re propuesta de regiones y una red de clasificacion sobre esas propuestas. Hacen basicamente lo mismo que en fitnets pero considerando solo aquellas zonas donde hay un region propuesta por la RPN
 
 
 
