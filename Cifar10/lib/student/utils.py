@@ -1,24 +1,23 @@
-
 import torch
 
 import torch.backends.cudnn as cudnn
 
 import os
 import json
-from lib.utils import experiment
-from lib.teacher.utils import load_model, get_model
+from lib.utils import experiment, get_model
+from lib.teacher.utils import load_model
 
 
-
-class distillation_experiment():# TODO: solucionar problemas de herencia
+class distillation_experiment():  # TODO: solucionar problemas de herencia
   """
   Class created for classification supervised distillation problems
   """
-  def __init__(self,**kwargs):
 
-    self.student=kwargs["student"]
-    self.teacher=kwargs["teacher"]
-    self.eval_criterion=kwargs["eval_criterion"]
+  def __init__(self, **kwargs):
+
+    self.student = kwargs["student"]
+    self.teacher = kwargs["teacher"]
+    self.eval_criterion = kwargs["eval_criterion"]
     self.device = kwargs["device"]
     self.optimizer = kwargs["optimizer"]
     self.criterion = kwargs["criterion"]
@@ -30,45 +29,40 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
 
     self.net = self.student
 
-
     try:
       with open('record.json', 'w') as fp:
-        self.record=json.load(fp)
-        self.epoch=self.record["epoch"]
+        self.record = json.load(fp)
+        self.epoch = self.record["epoch"]
         self.train_step = self.record["train_step"]
         self.test_step = self.record["test_step"]
 
     except:
-      self.record={}
+      self.record = {}
       self.epoch = 0
       self.train_step = 0
       self.test_step = 0
 
-
-
-
-
   def record_step(self, logs, test_phase=False):
     if test_phase:
-      for field,value in logs.items():
-        self.writer.add_scalar("test/"+field, value, global_step=self.test_step)
+      for field, value in logs.items():
+        self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
       self.test_step += 1
     else:
-      for field,value in logs.items():
-        self.writer.add_scalar("train/"+field, value, global_step=self.train_step)
+      for field, value in logs.items():
+        self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
       self.train_step += 1
 
   def record_epoch(self, logs, acc, test=False):
-    phase="test" if test else "train"
-    print("\rEpoch %i %s stats\n"%(self.epoch,phase),logs)
+    phase = "test" if test else "train"
+    print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs)
 
-    self.record.update({self.epoch:{phase:logs}})
+    self.record.update({self.epoch: {phase: logs}})
 
     if test:
       self.save_model(acc)
-      self.epoch+=1
+      self.epoch += 1
 
-  def save_model(self,acc):
+  def save_model(self, acc):
     # Early stoping, # Save checkpoint.
     if acc > self.best_acc:
       print('Saving..')
@@ -82,7 +76,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
       torch.save(state, './checkpoint/ckpt.pth')
       self.best_acc = acc
 
-      self.record.update({"epoch":self.epoch})
+      self.record.update({"epoch": self.epoch})
       self.record.update({"train_step": self.train_step})
       self.record.update({"test_step": self.test_step})
 
@@ -90,10 +84,7 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
         json.dump(self.record, fp)
 
 
-
-
-def load_teacher(args,device):
-
+def load_teacher(args, device):
   print('==> Building teacher model..', args.teacher)
   net = get_model(args.teacher)
   net = net.to(device)
@@ -105,7 +96,6 @@ def load_teacher(args,device):
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-
   assert os.path.isdir(args.teacher), 'Error: model not initialized'
   os.chdir(args.teacher)
   # Load checkpoint.
@@ -116,10 +106,11 @@ def load_teacher(args,device):
 
   return net
 
-def load_student(args,device):
+
+def load_student(args, device):
   best_acc = 0  # best test accuracy
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-  folder="student/"+args.student+"/"+args.distillation
+  folder = "student/" + args.student + "/" + args.distillation
   # Model
   print('==> Building student model..', args.student)
   net = get_model(args.student)
@@ -145,8 +136,8 @@ def load_student(args,device):
   else:
     if not os.path.isdir("student/"):
       os.mkdir("student")
-    if not os.path.isdir("student/"+args.student):
-      os.mkdir("student/"+args.student)
+    if not os.path.isdir("student/" + args.student):
+      os.mkdir("student/" + args.student)
     os.mkdir(folder)
     os.chdir(folder)
   return net, best_acc, start_epoch
@@ -156,15 +147,17 @@ def train(exp):
   print('\rTraining epoch: %d' % exp.epoch)
   exp.student.train()
   exp.teacher.eval()
+
   total_loss = 0
   correct = 0
+  correctT = 0
   total = 0
   for batch_idx, (inputs, targets) in enumerate(exp.trainloader):  # 784= 28*28
     inputs, targets = inputs.to(exp.device), targets.to(exp.device)
     exp.optimizer.zero_grad()
 
     # Predecir
-    if exp.flatten:# meter en exp
+    if exp.flatten:  # meter en exp
       S_y_pred = exp.student(inputs.view(-1, 3072))
     else:
       S_y_pred = exp.student(inputs)
@@ -181,28 +174,27 @@ def train(exp):
 
     total_loss += loss.item()
     # Accuracy
-    _, predicted = S_y_pred.max(1)
     total += targets.size(0)
+    _, predicted = S_y_pred.max(1)
     correct += predicted.eq(targets).sum().item()
-
     acc = 100. * correct / total
+    # teacher Accuracy
+    _, predictedT = T_y_pred.max(1)
+    correctT += predictedT.eq(targets).sum().item()
+    accT = 100. * correct / total
+
     loss = total_loss / (batch_idx + 1)
 
     EC = exp.eval_criterion(S_y_pred, targets).item()
 
-    logs=dict([('loss', loss),
-              ('acc', acc),
-              ("EvalCriterion", EC)])
+    logs = dict([("loss", loss),
+                 ("EC", EC),
+                 ("teacher/acc", acc),
+                 ("student/acc", accT)])
 
     exp.record_step(logs)
 
-
-  epoch_logs=dict([("loss=", loss),
-                  ("EC=", EC),
-                  ("Acc=", acc)])
-  exp.record_epoch(epoch_logs,acc)
-
-
+  exp.record_epoch(logs, acc)
 
 
 def test(exp):
@@ -210,7 +202,7 @@ def test(exp):
   exp.student.eval()
   exp.teacher.eval()
 
-  ac_loss = 0# acumular estos
+  ac_loss = 0  # acumular estos
   student_correct = 0
   teacher_correct = 0
   total = 0
@@ -237,8 +229,8 @@ def test(exp):
       total += targets.size(0)
       student_correct += predicted.eq(targets).sum().item()
 
-      _, predicted = T_y_pred.max(1)
-      teacher_correct += predicted.eq(targets).sum().item()
+      _, predictedT = T_y_pred.max(1)
+      teacher_correct += predictedT.eq(targets).sum().item()
 
       student_acc = 100. * student_correct / total
       teacher_acc = 100. * teacher_correct / total
@@ -247,18 +239,12 @@ def test(exp):
       # progress_bar(batch_idx, len(exp.testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
       #             % (ac_loss / (batch_idx + 1), 100. * student_correct / total, student_correct, total))
 
-      logs=dict([('student/acc', student_acc),
-                ('teacher/acc', teacher_acc),
-                ('loss', loss),
-                ("student/eval", student_eval),
-                ("teacher/eval", teacher_eval)])
+      logs = dict([('student/acc', student_acc),
+                   ('teacher/acc', teacher_acc),
+                   ('loss', loss),
+                   ("student/eval", student_eval),
+                   ("teacher/eval", teacher_eval)])
 
-      exp.record_step(logs, test_phase=True)
+      exp.record_step(logs, test=True)
 
-    epoch_logs=dict([("ac_loss=", ac_loss),
-                    ("Student_EC=", student_eval),
-                    ("Teacher_EC=", teacher_eval),
-                    ("Student_Acc=", student_acc),
-                    ("Teacher_Acc=", student_acc)])
-
-    exp.record_epoch(epoch_logs,student_acc,test=True)
+    exp.record_epoch(logs, student_acc, test=True)
