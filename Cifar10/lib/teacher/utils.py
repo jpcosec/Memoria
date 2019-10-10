@@ -42,7 +42,7 @@ def get_model(model_name):
 
 
 # Training
-def train(exp,epoch):# TODO: meter writer y weas en clase EXP
+def train(exp,epoch):# TODO: meter accuracy y weas en exp
 
   print('\rEpoch: %d' % epoch)
   exp.net.train()
