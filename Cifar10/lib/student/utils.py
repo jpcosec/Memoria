@@ -157,8 +157,8 @@ def load_student(args,device):
   return net, best_acc, start_epoch
 
 
-def train(exp, epoch):
-  print('\rTraining epoch: %d' % epoch)
+def train(exp):
+  print('\rTraining epoch: %d' % exp.epoch)
   exp.student.train()
   exp.teacher.eval()
   total_loss = 0
@@ -210,9 +210,8 @@ def train(exp, epoch):
 
 
 
-def test(exp, epoch):
-  assert exp is distillation_experiment
-  print('\rTesting epoch: %d' % epoch)
+def test(exp):
+  print('\rTesting epoch: %d' % exp.epoch)
   exp.student.eval()
   exp.teacher.eval()
 
