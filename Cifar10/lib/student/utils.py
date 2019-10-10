@@ -51,11 +51,11 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
   def record_step(self, logs, test_phase=False):
     if test_phase:
       for field,value in logs.items():
-        self.writer.add_scalar("test/"+field, value, step=self.test_step)
+        self.writer.add_scalar("test/"+field, value, global_step=self.test_step)
       self.test_step += 1
     else:
       for field,value in logs.items():
-        self.writer.add_scalar("train/"+field, value, step=self.train_step)
+        self.writer.add_scalar("train/"+field, value, global_step=self.train_step)
       self.train_step += 1
 
   def record_epoch(self, logs, acc, test=False):
