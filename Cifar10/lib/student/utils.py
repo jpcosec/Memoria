@@ -49,7 +49,6 @@ class distillation_experiment():# TODO: solucionar problemas de herencia
 
 
   def record_step(self, logs, test_phase=False):
-    assert logs is dict
     if test_phase:
       for field,value in logs.items():
         self.writer.add_scalar("test/"+field, value, step=self.test_step)
