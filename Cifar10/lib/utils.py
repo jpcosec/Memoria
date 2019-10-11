@@ -107,8 +107,10 @@ class Experiment():#todo mover a clase independiente
 
   def net_prediction(self,**args):#todo: llenar abstracta
     #
+    pass
 
   def batch_process(self):#todo: llenar abstracta
+    pass
 
   def train_epoch(self):#todo: llenar
     #epoch init
