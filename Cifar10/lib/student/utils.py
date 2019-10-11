@@ -15,16 +15,16 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
 
   def __init__(self, **kwargs):
     super(DistillationExperiment, self).__init__(
-      device=kwargs["device"],
-      net=kwargs["student"],
-      optimizer=kwargs["optimizer"],
-      criterion=kwargs["criterion"],
-      linear=kwargs["linear"],
-      writer=kwargs["writer"],
-      testloader=kwargs["testloader"],
-      trainloader=kwargs["trainloader"],
-      best_acc=kwargs["best_acc"]
-    )
+                  device=kwargs["device"],
+                  net=kwargs["student"],
+                  optimizer=kwargs["optimizer"],
+                  criterion=kwargs["criterion"],
+                  linear=kwargs["linear"],
+                  writer=kwargs["writer"],
+                  testloader=kwargs["testloader"],
+                  trainloader=kwargs["trainloader"],
+                  best_acc=kwargs["best_acc"]
+                )
 
     self.student = kwargs["student"]
     self.teacher = kwargs["teacher"]
@@ -72,7 +72,7 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
 
     loss_dict={"student_scores":S_y_pred, "teacher_scores":T_y_pred}
     if self.include_targets:
-      loss_dict["targets"]=targets
+      loss_dict["y"]=targets
 
     loss = self.criterion(**loss_dict)
 

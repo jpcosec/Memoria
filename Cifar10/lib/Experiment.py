@@ -24,7 +24,6 @@ class Experiment():
     self.flat_dim = 3072
 
     self.load_record()
-    self.epoch=kwargs["start_epoch"]
 
     self.test_phase = True
 
