@@ -4,11 +4,12 @@ import os
 import torch
 
 
-class Experiment():#todo mover a clase independiente
+class Experiment():  # todo mover a clase independiente
   """
   Objecto for regular supervised tasks
    
-  """#todo documentar
+  """  # todo documentar
+
   def __init__(self, **kwargs):
     self.device = kwargs["device"]
     self.net = kwargs["net"]
@@ -20,36 +21,60 @@ class Experiment():#todo mover a clase independiente
     self.trainloader = kwargs["trainloader"]
     self.best_acc = kwargs["best_acc"]
 
+    self.flat_dim = 3072
+
+    self.load_record()
+
+    self.test_phase = True
+
+    self.test_dict = {'loss': 0,
+                      'total': 0,
+                      'correct': 0,
+                      "batch_idx":0}
+
+    self.train_dict = {'loss': 0,
+                       'total': 0,
+                       'correct': 0,
+                       "batch_idx":0}
+
+    self.train_log_funcs ={'acc': lambda stats_dict : 100. * stats_dict["correct"] / stats_dict["total"],
+                'loss ': lambda stats_dict: stats_dict["loss"] / (stats_dict["batch_idx"] + 1)
+    }
+    self.test_log_funcs = {'acc': lambda stats_dict: 100. * stats_dict["correct"] / stats_dict["total"],
+                            'loss ': lambda stats_dict: stats_dict["loss"] / (stats_dict["batch_idx"] + 1)
+                            }
+
+  def load_record(self):
     try:
       with open('record.json', 'w') as fp:
-        self.record=json.load(fp)
-        self.epoch=self.record["epoch"]
+        self.record = json.load(fp)
+        self.epoch = self.record["epoch"]
         self.train_step = self.record["train_step"]
         self.test_step = self.record["test_step"]
 
     except:
-      self.record={}
+      self.record = {}
       self.epoch = 0
       self.train_step = 0
       self.test_step = 0
 
-  def record_step(self, logs, test=False):#todo: meter variable bool test/train
+  def record_step(self, logs):  # todo: meter variable bool test/train
     """
     Saves logs to tb.writer and advances one step
     :param logs:
     :param test:
     :return:
     """
-    if test:
-      for field,value in logs.items():
-        self.writer.add_scalar("test/"+field, value, global_step=self.test_step)
+    if self.test_phase:
+      for field, value in logs.items():
+        self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
       self.test_step += 1
     else:
-      for field,value in logs.items():
-        self.writer.add_scalar("train/"+field, value, global_step=self.train_step)
+      for field, value in logs.items():
+        self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
       self.train_step += 1
 
-  def record_epoch(self, logs, acc, test=False):
+  def record_epoch(self, logs):
     """
     Saves logs to json and advances one epoch
     :param logs:
@@ -57,16 +82,26 @@ class Experiment():#todo mover a clase independiente
     :param test:
     :return:
     """
-    phase="test" if test else "train"
-    print("\rEpoch %i %s stats\n"%(self.epoch,phase),logs)
+    phase = "test" if self.test_phase else "train"
+    print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs)
 
-    self.record.update({self.epoch:{phase:logs}})
+    self.record.update({self.epoch: {phase: logs}})
 
-    if test:
-      self.save_model(acc)
-      self.epoch+=1
+    if self.test_phase:
+      self.save_model(logs["acc"])
 
-  def save_model(self,acc):
+  def accumulate_stats(self, loss, outputs, targets, batch_idx):  # lambidizar en caso de cualquier modificacion
+
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+
+    _, predicted = outputs.max(1)
+
+    stats_dict["loss"] += loss.item()
+    stats_dict["total"] += targets.size(0)
+    stats_dict["correct"] += predicted.eq(targets).sum().item()
+    stats_dict["batch_idx"] = batch_idx
+
+  def save_model(self, acc):
     # Early stoping, # Save checkpoint.
     if acc > self.best_acc:
       print('Saving..')
@@ -81,26 +116,81 @@ class Experiment():#todo mover a clase independiente
       torch.save(state, './checkpoint/ckpt.pth')
       self.best_acc = acc
 
-      self.record.update({"epoch":self.epoch})
+      self.record.update({"epoch": self.epoch})
       self.record.update({"train_step": self.train_step})
       self.record.update({"test_step": self.test_step})
 
       with open('record.json', 'w') as fp:
         json.dump(self.record, fp)
 
-  def net_prediction(self,**args):#todo: llenar abstracta
-    #
-    pass
+  def train_epoch(self):
+    self.__set_train_phase()
+    print('\rTraining epoch: %d' % self.epoch)
+    self.iterate_epoch(self.trainloader,self.train_dict)
 
-  def batch_process(self):#todo: llenar abstracta
-    pass
+  def test_epoch(self):
+    self.__set_test_phase()
+    print('\rTesting epoch: %d' % self.epoch)
+    with torch.no_grad():
+        self.iterate_epoch(self.testloader,self.test_dict)
+    self.epoch += 1
 
-  def train_epoch(self):#todo: llenar
+  def __set_train_phase(self):
+    self.net.train()
+    self.test_phase=False
+
+  def __set_test_phase(self):
+    self.net.eval()
+    self.test_phase=True
+
+  def iterate_epoch(self,loader,stats_dict):
     # Se inicializan variables de acumulacion
+    for k in stats_dict.keys():
+      stats_dict[k] = 0
 
-    # Se itera sobre
-    pass
+    #se itera sobre dataset
+    for batch_idx, (inputs, targets) in enumerate(loader):
+      inputs, targets = inputs.to(self.device), targets.to(self.device)
+      self.process_batch(inputs, targets, batch_idx)
+
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
+    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
+    self.record_epoch(logs)
+
+  def process_batch(self, inputs, targets, batch_idx):  # todo: llenar abstracta
+
+    if not self.test_phase:
+      self.optimizer.zero_grad()
+
+    outputs = self.net_forward(inputs)
+    loss = self.criterion(outputs, targets)
+
+    if not self.test_phase:
+      loss.backward()
+      self.optimizer.step()
+
+    self.accumulate_stats(loss, outputs, targets, batch_idx)
+
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
+    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
+
+    self.record_step(logs)
+
+  def net_forward(self, inputs):
+    """
+    Method made for hiding the .view choice
+    :param inputs:
+    :return:
+    """
+    if self.flatten:
+      outputs = self.net(inputs.view(-1, self.flat_dim))
+    else:
+      outputs = self.net(inputs)
+    return outputs
 
 
-  def test_epoch(self):#todo: llenar
-    pass
+
+
+

@@ -54,5 +54,5 @@ if __name__ == '__main__':
            )
 
   for epoch in range(start_epoch, args.epochs):
-    train(exp,epoch)
-    test(exp,epoch)
+    exp.train_epoch()
+    exp.test_epoch()
