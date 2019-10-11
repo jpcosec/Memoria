@@ -61,13 +61,18 @@ class Experiment():
       self.train_step = 0
       self.test_step = 0
 
-  def record_step(self, logs):  # todo: meter variable bool test/train
+  def record_step(self):  # todo: meter variable bool test/train
     """
     Saves logs to tb.writer and advances one step
     :param logs:
     :param test:
     :return:
     """
+
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
+    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
+
     if self.test_phase:
       for field, value in logs.items():
         self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
@@ -77,7 +82,7 @@ class Experiment():
         self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
       self.train_step += 1
 
-  def record_epoch(self, logs):
+  def record_epoch(self):
     """
     Saves logs to json and advances one epoch
     :param logs:
@@ -85,6 +90,10 @@ class Experiment():
     :param test:
     :return:
     """
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
+    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
+
     phase = "test" if self.test_phase else "train"
     print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs)
 
@@ -93,16 +102,20 @@ class Experiment():
     if self.test_phase:
       self.save_model(logs["acc"])
 
-  def accumulate_stats(self, loss, outputs, targets, batch_idx):  # lambidizar en caso de cualquier modificacion
+  def accumulate_stats(self, **arg_dict):  # lambidizar en caso de cualquier modificacion
 
     stats_dict = self.test_dict if self.test_phase else self.train_dict
 
-    _, predicted = outputs.max(1)
+    for key,value in arg_dict:
+      stats_dict[key]+=value
 
-    stats_dict["loss"] += loss.item()
-    stats_dict["total"] += targets.size(0)
-    stats_dict["correct"] += predicted.eq(targets).sum().item()
+  def update_stats(self,batch_idx, **arg_dict):
+    stats_dict = self.test_dict if self.test_phase else self.train_dict
+
     stats_dict["batch_idx"] = batch_idx
+    for key,value in arg_dict:
+      stats_dict[key]=value
+
 
   def save_model(self, acc):
     # Early stoping, # Save checkpoint.
@@ -157,10 +170,7 @@ class Experiment():
       inputs, targets = inputs.to(self.device), targets.to(self.device)
       self.process_batch(inputs, targets, batch_idx)
 
-    stats_dict = self.test_dict if self.test_phase else self.train_dict
-    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
-    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
-    self.record_epoch(logs)
+    self.record_epoch()
 
   def process_batch(self, inputs, targets, batch_idx):  # todo: llenar abstracta
 
@@ -170,17 +180,20 @@ class Experiment():
     outputs = self.net_forward(inputs)
     loss = self.criterion(outputs, targets)
 
+    _, predicted = outputs.max(1)
+
     if not self.test_phase:
       loss.backward()
       self.optimizer.step()
 
-    self.accumulate_stats(loss, outputs, targets, batch_idx)
 
-    stats_dict = self.test_dict if self.test_phase else self.train_dict
-    func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
-    logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
 
-    self.record_step(logs)
+    self.accumulate_stats(loss=loss.item(),
+                          total=targets.size(0),
+                          correct=predicted.eq(targets).sum().item())
+    self.update_stats(batch_idx)
+
+    self.record_step()
 
   def net_forward(self, inputs):
     """
