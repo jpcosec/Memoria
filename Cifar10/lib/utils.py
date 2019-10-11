@@ -22,8 +22,11 @@ from lib.models.senet import SENet18
 from lib.models.vgg import VGG
 
 
-class Experiment():
-
+class Experiment():#todo mover a clase independiente
+  """
+  Objecto for regular supervised tasks
+   
+  """#todo documentar
   def __init__(self, **kwargs):
     self.device = kwargs["device"]
     self.net = kwargs["net"]
@@ -48,7 +51,7 @@ class Experiment():
       self.train_step = 0
       self.test_step = 0
 
-  def record_step(self, logs, test=False):
+  def record_step(self, logs, test=False):#todo: meter variable bool test/train
     """
     Saves logs to tb.writer and advances one step
     :param logs:
@@ -102,6 +105,20 @@ class Experiment():
       with open('record.json', 'w') as fp:
         json.dump(self.record, fp)
 
+  def net_prediction(self,**args):#todo: llenar abstracta
+    #
+
+  def batch_process(self):#todo: llenar abstracta
+
+  def train_epoch(self):#todo: llenar
+    #epoch init
+
+    #batch iteration
+    pass
+
+
+  def test_epoch(self):#todo: llenar
+    pass
 
 def load_dataset(args):
   # Data

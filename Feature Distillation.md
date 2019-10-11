@@ -39,7 +39,9 @@ Año: 2017
 
 En: CVPR
 
-Parten desde la arquitectura de R-CNN, es decir una red re propuesta de regiones y una red de clasificacion sobre esas propuestas. Hacen basicamente lo mismo que en fitnets pero considerando solo aquellas zonas donde hay un region propuesta por la RPN
+Parten desde la arquitectura de R-CNN, es decir una red de propuesta de regiones y una red de clasificacion sobre esas propuestas. Hacen basicamente lo mismo que en fitnets pero considerando solo aquellas zonas donde hay un region propuesta por la RPN. Definen sus perdidas como $L=\lambda_1 L_m + L_{gt}$, donde $L_{gt}=L_{cls}+\lambda_2 L_{reg}$, es decir la perdida de clasificacion y regresion de las regiones propuestas y la destilacion se realiza similarmente a fitnets usando un regreso r, sobre los espacios de las features originales indicadas por el pooling espacial de la RPNu. $L_m=\frac{1}{2N}\sum_i \frac{1}{m_i}\| u_T -r (u_s) \|_2^2$
+
+
 
 
 

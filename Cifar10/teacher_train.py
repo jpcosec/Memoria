@@ -30,7 +30,6 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
 
-
   trainloader, testloader, classes = load_dataset(args)
 
   net, best_acc, start_epoch = load_model(args,device)
