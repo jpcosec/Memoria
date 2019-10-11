@@ -33,6 +33,7 @@ if __name__ == '__main__':
   trainloader, testloader, classes = load_dataset(args)
 
   net, best_acc, start_epoch = load_model(args,device)
+  print("best acc",best_acc)
 
   writer = SummaryWriter("teacher_trainer")
   criterion = nn.CrossEntropyLoss()

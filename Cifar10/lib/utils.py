@@ -93,6 +93,7 @@ class Experiment():#todo mover a clase independiente
         'student_acc': acc,
         'epoch': self.epoch
       }
+
       if not os.path.isdir('checkpoint'):
         os.mkdir('checkpoint')
       torch.save(state, './checkpoint/ckpt.pth')
