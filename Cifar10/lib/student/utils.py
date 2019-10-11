@@ -46,15 +46,15 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
                        "batch_idx":0,
                        }
     # funciones lambda de estadisticos obtenidos sobre esas variables
-    self.test_log_funcs = {'student/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
+    self.test_log_funcs = {'acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
                           'teacher/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
                           'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-                          "student/eval": lambda dict: dict["eval_student"]}
+                          "eval": lambda dict: dict["eval_student"]}
 
-    self.train_log_funcs = {'student/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
+    self.train_log_funcs = {'acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
                           'teacher/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
                           'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-                          "student/eval": lambda dict: dict["eval_student"]}
+                          "eval": lambda dict: dict["eval_student"]}
 
     self.include_targets= self.criterion.__name__=="total_loss"
 
