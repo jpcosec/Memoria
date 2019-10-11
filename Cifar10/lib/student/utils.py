@@ -14,7 +14,7 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
   """
 
   def __init__(self, **kwargs):
-    super(Experiment, self).__init__(
+    super(DistillationExperiment, self).__init__(
       device=kwargs["device"],
       net=kwargs["student"],
       optimizer=kwargs["optimizer"],
