@@ -4,7 +4,7 @@ import os
 import torch
 
 
-class Experiment():  # todo mover a clase independiente
+class Experiment():
   """
   Objecto for regular supervised tasks
    
@@ -27,6 +27,7 @@ class Experiment():  # todo mover a clase independiente
 
     self.test_phase = True
 
+    # variables que se acumulan a lo largo de una epoca para logs
     self.test_dict = {'loss': 0,
                       'total': 0,
                       'correct': 0,
@@ -36,7 +37,7 @@ class Experiment():  # todo mover a clase independiente
                        'total': 0,
                        'correct': 0,
                        "batch_idx":0}
-
+    # funciones lambda de estadisticos obtenidos sobre esas variables
     self.train_log_funcs ={'acc': lambda stats_dict : 100. * stats_dict["correct"] / stats_dict["total"],
                 'loss ': lambda stats_dict: stats_dict["loss"] / (stats_dict["batch_idx"] + 1)
     }
@@ -144,6 +145,7 @@ class Experiment():  # todo mover a clase independiente
     self.test_phase=True
 
   def iterate_epoch(self,loader,stats_dict):
+
     # Se inicializan variables de acumulacion
     for k in stats_dict.keys():
       stats_dict[k] = 0
