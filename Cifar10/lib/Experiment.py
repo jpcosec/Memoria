@@ -24,6 +24,7 @@ class Experiment():
     self.flat_dim = 3072
 
     self.load_record()
+    self.epoch=kwargs["start_epoch"]
 
     self.test_phase = True
 
@@ -37,6 +38,7 @@ class Experiment():
                        'total': 0,
                        'correct': 0,
                        "batch_idx":0}
+
     # funciones lambda de estadisticos obtenidos sobre esas variables
     self.train_log_funcs ={'acc': lambda stats_dict : 100. * stats_dict["correct"] / stats_dict["total"],
                 'loss ': lambda stats_dict: stats_dict["loss"] / (stats_dict["batch_idx"] + 1)

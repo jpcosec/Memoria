@@ -50,7 +50,8 @@ if __name__ == '__main__':
            writer=writer,
            testloader=testloader,
            trainloader=trainloader,
-           best_acc=best_acc
+           best_acc=best_acc,
+           start_epoch=start_epoch
            )
 
   for epoch in range(start_epoch, args.epochs):
