@@ -6,7 +6,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.utils import Experiment, load_dataset
+from lib.utils import load_dataset
+from lib.Experiment import Experiment
 
 ###global device
 

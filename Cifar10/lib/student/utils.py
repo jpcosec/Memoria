@@ -4,7 +4,8 @@ import torch.backends.cudnn as cudnn
 
 import os
 import json
-from lib.utils import Experiment, get_model
+from lib.utils import get_model
+from lib.Experiment import Experiment
 from lib.teacher.utils import load_model
 
 
