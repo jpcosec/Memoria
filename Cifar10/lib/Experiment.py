@@ -172,7 +172,7 @@ class Experiment():
 
     self.record_epoch()
 
-  def process_batch(self, inputs, targets, batch_idx):  # todo: llenar abstracta
+  def process_batch(self, inputs, targets, batch_idx):
 
     if not self.test_phase:
       self.optimizer.zero_grad()
