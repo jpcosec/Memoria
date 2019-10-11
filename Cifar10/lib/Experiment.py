@@ -106,14 +106,14 @@ class Experiment():
 
     stats_dict = self.test_dict if self.test_phase else self.train_dict
 
-    for key,value in arg_dict:
+    for key,value in arg_dict.items():
       stats_dict[key]+=value
 
   def update_stats(self,batch_idx, **arg_dict):
     stats_dict = self.test_dict if self.test_phase else self.train_dict
 
     stats_dict["batch_idx"] = batch_idx
-    for key,value in arg_dict:
+    for key,value in arg_dict.items():
       stats_dict[key]=value
 
 
