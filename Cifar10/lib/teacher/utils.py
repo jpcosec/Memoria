@@ -28,7 +28,7 @@ def load_model(args,device):
 
     checkpoint = torch.load('./checkpoint/ckpt.pth')
     net.load_state_dict(checkpoint['net'])
-    best_acc = checkpoint['acc']
+    best_acc = checkpoint['student_acc']
     start_epoch = checkpoint['epoch']
 
     if start_epoch >= args.epochs:

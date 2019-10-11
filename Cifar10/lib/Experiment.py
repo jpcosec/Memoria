@@ -108,7 +108,7 @@ class Experiment():
       print('Saving..')
       state = {
         'net': self.net.state_dict(),
-        'student_acc': acc,
+        'acc': acc,
         'epoch': self.epoch
       }
 
