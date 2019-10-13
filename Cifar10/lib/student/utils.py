@@ -47,12 +47,12 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
                        }
     # funciones lambda de estadisticos obtenidos sobre esas variables
     self.test_log_funcs = {'acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
-                          'teacher/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
+                          'teacher/acc': lambda dict : 100. * dict["correct_teacher"] / dict["total"],
                           'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
                           "eval": lambda dict: dict["eval_student"]}
 
     self.train_log_funcs = {'acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
-                          'teacher/acc': lambda dict : 100. * dict["correct_student"] / dict["total"],
+                          'teacher/acc': lambda dict : 100. * dict["correct_teacher"] / dict["total"],
                           'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
                           "eval": lambda dict: dict["eval_student"]}
 
@@ -151,7 +151,7 @@ def load_student(args, device):
 
     checkpoint = torch.load('./checkpoint/ckpt.pth')
     net.load_state_dict(checkpoint['net'])
-    best_acc = checkpoint['student_acc']
+    best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
 
     if start_epoch >= args.epochs:
