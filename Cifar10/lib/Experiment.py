@@ -48,7 +48,7 @@ class Experiment():
 
   def load_record(self):
     try:
-      with open('record.json', 'w') as fp:
+      with open('record.json', 'r') as fp:
         self.record = json.load(fp)
         self.epoch = self.record["epoch"]
         self.train_step = self.record["train_step"]
