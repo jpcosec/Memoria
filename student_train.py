@@ -5,16 +5,15 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-
 from lib.utils import load_dataset
-
-###global device
-
 
 
 from lib.student.utils import *
 from lib.student.losses import parse_distillation_loss
 
+import os
+
+os.chdir("Cifar10")
 
 if __name__ == '__main__':
 
