@@ -15,6 +15,9 @@ from lib.utils import load_dataset
 from lib.student.utils import *
 from lib.student.losses import parse_distillation_loss
 
+import os
+
+os.chdir("Cifar10")
 
 if __name__ == '__main__':
 
