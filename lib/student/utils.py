@@ -12,7 +12,6 @@ class DistillationExperiment(Experiment):  # TODO: solucionar problemas de heren
   """
   Class created for classification supervised distillation problems
   """
-
   def __init__(self, **kwargs):
     super(DistillationExperiment, self).__init__(
                   device=kwargs["device"],
