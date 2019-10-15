@@ -10,8 +10,6 @@ from lib.utils import load_dataset
 
 ###global device
 
-
-
 from lib.student.utils import *
 from lib.student.losses import parse_distillation_loss
 
