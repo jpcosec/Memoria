@@ -7,6 +7,7 @@ for file_name in list_jsons:
 
   try:
     with open(file_name, 'w') as fp:
+      print("-.")
       record = json.load(fp)
       epoch = record["epoch"]
       train_step = record["train_step"]
