@@ -1,12 +1,12 @@
-
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 # Define teacher net
-class Net(nn.Module):
+class MnistNet(nn.Module):
 
     def __init__(self):
-        super(Net, self).__init__()
+        super(MnistNet, self).__init__()
         # 1 input image channel, 6 output channels, 3x3 square convolution
         # kernel
         self.conv1 = nn.Conv2d(1, 6, 3)
@@ -27,7 +27,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        return F.log_softmax(x, dim=1)
+        return x
 
     def num_flat_features(self, x):
         size = x.size()[1:]  # all dimensions except the batch dimension
