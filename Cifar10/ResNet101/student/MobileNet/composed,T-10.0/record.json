@@ -1,0 +1,1 @@
+{"0": {"test": {"acc": 10.25, "teacher/acc": 10.25, "loss": 730765.7978723145, "eval": 418.70428466796875}}, "epoch": 0, "train_step": 391, "test_step": 100}

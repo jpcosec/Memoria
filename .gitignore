@@ -54,3 +54,11 @@ default/version_0/tf/events.out.tfevents.1569444872.DESKTOP-PG5QSJ5.14728.0
 default/version_0/metrics.csv
 default/version_0/meta_tags.csv
 default/version_0/meta.experiment
+**/teacher_trainer/**
+**/checkpoint/**
+**/tb_logs/**
+/Mnist/runs/
+/Cifar10/data/cifar-10-batches-py/
+/Cifar10/eficcientnet/runs/Oct03_13-17-28_pcjpteacher_trainer/
+/Cifar10/ResNet101/old/student-test1/ResNet18/student_trainer/
+/Cifar10/runs/
