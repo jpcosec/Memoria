@@ -9,7 +9,6 @@ from torch.utils.tensorboard import SummaryWriter
 from lib.utils import load_dataset
 from lib.Experiment import Experiment
 
-###global device
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
