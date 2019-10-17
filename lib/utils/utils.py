@@ -18,12 +18,12 @@ from lib.models.senet import SENet18
 from lib.models.vgg import VGG
 from lib.models.mnist_net import MnistNet
 
-def auto_change_dir(folder):
-
+def auto_change_dir(path):
+  print("Moving to", path)#todo: log
+  for folder in path.split("/"):
     if not os.path.exists(folder):
-        print("Creating", folder)
-        os.mkdir(folder)
-    print("Moving to", folder)
+      print("Creating", folder)
+      os.mkdir(folder)
     os.chdir(folder)
 
 """ Dataset STUFF"""
@@ -80,6 +80,7 @@ def sample(loader):  # Deprecated
 def get_model(model_name):
 
     if model_name.split("_")[0] == "linear":
+        auto_change_dir("linear")
         shape = [int(st) for st in model_name.split("_")[1].split(",")]
         return linear_model(shape)
 

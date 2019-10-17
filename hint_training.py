@@ -22,7 +22,7 @@ def main(args):
     student, best_acc, start_epoch = load_student(args, device)
     writer = SummaryWriter("tb_logs")
 
-    criterion = parse_distillation_loss(args.distillation)
+    criterion = feature_loss
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 

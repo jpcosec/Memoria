@@ -4,7 +4,7 @@ import torch
 import torch.backends.cudnn as cudnn
 
 from lib.utils.Experiment import Experiment
-from lib.utils.utils import get_model
+from lib.utils.utils import get_model, auto_change_dir
 
 
 class DistillationExperiment(Experiment):
@@ -55,8 +55,6 @@ class DistillationExperiment(Experiment):
                             'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
                             'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
                             "eval": lambda dict: dict["eval_student"]}
-
-    self.include_targets = self.criterion.__name__ == "total_loss"
 
     self.teacher.eval()
 
@@ -116,8 +114,7 @@ def load_teacher(args, device):
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  assert os.path.isdir(args.teacher), 'Error: model not initialized'
-  os.chdir(args.teacher)
+  auto_change_dir(args.teacher)
   # Load checkpoint.
   print('==> Resuming from checkpoint..')
   assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
@@ -128,20 +125,21 @@ def load_teacher(args, device):
 
 
 def load_student(args, device):
-  best_acc = 0  # best test accuracy
-  start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-  folder = "students/" + args.student + "/" + args.distillation
-  # Model
+  # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
+  auto_change_dir("/".join(["students",
+                            args.student,
+                            args.distillation[:args.distillation.find(",")],
+                            args.distillation[args.distillation.find(",") + 1:]]))
+
   print('==> Building student model..', args.student)
   net = get_model(args.student)
   net = net.to(device)
+
   if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
   if args.resume:
-    assert os.path.isdir(folder), 'Error: model not initialized'
-    os.chdir(folder)
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
@@ -155,10 +153,7 @@ def load_student(args, device):
       print("Number of epochs already trained")
 
   else:
-    if not os.path.isdir("students/"):
-      os.mkdir("students")
-    if not os.path.isdir("students/" + args.student):
-      os.mkdir("students/" + args.student)
-    os.mkdir(folder)
-    os.chdir(folder)
+    best_acc = 0  # best test accuracy
+    start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
   return net, best_acc, start_epoch
