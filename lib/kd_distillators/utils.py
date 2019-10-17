@@ -59,7 +59,7 @@ class DistillationExperiment(Experiment):
 
     loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}
 
-    loss = self.criterion(dict([(field, loss_dict[field]) for field in self.criterion_fields]))  # probar
+    loss = self.criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields]))  # probar
 
     self.accumulate_stats(loss=loss.item(),
                           total=targets.size(0),
