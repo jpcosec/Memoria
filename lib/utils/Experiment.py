@@ -61,7 +61,7 @@ class Experiment:
                 self.test_step = self.record["test_step"]
 
         except:
-            self.record = {"test":{},"train"{}}
+            self.record = {"test":{},"train":{}}
             self.epoch = 0
             self.train_step = 0
             self.test_step = 0
@@ -119,6 +119,7 @@ class Experiment:
 
     def save_model(self):
         # Early stoping, # Save checkpoint.
+
         if self.last_acc > self.best_acc:
             print('Saving..',end="")
             state = {
