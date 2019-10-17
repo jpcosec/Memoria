@@ -153,11 +153,12 @@ def load_student(args, device):
 
     if start_epoch >= args.epochs:
       print("Number of epochs already trained")
+
   else:
-    if not os.path.isdir("kd_distillators/"):
-      os.mkdir("kd_distillators")
-    if not os.path.isdir("kd_distillators/" + args.student):
-      os.mkdir("kd_distillators/" + args.student)
+    if not os.path.isdir("students/"):
+      os.mkdir("students")
+    if not os.path.isdir("students/" + args.student):
+      os.mkdir("students/" + args.student)
     os.mkdir(folder)
     os.chdir(folder)
   return net, best_acc, start_epoch
