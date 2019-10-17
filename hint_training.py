@@ -62,7 +62,7 @@ def main(args):
                          student=student,
                          teacher=teacher,
                          optimizer=optimizer,
-                         criterion=criterion,
+                         #criterion=criterion,
                          eval_criterion=eval_criterion,
                          linear=flatten,
                          writer=writer,
