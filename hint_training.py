@@ -27,10 +27,14 @@ def main(args):
     hooked_layers=[4]
     fs={}
     ft={}
+
     register_hooks(teacher,hooked_layers,ft)
     register_hooks(student,hooked_layers,fs)
 
-    print(fs)
+    inp = torch.rand(1, 3, 32, 32)
+    out = teacher(inp.to(device))
+    out2 = student(inp.to(device))
+
     student_features = [f[1] for f in fs.items()]
     teacher_features = [f[1] for f in ft.items()]
 
