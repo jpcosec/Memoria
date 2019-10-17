@@ -34,7 +34,7 @@ def KD(T=8):
     :return: Loss function
     """
 
-    def KD_loss(input, teacher_logits, T=T):
+    def KD_loss(input, teacher_logits):
         return nn.KLDivLoss()(F.log_softmax(input / T, dim=1), F.softmax(teacher_logits / T, dim=1))
 
     return KD_loss
@@ -48,7 +48,7 @@ def KD_CE(alpha=0.5, T=8):
     :return: Loss function
     """
 
-    def KD_CE_loss(input, teacher_logits, target, alpha=alpha, T=T):
+    def KD_CE_loss(input, teacher_logits, target, alpha=alpha):
         KD_loss = nn.KLDivLoss()(F.log_softmax(input / T, dim=1),
                                  F.softmax(teacher_logits / T, dim=1))
 
