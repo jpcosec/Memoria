@@ -130,7 +130,7 @@ def load_teacher(args, device):
 def load_student(args, device):
   best_acc = 0  # best test accuracy
   start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-  folder = "kd_distillators/" + args.student + "/" + args.distillation
+  folder = "students/" + args.student + "/" + args.distillation
   # Model
   print('==> Building student model..', args.student)
   net = get_model(args.student)
