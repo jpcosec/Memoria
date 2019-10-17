@@ -44,7 +44,7 @@ class HintExperiment(Experiment):
       # "eval": lambda dict: dict["eval_student"]
     }
 
-    self.train_log_funcs = {  # 'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
+    self.train_log_funcs = {'acc':1,# lambda dict: 100. * dict["correct_student"] / dict["total"],
       # 'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
       'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
       # "eval": lambda dict: dict["eval_student"]

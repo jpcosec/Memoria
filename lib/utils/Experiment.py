@@ -92,8 +92,9 @@ class Experiment:
     stats_dict = self.test_dict if self.test_phase else self.train_dict
     func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
     logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
-    # mean
-    self.last_acc = logs["acc"]
+
+    if self.test_phase:
+      self.last_acc = logs["acc"]
 
     phase = "test" if self.test_phase else "train"
     print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs, end="")
