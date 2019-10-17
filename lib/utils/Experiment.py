@@ -136,12 +136,12 @@ class Experiment:
 
     def train_epoch(self):
         self.__set_train_phase()
-        print('\rTraining epoch: %d' % self.epoch)
+        print('\rTraining epoch: %d' % self.epoch,end="")
         self.iterate_epoch(self.trainloader, self.train_dict)
 
     def test_epoch(self):
         self.__set_test_phase()
-        print('\rTesting epoch: %d' % self.epoch)
+        print('\rTesting epoch: %d' % self.epoch,"end")
         with torch.no_grad():
             self.iterate_epoch(self.testloader, self.test_dict)
         self.epoch += 1
