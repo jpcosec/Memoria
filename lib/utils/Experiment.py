@@ -22,9 +22,9 @@ class Experiment:
         self.best_acc = kwargs["best_acc"]
 
         if "dimensions" in kwargs:
-            self.flat_dim = 3072
-        else:
             self.flat_dim = kwargs["dimensions"]
+        else:
+            self.flat_dim = 3072
 
         print("flat dimensions of", self.flat_dim)
 
