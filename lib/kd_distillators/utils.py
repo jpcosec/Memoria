@@ -36,12 +36,12 @@ class DistillationExperiment(Experiment):
 
     # funciones lambda de estadisticos obtenidos sobre esas variables
     self.test_log_funcs = {'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
-                           'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
+                           'teacher/acc': lambda dict: 100. * dict["correct_teacher"] / dict["total"],
                            'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
                            "eval": lambda dict: dict["eval_student"]}
 
     self.train_log_funcs = {'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
-                            'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
+                            'teacher/acc': lambda dict: 100. * dict["correct_teacher"] / dict["total"],
                             'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
                             "eval": lambda dict: dict["eval_student"]}
 

@@ -121,7 +121,7 @@ class Experiment:
         # Early stoping, # Save checkpoint.
 
         if self.last_acc > self.best_acc:
-            print('Saving..',end="")
+            print('Saving..')
             state = {
                 'net': self.net.state_dict(),
                 'acc': self.last_acc,
