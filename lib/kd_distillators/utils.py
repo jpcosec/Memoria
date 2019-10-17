@@ -57,7 +57,7 @@ class DistillationExperiment(Experiment):
     S_y_pred, predicted = self.net_forward(inputs)
     T_y_pred, predictedT = self.net_forward(inputs, teacher=True)
 
-    loss_dict = {"student_scores": S_y_pred, "teacher_scores": T_y_pred, "targets": targets}
+    loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}
 
     loss = self.criterion(dict([(field, loss_dict[field]) for field in self.criterion_fields]))  # probar
 

@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 
 """
-loss_dict = {"student_scores": S_y_pred, "teacher_scores": T_y_pred, "targets": targets}
+loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}
 """
 
 def parse_distillation_loss(st):
