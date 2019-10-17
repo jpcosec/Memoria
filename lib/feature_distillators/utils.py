@@ -81,7 +81,7 @@ class HintExperiment(Experiment):
     self.update_stats(batch_idx, eval_student=self.eval_criterion(S_y_pred, targets).item())
 
     if not self.test_phase:
-      print("LASORRA")
+      #print("LASORRA")
       loss.backward(retain_graph=True)
       self.optimizer.step()
       # for o in self.regressor_optimizers:
