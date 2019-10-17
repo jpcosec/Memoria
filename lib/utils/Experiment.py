@@ -92,12 +92,14 @@ class Experiment:
         logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
 
         phase = "test" if self.test_phase else "train"
-        print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs,end="")
+        print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs, end="")
 
         self.record.update({self.epoch: {phase: logs}})
 
-        if self.test_phase:
-            self.save_model(logs["acc"])
+        # mean
+        test_acc= 100. * self.test_dict["correct"] / self.test_dict["total"]
+
+        self.save_model(logs["acc"],test_acc)
 
     def accumulate_stats(self, **arg_dict):  # lambidizar en caso de cualquier modificacion
 
@@ -113,10 +115,10 @@ class Experiment:
         for key, value in arg_dict.items():
             stats_dict[key] = value
 
-    def save_model(self, acc):
+    def save_model(self,acc):
         # Early stoping, # Save checkpoint.
         if acc > self.best_acc:
-            print('Saving..')
+            print('Saving..',end="")
             state = {
                 'net': self.net.state_dict(),
                 'acc': acc,
@@ -142,7 +144,7 @@ class Experiment:
 
     def test_epoch(self):
         self.__set_test_phase()
-        print('\rTesting epoch: %d' % self.epoch,"end")
+        print('\rTesting epoch: %d' % self.epoch,end="")
         with torch.no_grad():
             self.iterate_epoch(self.testloader, self.test_dict)
         self.epoch += 1
