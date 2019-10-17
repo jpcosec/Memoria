@@ -4,6 +4,7 @@ import argparse
 
 import torch
 import torch.optim as optim
+
 from torch.utils.tensorboard import SummaryWriter
 
 from lib.feature_distillators.losses import feature_loss
@@ -21,12 +22,22 @@ def main(args):
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
 
+
     # hooks register
     hooked_layers=[4]
-    teacher_features={}
-    student_features={}
-    register_hooks(teacher,hooked_layers,teacher_features)
-    register_hooks(student,hooked_layers,student_features)
+    fs={}
+    ft={}
+    register_hooks(teacher,hooked_layers,ft)
+    register_hooks(student,hooked_layers,fs)
+    student_features = [f[1] for f in fs.items()]
+    teacher_features = [f[1] for f in ft.items()]
+    regressors =[torch.nn.Conv2d(student_features[i].shape[1],
+                          teacher_features[i].shape[1],
+                          kernel_size=1).to(device)
+                for i in range(len(hooked_layers))]
+
+
+
 
 
     writer = SummaryWriter("tb_logs")
@@ -38,19 +49,21 @@ def main(args):
     flatten = args.student.split("_")[0] == "linear"
 
     exp = HintExperiment(device=device,  # Todo mover arriba
-                                 student=student,
-                                 teacher=teacher,
-                                 optimizer=optimizer,
-                                 criterion=criterion,
-                                 eval_criterion=eval_criterion,
-                                 linear=flatten,
-                                 writer=writer,
-                                 testloader=testloader,
-                                 trainloader=trainloader,
-                                 best_acc=best_acc,
-                                 teacher_features=teacher_features,
-                                 student_features=student_features
-                                 )
+                         student=student,
+                         teacher=teacher,
+                         optimizer=optimizer,
+                         criterion=criterion,
+                         eval_criterion=eval_criterion,
+                         linear=flatten,
+                         writer=writer,
+                         testloader=testloader,
+                         trainloader=trainloader,
+                         best_acc=best_acc,
+                         teacher_features=teacher_features,
+                         student_features=student_features,
+                         regressors=regressors,
+                         regressor_optim = [optim.Adam(r.parameters(), lr=args.lr) for r in regressors]
+                         )
 
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()

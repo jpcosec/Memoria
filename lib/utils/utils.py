@@ -121,3 +121,4 @@ def register_hooks(net, idxs, feature):
     for id, layer in enumerate(module.children()):
       if id in idxs:
         layer.register_forward_hook(hook)
+
