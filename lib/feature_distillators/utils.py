@@ -80,7 +80,7 @@ class HintExperiment(Experiment):
 
     if not self.test_phase:
       #print("LASORRA")
-      loss.backward(inp = torch.rand(1, 3, 32, 32))
+      loss.backward(retain_graph=True)
       self.optimizer.step()
       for o in self.regressor_optimizers:
         o.step()
