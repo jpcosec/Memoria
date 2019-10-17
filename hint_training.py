@@ -77,7 +77,7 @@ def main(args):
 
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
-        #exp.test_epoch()
+        exp.test_epoch()
 
 
 
