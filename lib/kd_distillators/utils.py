@@ -15,7 +15,7 @@ class DistillationExperiment(Experiment):
   def __init__(self, **kwargs):
     super(DistillationExperiment, self).__init__(
       device=kwargs["device"],
-      net=kwargs["kd_distillators"],
+      net=kwargs["student"],
       optimizer=kwargs["optimizer"],
       criterion=kwargs["criterion"],
       linear=kwargs["linear"],
