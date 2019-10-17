@@ -81,8 +81,6 @@ class Experiment:
         if self.test_phase:
             for field, value in logs.items():
                 self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
-                # mean
-                self.last_acc= logs["acc"]
 
             self.test_step += 1
         else:
@@ -94,6 +92,8 @@ class Experiment:
         stats_dict = self.test_dict if self.test_phase else self.train_dict
         func_dict = self.test_log_funcs if self.test_phase else self.train_log_funcs
         logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
+        # mean
+        self.last_acc = logs["acc"]
 
         phase = "test" if self.test_phase else "train"
         print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs, end="")
@@ -101,7 +101,7 @@ class Experiment:
         self.record[phase].update({self.epoch: logs})
 
 
-        self.save_model(logs["acc"])
+        self.save_model()
 
     def accumulate_stats(self, **arg_dict):  # lambidizar en caso de cualquier modificacion
 
