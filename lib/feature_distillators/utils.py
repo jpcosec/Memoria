@@ -16,7 +16,7 @@ class HintExperiment(Experiment):
     self.teacher = kwargs["teacher"]
     self.teacher_features = kwargs["teacher_features"]
 
-    self.regressors=kwargs["regressor"]
+    self.regressors=kwargs["regressors"]
     self.regressor_optimizers=kwargs["regressor_optim"]
 
     self.eval_criterion = kwargs["eval_criterion"]
