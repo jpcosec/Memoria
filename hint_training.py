@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from lib.feature_distillators.losses import feature_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10
+from lib.utils.utils import load_cifar10, register_hooks
 
 
 def main(args):
@@ -20,6 +20,15 @@ def main(args):
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
+
+    # hooks register
+    hooked_layers=[4]
+    teacher_features={}
+    student_features={}
+    register_hooks(teacher,hooked_layers,teacher_features)
+    register_hooks(student,hooked_layers,student_features)
+
+
     writer = SummaryWriter("tb_logs")
 
     criterion = feature_loss
@@ -28,7 +37,7 @@ def main(args):
 
     flatten = args.student.split("_")[0] == "linear"
 
-    exp = DistillationExperiment(device=device,  # Todo mover arriba
+    exp = HintExperiment(device=device,  # Todo mover arriba
                                  student=student,
                                  teacher=teacher,
                                  optimizer=optimizer,
@@ -38,7 +47,9 @@ def main(args):
                                  writer=writer,
                                  testloader=testloader,
                                  trainloader=trainloader,
-                                 best_acc=best_acc
+                                 best_acc=best_acc,
+                                 teacher_features=teacher_features,
+                                 student_features=student_features
                                  )
 
     for epoch in range(start_epoch, args.epochs):

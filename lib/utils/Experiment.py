@@ -29,6 +29,7 @@ class Experiment:
         print("flat dimensions of", self.flat_dim)
 
         self.load_record()
+        self.last_acc=1.0
 
         self.test_phase = True
 
@@ -60,7 +61,7 @@ class Experiment:
                 self.test_step = self.record["test_step"]
 
         except:
-            self.record = {}
+            self.record = {"test":{},"train"{}}
             self.epoch = 0
             self.train_step = 0
             self.test_step = 0
@@ -80,6 +81,9 @@ class Experiment:
         if self.test_phase:
             for field, value in logs.items():
                 self.writer.add_scalar("test/" + field, value, global_step=self.test_step)
+                # mean
+                self.last_acc= logs["acc"]
+
             self.test_step += 1
         else:
             for field, value in logs.items():
@@ -94,12 +98,10 @@ class Experiment:
         phase = "test" if self.test_phase else "train"
         print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs, end="")
 
-        self.record.update({self.epoch: {phase: logs}})
+        self.record[phase].update({self.epoch: logs})
 
-        # mean
-        test_acc= 100. * self.test_dict["correct"] / self.test_dict["total"]
 
-        self.save_model(logs["acc"],test_acc)
+        self.save_model(logs["acc"])
 
     def accumulate_stats(self, **arg_dict):  # lambidizar en caso de cualquier modificacion
 
@@ -115,20 +117,20 @@ class Experiment:
         for key, value in arg_dict.items():
             stats_dict[key] = value
 
-    def save_model(self,acc):
+    def save_model(self):
         # Early stoping, # Save checkpoint.
-        if acc > self.best_acc:
+        if self.last_acc > self.best_acc:
             print('Saving..',end="")
             state = {
                 'net': self.net.state_dict(),
-                'acc': acc,
+                'acc': self.last_acc,
                 'epoch': self.epoch
             }
 
             if not os.path.isdir('checkpoint'):
                 os.mkdir('checkpoint')
             torch.save(state, './checkpoint/ckpt.pth')
-            self.best_acc = acc
+            self.best_acc = self.last_acc
 
             self.record.update({"epoch": self.epoch})
             self.record.update({"train_step": self.train_step})

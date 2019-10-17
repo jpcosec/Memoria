@@ -46,6 +46,7 @@ class DistillationExperiment(Experiment):
                             "eval": lambda dict: dict["eval_student"]}
 
     self.teacher.eval()
+    self.last_test_acc=01.0
 
     self.criterion_fields = self.criterion.__code__.co_varnames
 
