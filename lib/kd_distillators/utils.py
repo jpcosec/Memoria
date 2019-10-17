@@ -9,10 +9,10 @@ from lib.utils.utils import get_model, auto_change_dir
 
 class DistillationExperiment(Experiment):
   """
-  Class created for classification supervised distillation problems
-  """
+     Class created for classification supervised distillation problems
+     """
 
-  def __init__(self, **kwargs):
+  """def __init__(self, **kwargs):
     super(DistillationExperiment, self).__init__(
       device=kwargs["device"],
       net=kwargs["student"],
@@ -23,7 +23,10 @@ class DistillationExperiment(Experiment):
       testloader=kwargs["testloader"],
       trainloader=kwargs["trainloader"],
       best_acc=kwargs["best_acc"]
-    )
+    )"""
+
+  def __init__(self, **kwargs):
+    super(DistillationExperiment, self).__init__(**kwargs)
 
     self.student = kwargs["student"]
     self.teacher = kwargs["teacher"]
