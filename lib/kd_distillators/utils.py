@@ -12,21 +12,9 @@ class DistillationExperiment(Experiment):
      Class created for classification supervised distillation problems
      """
 
-  """def __init__(self, **kwargs):
-    super(DistillationExperiment, self).__init__(
-      device=kwargs["device"],
-      net=kwargs["student"],
-      optimizer=kwargs["optimizer"],
-      criterion=kwargs["criterion"],
-      linear=kwargs["linear"],
-      writer=kwargs["writer"],
-      testloader=kwargs["testloader"],
-      trainloader=kwargs["trainloader"],
-      best_acc=kwargs["best_acc"]
-    )"""
 
   def __init__(self, **kwargs):
-    super(DistillationExperiment, self).__init__(**kwargs)
+    super(DistillationExperiment, self).__init__(**kwargs, net=kwargs["student"])
 
     self.student = kwargs["student"]
     self.teacher = kwargs["teacher"]
