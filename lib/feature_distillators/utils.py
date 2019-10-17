@@ -38,7 +38,7 @@ class HintExperiment(Experiment):
                       }
 
     # funciones lambda de estadisticos obtenidos sobre esas variables
-    self.test_log_funcs = {  # 'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
+    self.test_log_funcs = { "acc":1, # 'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
       # 'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
       'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
       # "eval": lambda dict: dict["eval_student"]
