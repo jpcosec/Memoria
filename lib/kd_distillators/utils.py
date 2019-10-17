@@ -47,7 +47,7 @@ class DistillationExperiment(Experiment):
 
     self.teacher.eval()
 
-    self.criterion_fields = self.criterion.__code__.co_varnames()
+    self.criterion_fields = self.criterion.__code__.co_varnames
 
   def process_batch(self, inputs, targets, batch_idx):
 
