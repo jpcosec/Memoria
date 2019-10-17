@@ -30,8 +30,8 @@ def soft(T=8):
     :return: Loss function
     """
 
-    def dist_loss(student_scores, teacher_scores, T=T):
-        return nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1), F.softmax(teacher_scores / T, dim=1))
+    def dist_loss(input, teacher_logits, T=T):
+        return nn.KLDivLoss()(F.log_softmax(input / T, dim=1), F.softmax(teacher_logits / T, dim=1))
 
     return dist_loss
 
@@ -44,12 +44,14 @@ def composed(alpha=0.5, T=8):
     :return: Loss function
     """
 
-    def total_loss(student_scores, teacher_scores, y, alpha=alpha, T=T):
-        KD_loss = nn.KLDivLoss()(F.log_softmax(student_scores / T, dim=1),
-                                 F.softmax(teacher_scores / T, dim=1))
+    def total_loss(input, teacher_logits, target, alpha=alpha, T=T):
+        KD_loss = nn.KLDivLoss()(F.log_softmax(input / T, dim=1),
+                                 F.softmax(teacher_logits / T, dim=1))
 
-        CE_loss = nn.CrossEntropyLoss()(student_scores.squeeze(), y)
+        CE_loss = nn.CrossEntropyLoss()(input.squeeze(), target)
 
         return CE_loss * alpha * T * T + KD_loss * (1 - alpha)
 
     return total_loss
+
+

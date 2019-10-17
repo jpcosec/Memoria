@@ -15,7 +15,7 @@ class DistillationExperiment(Experiment):
     def __init__(self, **kwargs):
         super(DistillationExperiment, self).__init__(
             device=kwargs["device"],
-            net=kwargs["student"],
+            net=kwargs["kd_distillators"],
             optimizer=kwargs["optimizer"],
             criterion=kwargs["criterion"],
             linear=kwargs["linear"],
@@ -60,6 +60,8 @@ class DistillationExperiment(Experiment):
 
         self.teacher.eval()
 
+        self.criterion_fields=self.criterion.__code__.co_varnames()
+
     def process_batch(self, inputs, targets, batch_idx):
 
         if not self.test_phase:
@@ -68,11 +70,10 @@ class DistillationExperiment(Experiment):
         S_y_pred, predicted = self.net_forward(inputs)
         T_y_pred, predictedT = self.net_forward(inputs, teacher=True)
 
-        loss_dict = {"student_scores": S_y_pred, "teacher_scores": T_y_pred}
-        if self.include_targets:
-            loss_dict["y"] = targets
+        loss_dict = {"student_scores": S_y_pred, "teacher_scores": T_y_pred,"targets":targets}
 
-        loss = self.criterion(**loss_dict)
+
+        loss = self.criterion( dict([(field,loss_dict[field]) for field in self.criterion_fields]) )#probar
 
         self.accumulate_stats(loss=loss.item(),
                               total=targets.size(0),
@@ -130,7 +131,7 @@ def load_teacher(args, device):
 def load_student(args, device):
     best_acc = 0  # best test accuracy
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-    folder = "student/" + args.student + "/" + args.distillation
+    folder = "kd_distillators/" + args.student + "/" + args.distillation
     # Model
     print('==> Building student model..', args.student)
     net = get_model(args.student)
@@ -154,10 +155,10 @@ def load_student(args, device):
         if start_epoch >= args.epochs:
             print("Number of epochs already trained")
     else:
-        if not os.path.isdir("student/"):
-            os.mkdir("student")
-        if not os.path.isdir("student/" + args.student):
-            os.mkdir("student/" + args.student)
+        if not os.path.isdir("kd_distillators/"):
+            os.mkdir("kd_distillators")
+        if not os.path.isdir("kd_distillators/" + args.student):
+            os.mkdir("kd_distillators/" + args.student)
         os.mkdir(folder)
         os.chdir(folder)
     return net, best_acc, start_epoch

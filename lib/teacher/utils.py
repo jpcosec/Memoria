@@ -18,7 +18,7 @@ def load_model(args, device):
         cudnn.benchmark = True
 
 
-    if args.resume:
+    if args.resume:#todo: cambiar a non initialized
         assert os.path.isdir(args.model), 'Error: model not initialized'
         os.chdir(args.model)
         # Load checkpoint.
@@ -33,6 +33,6 @@ def load_model(args, device):
         if start_epoch >= args.epochs:
             print("Number of epochs already trained")
     else:
-        os.mkdir(args.model)
+        os.mkdir(args.model)# Mover a experiment
         os.chdir(args.model)
     return net, best_acc, start_epoch
