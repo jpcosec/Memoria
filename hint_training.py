@@ -50,7 +50,7 @@ def main(args):
 
     writer = SummaryWriter("tb_logs")
 
-    criterion = feature_loss
+    criterion = feature_loss()
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
