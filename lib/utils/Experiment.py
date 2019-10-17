@@ -21,10 +21,11 @@ class Experiment:
         self.trainloader = kwargs["trainloader"]
         self.best_acc = kwargs["best_acc"]
 
-        if kwargs["dimensions"] is None:
+        if "dimensions" in kwargs:
             self.flat_dim = 3072
         else:
             self.flat_dim = kwargs["dimensions"]
+
         print("flat dimensions of", self.flat_dim)
 
         self.load_record()
