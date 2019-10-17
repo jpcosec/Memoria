@@ -29,8 +29,12 @@ def main(args):
     ft={}
     register_hooks(teacher,hooked_layers,ft)
     register_hooks(student,hooked_layers,fs)
+
+    print(fs)
     student_features = [f[1] for f in fs.items()]
     teacher_features = [f[1] for f in ft.items()]
+
+
     regressors =[torch.nn.Conv2d(student_features[i].shape[1],
                           teacher_features[i].shape[1],
                           kernel_size=1).to(device)
