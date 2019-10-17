@@ -11,8 +11,6 @@ class DistillationExperiment(Experiment):
   """
      Class created for classification supervised distillation problems
      """
-
-
   def __init__(self, **kwargs):
     super(DistillationExperiment, self).__init__(**kwargs, net=kwargs["student"])
 
