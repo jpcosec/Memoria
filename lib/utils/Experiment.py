@@ -91,7 +91,7 @@ class Experiment:
         logs = dict([(k, func(stats_dict)) for k, func in func_dict.items()])
 
         phase = "test" if self.test_phase else "train"
-        print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs)
+        print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs,end="")
 
         self.record.update({self.epoch: {phase: logs}})
 
