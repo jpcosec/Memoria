@@ -32,6 +32,8 @@ def main(args):
     register_hooks(student,hooked_layers,fs)
 
     inp = torch.rand(1, 3, 32, 32)
+    teacher.eval()
+    student.train()
     out = teacher(inp.to(device))
     out2 = student(inp.to(device))
 
@@ -75,7 +77,7 @@ def main(args):
 
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
-        exp.test_epoch()
+        #exp.test_epoch()
 
 
 

@@ -51,6 +51,7 @@ class HintExperiment(Experiment):
     }
 
     self.teacher.eval()
+    self.student.train()
     # self.criterion_fields = self.criterion.__code__.co_varnames
 
   def process_batch(self, inputs, targets, batch_idx):
@@ -78,6 +79,7 @@ class HintExperiment(Experiment):
     self.update_stats(batch_idx)#, eval_student=self.eval_criterion(S_y_pred, targets).item())
 
     if not self.test_phase:
+      print("LASORRA")
       loss.backward()
       self.optimizer.step()
       for o in self.regressor_optimizers:
