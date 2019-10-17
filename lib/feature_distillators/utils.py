@@ -79,8 +79,8 @@ class HintExperiment(Experiment):
     self.update_stats(batch_idx)#, eval_student=self.eval_criterion(S_y_pred, targets).item())
 
     if not self.test_phase:
-      print("LASORRA")
-      loss.backward()
+      #print("LASORRA")
+      loss.backward(inp = torch.rand(1, 3, 32, 32))
       self.optimizer.step()
       for o in self.regressor_optimizers:
         o.step()
