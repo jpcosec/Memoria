@@ -38,12 +38,12 @@ class DistillationExperiment(Experiment):
     self.test_log_funcs = {'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
                            'teacher/acc': lambda dict: 100. * dict["correct_teacher"] / dict["total"],
                            'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-                           "eval": lambda dict: dict["eval_student"]}
+                           "eval": lambda dict: dict["eval_student"]/ (dict["batch_idx"] + 1)}
 
     self.train_log_funcs = {'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
                             'teacher/acc': lambda dict: 100. * dict["correct_teacher"] / dict["total"],
                             'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-                            "eval": lambda dict: dict["eval_student"]}
+                            "eval": lambda dict: dict["eval_student"]/ (dict["batch_idx"] + 1)}
 
     self.teacher.eval()
     self.last_test_acc=01.0
@@ -63,9 +63,10 @@ class DistillationExperiment(Experiment):
     self.accumulate_stats(loss=loss.item(),
                           total=targets.size(0),
                           correct_student=predicted.eq(targets).sum().item(),
-                          correct_teacher=predictedT.eq(targets).sum().item())
+                          correct_teacher=predictedT.eq(targets).sum().item(),
+                          eval_student=self.eval_criterion(S_y_pred, targets).item())
 
-    self.update_stats(batch_idx, eval_student=self.eval_criterion(S_y_pred, targets).item())
+    self.update_stats(batch_idx)
 
     if not self.test_phase:
       loss.backward()
