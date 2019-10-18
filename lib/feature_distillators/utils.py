@@ -74,7 +74,7 @@ class HintExperiment(DistillationExperiment):
             sf = list(self.student_features.values())
             tf = list(self.teacher_features.values())
 
-            print(sf)
+            print("lasorraa\n\n\n\n",sf)
 
             r = self.regressors[0](sf[0])
             floss = self.f_lambda*self.ft_criterion(tf[0], r)
