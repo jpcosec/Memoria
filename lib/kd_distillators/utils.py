@@ -50,9 +50,6 @@ class DistillationExperiment(Experiment):
 
   def process_batch(self, inputs, targets, batch_idx):
 
-    if not self.test_phase:
-      self.optimizer.zero_grad()
-
     S_y_pred, predicted = self.net_forward(inputs)
     T_y_pred, predictedT = self.net_forward(inputs, teacher=True)
 
@@ -69,6 +66,7 @@ class DistillationExperiment(Experiment):
     self.update_stats(batch_idx)
 
     if not self.test_phase:
+      self.optimizer.zero_grad()
       loss.backward()
       self.optimizer.step()
 
