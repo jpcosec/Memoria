@@ -35,7 +35,7 @@ class HintExperiment(DistillationExperiment):
 
         for name, module in self.teacher._modules.items():
             for id, layer in enumerate(module.children()):
-                if id in idxs:
+                if id in self.idxs:
                     def hook(m, i, o):
                         self.teacher_features[id]=o
                     layer.register_forward_hook(hook)
@@ -43,7 +43,7 @@ class HintExperiment(DistillationExperiment):
         self.student_features = {}
         for name, module in self.student._modules.items():
             for id, layer in enumerate(module.children()):
-                if id in idxs:
+                if id in self.idxs:
                     def hook(m, i, o):
                         self.student_features[id]=o
                     layer.register_forward_hook(hook)
