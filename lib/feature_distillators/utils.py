@@ -19,8 +19,8 @@ class HintExperiment(DistillationExperiment):
         self.kd_criterion = kwargs["kd_criterion"]
         self.ft_criterion = kwargs["ft_criterion"]
 
-        self.regressors = kwargs["regressors"]
-        self.regressor_optimizers = kwargs["regressor_optim"]
+        #self.regressors = kwargs["regressors"]
+        #self.regressor_optimizers = kwargs["regressor_optim"]
 
         self.criterion_fields = self.kd_criterion.__code__.co_varnames
 
@@ -56,12 +56,12 @@ class HintExperiment(DistillationExperiment):
         out = self.teacher()
         out2 = self.student()
 
-        regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
+        self.regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
                                       self.teacher_features[i].shape[1],
                                       kernel_size=1).to(self.device)
                                       for i in range(len(idxs))]
 
-        regressor_optim = [optim.Adam(r.parameters(), lr=0.001) for r in regressors]
+        self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
 
         def register_hooks(net, idxs, feature):
