@@ -55,10 +55,8 @@ class HintExperiment(DistillationExperiment):
         sf = list(self.student_features.values())
         tf = list(self.teacher_features.values())
 
-        print(sf)
-        self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],
-                                           kernel_size=1).to(self.device)
-                                      for i in range(len(self.idxs))]
+        self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],kernel_size=1
+                                           ).to(self.device) for i in range(len(self.idxs))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
@@ -72,16 +70,12 @@ class HintExperiment(DistillationExperiment):
         loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
         # todo: meter loss en applt loss
         if self.feature_train:
-            #hooked_layers = [4]
-            #fs = {}
-            #ft = {}
-            #register_hooks(self.teacher, hooked_layers, ft)
-            #register_hooks(self.student, hooked_layers, fs)
-            #student_features = [f[1] for f in fs.items()]
-            #teacher_features = [f[1] for f in ft.items()]
 
             sf = list(self.student_features.values())
             tf = list(self.teacher_features.values())
+
+            print(sf)
+
             r = self.regressors[0](sf[0])
             floss = self.f_lambda*self.ft_criterion(tf[0], r)
             loss += floss
