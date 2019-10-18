@@ -56,7 +56,7 @@ class HintExperiment(DistillationExperiment):
         self.student.train()
         self.criterion_fields = self.kd_criterion.__code__.co_varnames
 
-        self.feature_train = False
+        self.feature_train = True
         self.kd_train = True
 
     def process_batch(self, inputs, targets, batch_idx):
