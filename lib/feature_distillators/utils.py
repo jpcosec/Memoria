@@ -55,7 +55,7 @@ class HintExperiment(DistillationExperiment):
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        print(self.student_features)
+        print(sf)
         self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],
                                            kernel_size=1).to(self.device)
                                       for i in range(len(self.idxs))]
