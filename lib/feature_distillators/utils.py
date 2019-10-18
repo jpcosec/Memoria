@@ -28,11 +28,6 @@ class HintExperiment(DistillationExperiment):
 
     def process_batch(self, inputs, targets, batch_idx):
 
-        if not self.test_phase:
-            self.optimizer.zero_grad()
-            for o in self.regressor_optimizers:
-                o.zero_grad()
-
         s_output, predicted = self.net_forward(inputs)
         t_output, predictedt = self.net_forward(inputs, teacher=True)
 
@@ -52,7 +47,7 @@ class HintExperiment(DistillationExperiment):
 
             self.accumulate_stats(correct_student=predicted.eq(targets).sum().item(),
                                   correct_teacher=predictedt.eq(targets).sum().item(),
-                                  eval_student = self.eval_criterion(s_output, targets).item())
+                                  eval_student=self.eval_criterion(s_output, targets).item())
 
         #print(floss/kd_loss)
         self.accumulate_stats(loss=loss.item(),
@@ -61,6 +56,10 @@ class HintExperiment(DistillationExperiment):
         self.update_stats(batch_idx)
 
         if not self.test_phase:
+            self.optimizer.zero_grad()
+            for o in self.regressor_optimizers:
+                o.zero_grad()
+
             loss.backward(retain_graph=True)
             if self.feature_train:
                 for o in self.regressor_optimizers:
