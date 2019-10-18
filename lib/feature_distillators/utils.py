@@ -42,21 +42,21 @@ class HintExperiment(DistillationExperiment):
             'acc': lambda di: 100. * di["correct_student"] / di["total"],
             'teacher/acc': lambda di: 100. * di["correct_student"] / di["total"],
             'loss': lambda di: di["loss"] / (di["batch_idx"] + 1),
-            "eval": lambda di: di["eval_student"]
+            "eval": lambda di: di["eval_student"]/ (di["batch_idx"] + 1)
         }
 
         self.train_log_funcs = {  # 'acc': lambda dict : 1,
             "acc": lambda di: 100. * di["correct_student"] / di["total"],
             'teacher/acc': lambda di: 100. * di["correct_student"] / di["total"],
             'loss': lambda di: di["loss"] / (di["batch_idx"] + 1),
-            "eval": lambda di: di["eval_student"]
+            "eval": lambda di: di["eval_student"]/ (di["batch_idx"] + 1)
         }
 
         self.teacher.eval()
         self.student.train()
         self.criterion_fields = self.kd_criterion.__code__.co_varnames
 
-        self.feature_train = True
+        self.feature_train = False
         self.kd_train = True
 
     def process_batch(self, inputs, targets, batch_idx):
@@ -82,13 +82,14 @@ class HintExperiment(DistillationExperiment):
             kd_loss = self.kd_criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields]))
             loss += kd_loss
 
-            self.accumulate_stats(loss=loss.item(),
-                                  total=targets.size(0),
-                                  correct_student=predicted.eq(targets).sum().item(),
-                                  correct_teacher=predictedt.eq(targets).sum().item()
-                                  )
+            self.accumulate_stats(correct_student=predicted.eq(targets).sum().item(),
+                                  correct_teacher=predictedt.eq(targets).sum().item(),
+                                  eval_student = self.eval_criterion(s_output, targets).item())
 
-        self.update_stats(batch_idx, eval_student=self.eval_criterion(s_output, targets).item())
+        self.accumulate_stats(loss=loss.item(),
+                              total=targets.size(0))
+
+        self.update_stats(batch_idx)
 
         if not self.test_phase:
             loss.backward(retain_graph=True)
