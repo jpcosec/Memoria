@@ -87,7 +87,7 @@ class Experiment:
             for field, value in logs.items():
                 self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
             self.train_step += 1
-        print(logs)
+        #print(logs)
 
     def record_epoch(self):
         stats_dict = self.test_dict if self.test_phase else self.train_dict

@@ -37,10 +37,11 @@ class HintExperiment(DistillationExperiment):
         loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
         # todo: meter loss en applt loss
         if self.feature_train:
+            print(self.student_features[0])
             r = self.regressors[0](self.student_features[0])
             floss = self.f_lambda*self.ft_criterion(self.teacher_features[0], r)
             loss += floss
-            # todo: Cambiar esta wea a iterable y a if
+            # todo: Cambiar esta wea a iterable
 
         if self.kd_train:
             loss_dict = {"input": s_output, "teacher_logits": t_output, "target": targets, }
@@ -66,6 +67,7 @@ class HintExperiment(DistillationExperiment):
                 o.zero_grad()
 
             loss.backward(retain_graph=True)
+
             if self.feature_train:
                 for o in self.regressor_optimizers:
                    o.step()
