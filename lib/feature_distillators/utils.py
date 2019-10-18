@@ -13,8 +13,7 @@ class HintExperiment(DistillationExperiment):
     def __init__(self, **kwargs):
         super(HintExperiment, self).__init__(**kwargs, criterion=None)
 
-        self.student_features = kwargs["student_features"]
-        self.teacher_features = kwargs["teacher_features"]
+
 
         self.kd_criterion = kwargs["kd_criterion"]
         self.ft_criterion = kwargs["ft_criterion"]
@@ -27,6 +26,57 @@ class HintExperiment(DistillationExperiment):
         self.feature_train = True
         self.kd_train = True
         self.f_lambda = 0.000001
+
+
+        idxs=[4]
+
+        self.teacher_features = []
+
+        for name, module in self.teacher._modules.items():
+            for id, layer in enumerate(module.children()):
+                if id in idxs:
+                    def hook(m, i, o):
+                        self.teacher_features.append(o)
+                    layer.register_forward_hook(hook)
+
+        self.student_features = []
+        for name, module in self.student._modules.items():
+            for id, layer in enumerate(module.children()):
+                if id in idxs:
+                    def hook(m, i, o):
+                        self.student_features.append(o)
+                    layer.register_forward_hook(hook)
+
+        #student_features = [f[1] for f in fs.items()]
+        #teacher_features = [f[1] for f in ft.items()]
+        inp = torch.rand(1, 3, 32, 32).to(self.device)
+        self.teacher.eval()
+        self.student.eval()
+        out = self.teacher()
+        out2 = self.student()
+
+        regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
+                                      self.teacher_features[i].shape[1],
+                                      kernel_size=1).to(self.device)
+                                      for i in range(len(idxs))]
+
+
+        def register_hooks(net, idxs, feature):
+            """
+            Registers a hook in the module of the net
+            :param net:
+            :param idxs:
+            :param feature:
+            :return:
+            """
+
+            def hook(m, i, o):
+                feature[m] = o
+
+            for name, module in net._modules.items():
+                for id, layer in enumerate(module.children()):
+                    if id in idxs:
+                        layer.register_forward_hook(hook)
 
 
         #self.
@@ -45,7 +95,6 @@ class HintExperiment(DistillationExperiment):
             register_hooks(self.teacher, hooked_layers, ft)
             register_hooks(self.student, hooked_layers, fs)
             student_features = [f[1] for f in fs.items()]
-            print(student_features)
             teacher_features = [f[1] for f in ft.items()]
 
             r = self.regressors[0](student_features[0])

@@ -66,6 +66,7 @@ class Experiment:
             self.train_step = 0
             self.test_step = 0
 
+
     def record_step(self):  # todo: meter variable bool test/train
         """
         Saves logs to tb.writer and advances one step

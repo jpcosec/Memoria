@@ -23,7 +23,7 @@ def main(args):
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
 
-
+  """
     # hooks register
     hooked_layers=[4]
     fs={}
@@ -48,7 +48,7 @@ def main(args):
                 for i in range(len(hooked_layers))]
 
 
-
+    """
 
 
     writer = SummaryWriter("tb_logs")
