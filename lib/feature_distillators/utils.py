@@ -54,7 +54,9 @@ class HintExperiment(DistillationExperiment):
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        self.regressors = [torch.nn.Conv2d(sf,tf,kernel_size=1).to(self.device)
+        print(sf)
+        self.regressors = [torch.nn.Conv2d(sf[i].size[1],tf[i].size[1],
+                                           kernel_size=1).to(self.device)
                                       for i in range(len(self.idxs))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
