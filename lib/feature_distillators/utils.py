@@ -52,8 +52,8 @@ class HintExperiment(DistillationExperiment):
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        sf = [f[1] for f in self.student_features.values()]
-        tf = [f[1] for f in self.teacher_features.items()]
+        sf = list(self.student_features.values())
+        tf = list(self.teacher_features.values())
 
         print(sf)
         self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],
@@ -80,10 +80,10 @@ class HintExperiment(DistillationExperiment):
             #student_features = [f[1] for f in fs.items()]
             #teacher_features = [f[1] for f in ft.items()]
 
-            sf = [f[1] for f in self.student_features.items()]
-            tf = [f[1] for f in self.teacher_features.items()]
-            r = self.regressors[0](sf)
-            floss = self.f_lambda*self.ft_criterion(tf, r)
+            sf = list(self.student_features.values())
+            tf = list(self.teacher_features.values())
+            r = self.regressors[0](sf[0])
+            floss = self.f_lambda*self.ft_criterion(tf[0], r)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
