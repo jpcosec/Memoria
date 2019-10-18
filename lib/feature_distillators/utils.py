@@ -42,10 +42,10 @@ class HintExperiment(DistillationExperiment):
             hooked_layers = [4]
             fs = {}
             ft = {}
-
             register_hooks(self.teacher, hooked_layers, ft)
             register_hooks(self.student, hooked_layers, fs)
             student_features = [f[1] for f in fs.items()]
+            print(student_features)
             teacher_features = [f[1] for f in ft.items()]
 
             r = self.regressors[0](student_features[0])
