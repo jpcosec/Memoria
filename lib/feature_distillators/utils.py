@@ -14,8 +14,6 @@ class HintExperiment(DistillationExperiment):
     def __init__(self, **kwargs):
         super(HintExperiment, self).__init__(**kwargs, criterion=None)
 
-
-
         self.kd_criterion = kwargs["kd_criterion"]
         self.ft_criterion = kwargs["ft_criterion"]
 
