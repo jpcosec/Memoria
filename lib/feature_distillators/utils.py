@@ -35,7 +35,7 @@ class HintExperiment(DistillationExperiment):
             for id, layer in enumerate(module.children()):
                 if id in self.idxs:
                     def hook(m, i, o):
-                        self.teacher_features[id]=o
+                        self.teacher_features[m]=o
                     layer.register_forward_hook(hook)
 
         self.student_features = {}
@@ -43,21 +43,19 @@ class HintExperiment(DistillationExperiment):
             for id, layer in enumerate(module.children()):
                 if id in self.idxs:
                     def hook(m, i, o):
-                        self.student_features[id]=o
+                        self.student_features[m]=o
                     layer.register_forward_hook(hook)
 
-        #student_features = [f[1] for f in fs.items()]
-        #teacher_features = [f[1] for f in ft.items()]
+        sf = [f[1] for f in self.student_features.items()]
+        tf = [f[1] for f in self.teacher_features.items()]
         inp = torch.rand(1, 3, 32, 32).to(self.device)
         self.teacher.eval()
         self.student.eval()
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        self.regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
-                                      self.teacher_features[i].shape[1],
-                                      kernel_size=1).to(self.device)
-                                      for i in self.idxs]
+        self.regressors = [torch.nn.Conv2d(sf,tf,kernel_size=1).to(self.device)
+                                      for i in range(len(self.idxs))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
@@ -98,8 +96,10 @@ class HintExperiment(DistillationExperiment):
             #student_features = [f[1] for f in fs.items()]
             #teacher_features = [f[1] for f in ft.items()]
 
-            r = self.regressors[0](self.student_features[self.idxs[0]])
-            floss = self.f_lambda*self.ft_criterion(self.teacher_features[self.idxs[0]], r)
+            sf = [f[1] for f in self.student_features.items()]
+            tf = [f[1] for f in self.teacher_features.items()]
+            r = self.regressors[0](sf)
+            floss = self.f_lambda*self.ft_criterion(tf, r)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
