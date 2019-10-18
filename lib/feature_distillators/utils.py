@@ -53,8 +53,8 @@ class HintExperiment(DistillationExperiment):
         inp = torch.rand(1, 3, 32, 32).to(self.device)
         self.teacher.eval()
         self.student.eval()
-        out = self.teacher()
-        out2 = self.student()
+        out = self.teacher(inp)
+        out2 = self.student(inp)
 
         self.regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
                                       self.teacher_features[i].shape[1],
