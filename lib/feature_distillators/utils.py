@@ -3,6 +3,7 @@ import torch
 from lib.kd_distillators.utils import DistillationExperiment
 
 
+#class distillation_container()
 
 
 class HintExperiment(DistillationExperiment):
@@ -25,6 +26,8 @@ class HintExperiment(DistillationExperiment):
         self.kd_train = True
         self.f_lambda = 0.000001
 
+
+        #self.
 
     def process_batch(self, inputs, targets, batch_idx):
 
