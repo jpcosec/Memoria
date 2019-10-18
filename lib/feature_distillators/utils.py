@@ -49,13 +49,15 @@ class HintExperiment(DistillationExperiment):
                                   correct_teacher=predictedt.eq(targets).sum().item(),
                                   eval_student=self.eval_criterion(s_output, targets).item())
 
+
+
         #print(floss/kd_loss)
         self.accumulate_stats(loss=loss.item(),
                               total=targets.size(0))
-
+        print(loss)
         self.update_stats(batch_idx)
 
-        if not self.test_phase:
+        if not self.test_phase and False:
             self.optimizer.zero_grad()
             for o in self.regressor_optimizers:
                 o.zero_grad()
