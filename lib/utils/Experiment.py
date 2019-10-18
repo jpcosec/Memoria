@@ -171,16 +171,13 @@ class Experiment:
         self.record_epoch()
 
     def process_batch(self, inputs, targets, batch_idx):
-
-        if not self.test_phase:
-            self.optimizer.zero_grad()
-
         outputs = self.net_forward(inputs)
         loss = self.criterion(outputs, targets)
 
         _, predicted = outputs.max(1)
 
         if not self.test_phase:
+            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
