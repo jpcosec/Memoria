@@ -1,5 +1,6 @@
-from lib.kd_distillators.utils import DistillationExperiment
 import torch
+
+from lib.kd_distillators.utils import DistillationExperiment
 
 
 class HintExperiment(DistillationExperiment):
@@ -65,21 +66,22 @@ class HintExperiment(DistillationExperiment):
             for o in self.regressor_optimizers:
                 o.zero_grad()
 
-        s_output = self.net_forward(inputs)
-        t_output = self.net_forward(inputs, teacher=True)
+        s_output, predicted = self.net_forward(inputs)
+        t_output, predictedt = self.net_forward(inputs, teacher=True)
 
-        loss = torch.tensor(targets.size(0))  # todo: meter alphas
+        loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
         # todo: meter loss en applt loss
         if self.feature_train:
-            r=self.regressors[0](self.student_features[0])
-            loss.sum(self.ft_criterion(self.teacher_features[0],r))
+            r = self.regressors[0](self.student_features[0])
+            floss = self.ft_criterion(self.teacher_features[0], r)
+            loss += floss
             # todo: Cambiar esta wea a iterable y a if
 
         if self.kd_train:
             loss_dict = {"input": s_output, "teacher_logits": t_output, "target": targets, }
-            loss.sum(self.kd_criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields])))
-            _, predicted = s_output.max(1)
-            _, predictedt = t_output.max(1)
+            kd_loss = self.kd_criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields]))
+            loss += kd_loss
+
             self.accumulate_stats(loss=loss.item(),
                                   total=targets.size(0),
                                   correct_student=predicted.eq(targets).sum().item(),
