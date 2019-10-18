@@ -29,23 +29,23 @@ class HintExperiment(DistillationExperiment):
         self.f_lambda = 0.000001
 
 
-        idxs=[4]
+        self.idxs=[4]
 
-        self.teacher_features = []
+        self.teacher_features = {}
 
         for name, module in self.teacher._modules.items():
             for id, layer in enumerate(module.children()):
                 if id in idxs:
                     def hook(m, i, o):
-                        self.teacher_features.append(o)
+                        self.teacher_features[id]=o
                     layer.register_forward_hook(hook)
 
-        self.student_features = []
+        self.student_features = {}
         for name, module in self.student._modules.items():
             for id, layer in enumerate(module.children()):
                 if id in idxs:
                     def hook(m, i, o):
-                        self.student_features.append(o)
+                        self.student_features[id]=o
                     layer.register_forward_hook(hook)
 
         #student_features = [f[1] for f in fs.items()]
@@ -59,7 +59,7 @@ class HintExperiment(DistillationExperiment):
         self.regressors = [torch.nn.Conv2d(self.student_features[i].shape[1],
                                       self.teacher_features[i].shape[1],
                                       kernel_size=1).to(self.device)
-                                      for i in range(len(idxs))]
+                                      for i in self.idxs]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
@@ -100,8 +100,8 @@ class HintExperiment(DistillationExperiment):
             #student_features = [f[1] for f in fs.items()]
             #teacher_features = [f[1] for f in ft.items()]
 
-            r = self.regressors[0](self.student_features[0])
-            floss = self.f_lambda*self.ft_criterion(self.teacher_features[0], r)
+            r = self.regressors[0](self.student_features[self.idxs[0]])
+            floss = self.f_lambda*self.ft_criterion(self.teacher_features[self.idxs[0]], r)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
