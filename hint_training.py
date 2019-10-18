@@ -11,6 +11,7 @@ from lib.feature_distillators.losses import feature_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, register_hooks
+from lib.kd_distillators.losses import KD
 
 
 def main(args):
@@ -52,7 +53,6 @@ def main(args):
 
     writer = SummaryWriter("tb_logs")
 
-    criterion = feature_loss()
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
@@ -62,7 +62,8 @@ def main(args):
                          student=student,
                          teacher=teacher,
                          optimizer=optimizer,
-                         #criterion=criterion,
+                         kd_criterion = KD(T=8.0),
+                         ft_criterion = feature_loss(),
                          eval_criterion=eval_criterion,
                          linear=flatten,
                          writer=writer,
@@ -97,7 +98,7 @@ if __name__ == '__main__':
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="features",
+    parser.add_argument('--distillation', default="features1",
                         help="default=soft,T-3.5, chose one method from lib.kd_distillators an put the numerical params "
                              "separated by , using - instead of =.")
     arg = parser.parse_args()

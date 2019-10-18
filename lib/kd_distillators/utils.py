@@ -48,8 +48,6 @@ class DistillationExperiment(Experiment):
     self.teacher.eval()
     self.last_test_acc=01.0
 
-    self.criterion_fields = self.criterion.__code__.co_varnames
-
   def process_batch(self, inputs, targets, batch_idx):
 
     if not self.test_phase:

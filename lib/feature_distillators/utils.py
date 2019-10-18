@@ -1,106 +1,99 @@
+from lib.kd_distillators.utils import DistillationExperiment
+import torch
 
 
-from lib.utils.Experiment import Experiment
-from lib.kd_distillators.losses import KD
+class HintExperiment(DistillationExperiment):
 
+    def __init__(self, **kwargs):
+        super(HintExperiment, self).__init__(**kwargs, criterion=None)
 
-class HintExperiment(Experiment):
+        self.student = kwargs["student"]
+        self.student_features = kwargs["student_features"]
+        self.teacher = kwargs["teacher"]
+        self.teacher_features = kwargs["teacher_features"]
 
-  def __init__(self, **kwargs):
-    super(HintExperiment, self).__init__(**kwargs, net=kwargs["student"], criterion=KD(T=8.0))
+        self.kd_criterion = kwargs["kd_criterion"]
+        self.ft_criterion = kwargs["ft_criterion"]
 
-    self.student = kwargs["student"]
-    self.student_features = kwargs["student_features"]
-    self.teacher = kwargs["teacher"]
-    self.teacher_features = kwargs["teacher_features"]
+        self.regressors = kwargs["regressors"]
+        self.regressor_optimizers = kwargs["regressor_optim"]
 
-    self.regressors = kwargs["regressors"]
-    self.regressor_optimizers = kwargs["regressor_optim"]
+        self.eval_criterion = kwargs["eval_criterion"]
 
-    self.eval_criterion = kwargs["eval_criterion"]
+        # variables que se acumulan a lo largo de una epoca para logs
+        self.train_dict = {'loss': 0,
+                           'total': 0,
+                           'correct_student': 0,
+                           'correct_teacher': 0,
+                           'eval_student': 0,
+                           "batch_idx": 0}
 
-    # variables que se acumulan a lo largo de una epoca para logs
-    self.train_dict = {'loss': 0,
-                       'total': 0,
-                       'correct_student': 0,
-                       'correct_teacher': 0,
-                       'eval_student': 0,
-                       "batch_idx": 0}
+        self.test_dict = {'loss': 0,
+                          'total': 0,
+                          'correct_student': 0,
+                          'correct_teacher': 0,
+                          'eval_student': 0,
+                          "batch_idx": 0,
+                          }
 
-    self.test_dict = {'loss': 0,
-                      'total': 0,
-                      'correct_student': 0,
-                      'correct_teacher': 0,
-                      'eval_student': 0,
-                      "batch_idx": 0,
-                      }
+        # funciones lambda de estadisticos obtenidos sobre esas variables
+        self.test_log_funcs = {  # "acc": lambda dict : 1,
+            'acc': lambda di: 100. * di["correct_student"] / di["total"],
+            'teacher/acc': lambda di: 100. * di["correct_student"] / di["total"],
+            'loss': lambda di: di["loss"] / (di["batch_idx"] + 1),
+            "eval": lambda di: di["eval_student"]
+        }
 
-    # funciones lambda de estadisticos obtenidos sobre esas variables
-    self.test_log_funcs = {  # "acc": lambda dict : 1,
-      'acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
-      'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
-      'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-      "eval": lambda dict: dict["eval_student"]
-    }
+        self.train_log_funcs = {  # 'acc': lambda dict : 1,
+            "acc": lambda di: 100. * di["correct_student"] / di["total"],
+            'teacher/acc': lambda di: 100. * di["correct_student"] / di["total"],
+            'loss': lambda di: di["loss"] / (di["batch_idx"] + 1),
+            "eval": lambda di: di["eval_student"]
+        }
 
-    self.train_log_funcs = {  # 'acc': lambda dict : 1,
-      "acc": lambda dict: 100. * dict["correct_student"] / dict["total"],
-      'teacher/acc': lambda dict: 100. * dict["correct_student"] / dict["total"],
-      'loss': lambda dict: dict["loss"] / (dict["batch_idx"] + 1),
-      "eval": lambda dict: dict["eval_student"]
-    }
+        self.teacher.eval()
+        self.student.train()
+        self.criterion_fields = self.kd_criterion.__code__.co_varnames
 
-    self.teacher.eval()
-    self.student.train()
-    self.criterion_fields = self.criterion.__code__.co_varnames
+        self.feature_train = True
+        self.kd_train = True
 
-  def process_batch(self, inputs, targets, batch_idx):
+    def process_batch(self, inputs, targets, batch_idx):
 
-    if not self.test_phase:
-      self.optimizer.zero_grad()
-      # for o in self.regressor_optimizers:
-      #  o.zero_grad()
+        if not self.test_phase:
+            self.optimizer.zero_grad()
+            for o in self.regressor_optimizers:
+                o.zero_grad()
 
-    S_y_pred, predicted = self.net_forward(inputs)
-    T_y_pred, predictedT = self.net_forward(inputs, teacher=True)
+        s_output = self.net_forward(inputs)
+        t_output = self.net_forward(inputs, teacher=True)
 
-    # todo: meter loss en applt loss
+        loss = torch.tensor(targets.size(0))  # todo: meter alphas
+        # todo: meter loss en applt loss
+        if self.feature_train:
+            r=self.regressors[0](self.student_features[0])
+            loss.sum(self.ft_criterion(self.teacher_features[0],r))
+            # todo: Cambiar esta wea a iterable y a if
 
-    # loss = self.criterion(self.teacher_features[0],self.student_features[0],self.regressors[0])#todo: Cambiar esta wea a iterable y a if
+        if self.kd_train:
+            loss_dict = {"input": s_output, "teacher_logits": t_output, "target": targets, }
+            loss.sum(self.kd_criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields])))
+            _, predicted = s_output.max(1)
+            _, predictedt = t_output.max(1)
+            self.accumulate_stats(loss=loss.item(),
+                                  total=targets.size(0),
+                                  correct_student=predicted.eq(targets).sum().item(),
+                                  correct_teacher=predictedt.eq(targets).sum().item()
+                                  )
 
-    loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets, }
+        self.update_stats(batch_idx, eval_student=self.eval_criterion(s_output, targets).item())
 
-    loss = self.criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields]))  # probar
+        if not self.test_phase:
+            loss.backward(retain_graph=True)
+            if self.kd_train:
+                self.optimizer.step()
+            if self.feature_train:
+                for o in self.regressor_optimizers:
+                    o.step()
 
-    self.accumulate_stats(loss=loss.item(),
-                          total=targets.size(0),
-                          correct_student=predicted.eq(targets).sum().item(),
-                          correct_teacher=predictedT.eq(targets).sum().item()
-                          )
-
-    self.update_stats(batch_idx, eval_student=self.eval_criterion(S_y_pred, targets).item())
-
-    if not self.test_phase:
-      #print("LASORRA")
-      loss.backward(retain_graph=True)
-      self.optimizer.step()
-      # for o in self.regressor_optimizers:
-      # o.step()
-
-    self.record_step()
-
-  def net_forward(self, inputs, teacher=False):
-    """
-    Method made for hiding the .view choice
-    :param inputs:
-    :return:
-    """
-    net = self.teacher if teacher else self.student
-
-    if self.flatten:
-      outputs = net(inputs.view(-1, self.flat_dim))
-    else:
-      outputs = net(inputs)
-
-    _, predicted = outputs.max(1)
-    return outputs, predicted
+        self.record_step()
