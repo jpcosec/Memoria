@@ -46,6 +46,7 @@ class HintExperiment(DistillationExperiment):
                         self.student_features[m]=o
                     layer.register_forward_hook(hook)
 
+
         sf = [f[1] for f in self.student_features.items()]
         tf = [f[1] for f in self.teacher_features.items()]
         inp = torch.rand(1, 3, 32, 32).to(self.device)
@@ -54,7 +55,7 @@ class HintExperiment(DistillationExperiment):
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        print(sf)
+        print(self.student_features)
         self.regressors = [torch.nn.Conv2d(sf[i].size[1],tf[i].size[1],
                                            kernel_size=1).to(self.device)
                                       for i in range(len(self.idxs))]
