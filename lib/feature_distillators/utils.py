@@ -56,32 +56,13 @@ class HintExperiment(DistillationExperiment):
         out2 = self.student(inp)
 
         print(self.student_features)
-        self.regressors = [torch.nn.Conv2d(sf[i].size[1],tf[i].size[1],
+        self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],
                                            kernel_size=1).to(self.device)
                                       for i in range(len(self.idxs))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
 
-        def register_hooks(net, idxs, feature):
-            """
-            Registers a hook in the module of the net
-            :param net:
-            :param idxs:
-            :param feature:
-            :return:
-            """
-
-            def hook(m, i, o):
-                feature[m] = o
-
-            for name, module in net._modules.items():
-                for id, layer in enumerate(module.children()):
-                    if id in idxs:
-                        layer.register_forward_hook(hook)
-
-
-        #self.
 
     def process_batch(self, inputs, targets, batch_idx):
 
