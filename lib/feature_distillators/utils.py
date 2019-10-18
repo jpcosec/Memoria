@@ -1,9 +1,11 @@
 import torch
 
 from lib.kd_distillators.utils import DistillationExperiment
+from lib.utils.utils import register_hooks
+from lib.models.resnet import ResNet as resnet
 
 
-#class distillation_container()
+
 
 
 class HintExperiment(DistillationExperiment):
@@ -37,9 +39,17 @@ class HintExperiment(DistillationExperiment):
         loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
         # todo: meter loss en applt loss
         if self.feature_train:
-            print(self.student_features[0])
-            r = self.regressors[0](self.student_features[0])
-            floss = self.f_lambda*self.ft_criterion(self.teacher_features[0], r)
+            hooked_layers = [4]
+            fs = {}
+            ft = {}
+
+            register_hooks(self.teacher, hooked_layers, ft)
+            register_hooks(self.student, hooked_layers, fs)
+            student_features = [f[1] for f in fs.items()]
+            teacher_features = [f[1] for f in ft.items()]
+
+            r = self.regressors[0](student_features[0])
+            floss = self.f_lambda*self.ft_criterion(teacher_features[0], r)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
