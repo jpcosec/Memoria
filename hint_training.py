@@ -23,32 +23,32 @@ def main(args):
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
 
-  """
-    # hooks register
-    hooked_layers=[4]
-    fs={}
-    ft={}
-
-    register_hooks(teacher,hooked_layers,ft)
-    register_hooks(student,hooked_layers,fs)
-
-    inp = torch.rand(1, 3, 32, 32)
-    teacher.eval()
-    student.train()
-    out = teacher(inp.to(device))
-    out2 = student(inp.to(device))
-
-    student_features = [f[1] for f in fs.items()]
-    teacher_features = [f[1] for f in ft.items()]
-
-
-    regressors =[torch.nn.Conv2d(student_features[i].shape[1],
-                          teacher_features[i].shape[1],
-                          kernel_size=1).to(device)
-                for i in range(len(hooked_layers))]
-
-
     """
+      # hooks register
+      hooked_layers=[4]
+      fs={}
+      ft={}
+  
+      register_hooks(teacher,hooked_layers,ft)
+      register_hooks(student,hooked_layers,fs)
+  
+      inp = torch.rand(1, 3, 32, 32)
+      teacher.eval()
+      student.train()
+      out = teacher(inp.to(device))
+      out2 = student(inp.to(device))
+  
+      student_features = [f[1] for f in fs.items()]
+      teacher_features = [f[1] for f in ft.items()]
+  
+  
+      regressors =[torch.nn.Conv2d(student_features[i].shape[1],
+                            teacher_features[i].shape[1],
+                            kernel_size=1).to(device)
+                  for i in range(len(hooked_layers))]
+  
+  
+      """
 
 
     writer = SummaryWriter("tb_logs")
@@ -70,10 +70,10 @@ def main(args):
                          testloader=testloader,
                          trainloader=trainloader,
                          best_acc=best_acc,
-                         teacher_features=teacher_features,
-                         student_features=student_features,
-                         regressors=regressors,
-                         regressor_optim = [optim.Adam(r.parameters(), lr=args.lr) for r in regressors]
+                         #teacher_features=teacher_features,
+                         #student_features=student_features,
+                         #regressors=regressors,
+                         #regressor_optim = [optim.Adam(r.parameters(), lr=args.lr) for r in regressors]
                          )
     exp.feature_train=True#funcionalizar
     exp.kd_train=False

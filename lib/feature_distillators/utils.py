@@ -1,4 +1,5 @@
 import torch
+import torch.optim as optim
 
 from lib.kd_distillators.utils import DistillationExperiment
 from lib.utils.utils import register_hooks
@@ -59,6 +60,8 @@ class HintExperiment(DistillationExperiment):
                                       self.teacher_features[i].shape[1],
                                       kernel_size=1).to(self.device)
                                       for i in range(len(idxs))]
+
+        regressor_optim = [optim.Adam(r.parameters(), lr=0.001) for r in regressors]
 
 
         def register_hooks(net, idxs, feature):
