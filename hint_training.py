@@ -75,6 +75,11 @@ def main(args):
                          regressors=regressors,
                          regressor_optim = [optim.Adam(r.parameters(), lr=args.lr) for r in regressors]
                          )
+    exp.feature_train=True#funcionalizar
+    exp.kd_train=False
+    exp.train_epoch()
+    exp.feature_train=False
+    exp.kd_train=True
 
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()

@@ -57,7 +57,7 @@ class HintExperiment(DistillationExperiment):
         #print(floss/kd_loss)
         self.accumulate_stats(loss=loss.item(),
                               total=targets.size(0))
-        print(loss)
+        #print(loss)
         self.update_stats(batch_idx)
 
         if not self.test_phase and False:
