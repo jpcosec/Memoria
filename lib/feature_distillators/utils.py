@@ -24,7 +24,6 @@ class HintExperiment(DistillationExperiment):
 
         self.feature_train = True
         self.kd_train = True
-        self.f_lambda = 0.000001
 
 
         self.idxs=[4]
@@ -77,7 +76,7 @@ class HintExperiment(DistillationExperiment):
             #print("lasorraa\n\n\n\n",sf)
 
             r = self.regressors[0](sf[0])
-            floss = self.f_lambda*self.ft_criterion(tf[0], r)
+            floss = self.ft_criterion(tf[0], r)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
@@ -99,7 +98,8 @@ class HintExperiment(DistillationExperiment):
         #print(loss)
         self.update_stats(batch_idx)
 
-        if not self.test_phase and False:
+        if not self.test_phase:
+
             self.optimizer.zero_grad()
             for o in self.regressor_optimizers:
                 o.zero_grad()
@@ -108,7 +108,7 @@ class HintExperiment(DistillationExperiment):
 
             if self.feature_train:
                 for o in self.regressor_optimizers:
-                   o.step()
+                    o.step()
 
             if self.kd_train:
                 self.optimizer.step()

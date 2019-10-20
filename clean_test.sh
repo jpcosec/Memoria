@@ -1,3 +1,3 @@
 rm -r student
 git pull
-python student_train.py
+python KD_distillation.py

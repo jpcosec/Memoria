@@ -21,6 +21,7 @@ class Experiment:
         self.trainloader = kwargs["trainloader"]
         self.best_acc = kwargs["best_acc"]
 
+
         if "dimensions" in kwargs:
             self.flat_dim = kwargs["dimensions"]
         else:
@@ -29,6 +30,12 @@ class Experiment:
         print("flat dimensions of", self.flat_dim)
 
         self.load_record()
+        if "args" in kwargs:
+            d=vars(kwargs["args"])
+            with open('config.json', 'w') as fp:
+                json.dump(d, fp)
+
+
         self.last_acc = 1.0
 
         self.test_phase = True
@@ -66,7 +73,6 @@ class Experiment:
             self.train_step = 0
             self.test_step = 0
 
-
     def record_step(self):  # todo: meter variable bool test/train
         """
         Saves logs to tb.writer and advances one step
@@ -88,7 +94,7 @@ class Experiment:
             for field, value in logs.items():
                 self.writer.add_scalar("train/" + field, value, global_step=self.train_step)
             self.train_step += 1
-        #print(logs)
+        #print(logs)#todo borrar
 
     def record_epoch(self):
         stats_dict = self.test_dict if self.test_phase else self.train_dict
