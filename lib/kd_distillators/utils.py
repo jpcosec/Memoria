@@ -48,6 +48,9 @@ class DistillationExperiment(Experiment):
     self.teacher.eval()
     self.last_test_acc=01.0
 
+    self.criterion_fields = self.criterion.__code__.co_varnames
+
+
   def process_batch(self, inputs, targets, batch_idx):
 
     S_y_pred, predicted = self.net_forward(inputs)
@@ -55,7 +58,8 @@ class DistillationExperiment(Experiment):
 
     loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}
 
-    loss = self.criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields]))  # probar
+    loss = self.criterion(**dict([(field, loss_dict[field]) for field in self.criterion_fields
+                                  if field in loss_dict.keys()]))  #todo: ver si se puede harcodear
 
     self.accumulate_stats(loss=loss.item(),
                           total=targets.size(0),
@@ -111,9 +115,9 @@ def load_teacher(args, device):
   return net
 
 
-def load_student(args, device):
+def load_student(args, device,base_folder="students"):
   # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
-  auto_change_dir("/".join(["students",
+  auto_change_dir("/".join([base_folder,
                             args.student,
                             args.distillation[:args.distillation.find(",")],
                             args.distillation[args.distillation.find(",") + 1:]]))

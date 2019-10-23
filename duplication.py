@@ -11,8 +11,7 @@ from lib.utils.utils import load_cifar10
 
 
 def experiment_run(args, device, teacher, testloader, trainloader):
-
-    student, best_acc, start_epoch = load_student(args, device)
+    student, best_acc, start_epoch = load_student(args, device, base_folder="student")
     writer = SummaryWriter("tb_logs")
 
     criterion = parse_distillation_loss(args.distillation)
@@ -38,6 +37,8 @@ def experiment_run(args, device, teacher, testloader, trainloader):
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
         exp.test_epoch()
+        break
+    exp.save_model(save_checkpoints=False)
 
 
 def fake_arg(**kwargs):
@@ -78,7 +79,7 @@ def fake_arg(**kwargs):
     else:
         args.distillation = "KD,T-8"
 
-    args.resume=False
+    args.resume = True
     return args
 
 
@@ -90,10 +91,11 @@ if __name__ == '__main__':
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
 
-    for student in ["ResNet18", "MobileNet", "EfficientNetB0"]:
-        for distillation in ["KD", "KD_CE"]:
-            for T in [str(i) for i in [1, 5, 10, 100, 1000]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp1")#funcionalizar
-                dist = distillation+",T-"+ T
+
+    for student in ["ResNet18", "MobileNet"]:  # todo: volve
+        for distillation in ["KD_CE", "KD"]:
+            for T in [str(i) for i in [3.5, 10.0, 100.0, 1000.0]]:
+                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101")  # funcionalizar
+                dist = distillation + ",T-" + T
                 arg = fake_arg(distillation=dist, student=student)
                 experiment_run(arg, device, teacher, testloader, trainloader)

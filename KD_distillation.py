@@ -61,7 +61,7 @@ if __name__ == '__main__':
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
     parser.add_argument('--distillation', default="KD,T-4.0",
-                        help="default=KD,T-3.5, chose one method from lib.kd_distillators an put the numerical params "
+                        help="default=T-3.5, chose one method from lib.kd_distillators an put the numerical params "
                              "separated by , using - instead of =.")
     arg = parser.parse_args()
 

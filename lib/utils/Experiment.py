@@ -107,7 +107,7 @@ class Experiment:
         phase = "test" if self.test_phase else "train"
         print("\rEpoch %i %s stats\n" % (self.epoch, phase), logs, )
 
-        self.record[phase].update({self.epoch: logs})
+        self.record[phase]=({self.epoch: logs})#devolver a estado normal despues
 
         self.save_model()
 
@@ -122,7 +122,7 @@ class Experiment:
         for key, value in arg_dict.items():
             stats_dict[key] = value
 
-    def save_model(self):
+    def save_model(self, save_checkpoints=True, save_record=True):
         # Early stoping, # Save checkpoint.
 
         if self.last_acc > self.best_acc:
@@ -132,16 +132,16 @@ class Experiment:
                 'acc': self.last_acc,
                 'epoch': self.epoch
             }
-
-            if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
-            torch.save(state, './checkpoint/ckpt.pth')
             self.best_acc = self.last_acc
-
             self.record.update(dict([("epoch", self.epoch),
-                                    ("train_step",self.train_step),
-                                    ("test_step", self.test_step)]))
+                                     ("train_step",self.train_step),
+                                     ("test_step", self.test_step)]))
+            if save_checkpoints:
+                if not os.path.isdir('checkpoint'):
+                    os.mkdir('checkpoint')
+                torch.save(state, './checkpoint/ckpt.pth')
 
+        if save_record:#todo reidentar
             with open('record.json', 'w') as fp:
                 json.dump(self.record, fp)
 

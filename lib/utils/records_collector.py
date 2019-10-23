@@ -1,19 +1,26 @@
 import glob
 import json
 
-list_jsons = glob.glob("Cifar10/**/*.json", recursive=True)
+list_jsons = glob.glob("/home/jp/Memoria/repo/Cifar10/ResNet101/student/**/record.json", recursive=True)
 
 for file_name in list_jsons:
 
     try:
         with open(file_name, 'r') as fp:
             record = json.load(fp)
-            print(record)
-            epoch = record["epoch"]
-            train_step = record["train_step"]
-            test_step = record["test_step"]
+            int_keys = [int(i) for i in record.keys()]
+            print(int_keys)
+    except:
+        print(file_name, "abrir wea")
 
-            print(file_name, epoch)
 
+
+
+    try:
+        with open(file_name.replace("record",'config'), 'r') as fp:
+            record = json.load(fp)
+            print(record['student'])
+            print(record['distillation'])
+    #       print(record["test"])#["acc"] - record["test"]["teacher/acc"])
     except:
         print(file_name, "abrir wea")
