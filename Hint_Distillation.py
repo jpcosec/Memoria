@@ -44,9 +44,10 @@ def main(args):
                          trainloader=trainloader,
                          best_acc=best_acc,
                          )
-    #exp.feature_train=True#funcionalizar
-    #exp.kd_train=False
-    #exp.train_epoch()
+    exp.feature_train=True#funcionalizar
+    exp.kd_train=False
+    for epoch in range(args.pre):
+        exp.train_epoch()
     exp.feature_train=False
     exp.kd_train=True
 
@@ -62,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', ) # change to restart
     parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
+    parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')
     parser.add_argument('--student', default="ResNet18",
@@ -72,7 +74,7 @@ if __name__ == '__main__':
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="soft,T-8.0",
+    parser.add_argument('--distillation', default="feature7",
                         help="default=T-3.5, chose one method from lib.kd_distillators an put the numerical params "
                              "separated by , using - instead of =.")
     arg = parser.parse_args()

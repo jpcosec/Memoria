@@ -12,15 +12,18 @@ from lib.models.resnet import ResNet as resnet
 class HintExperiment(DistillationExperiment):
 
     def __init__(self, **kwargs):
-        super(HintExperiment, self).__init__(**kwargs, criterion=None)
-
         self.kd_criterion = kwargs["kd_criterion"]
+
         self.ft_criterion = kwargs["ft_criterion"]
+        self.criterion = self.kd_criterion
+
+        super(HintExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
+
 
         #self.regressors = kwargs["regressors"]
         #self.regressor_optimizers = kwargs["regressor_optim"]
 
-        self.criterion_fields = self.kd_criterion.__code__.co_varnames
+
 
         self.feature_train = True
         self.kd_train = True
@@ -58,6 +61,7 @@ class HintExperiment(DistillationExperiment):
                                            ).to(self.device) for i in range(len(self.idxs))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
+
 
 
 

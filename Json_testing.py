@@ -34,7 +34,7 @@ def experiment_run(args, device, teacher, testloader, trainloader):
                                  best_acc=best_acc,
                                  args=args
                                  )
-
+    print("training from epoch",start_epoch, "to", args.epochs)
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
         exp.test_epoch()
@@ -78,7 +78,7 @@ def fake_arg(**kwargs):
     else:
         args.distillation = "KD,T-8"
 
-    args.resume=False
+    args.resume=True
     return args
 
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     for student in ["ResNet18", "MobileNet", "EfficientNetB0"]:
         for distillation in ["KD", "KD_CE"]:
-            for T in [str(i) for i in [1, 5, 10, 100, 1000]]:
+            for T in [str(i) for i in [1, 5, 10,50, 100, 1000]]:
                 os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp1")#funcionalizar
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)

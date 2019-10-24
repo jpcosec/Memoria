@@ -122,7 +122,7 @@ class Experiment:
         for key, value in arg_dict.items():
             stats_dict[key] = value
 
-    def save_model(self, save_checkpoints=True, save_record=True):
+    def save_model(self, save_checkpoints=True, overwrite_record=True):
         # Early stoping, # Save checkpoint.
 
         if self.last_acc > self.best_acc:
@@ -136,12 +136,16 @@ class Experiment:
             self.record.update(dict([("epoch", self.epoch),
                                      ("train_step",self.train_step),
                                      ("test_step", self.test_step)]))
+            with open('record.json', 'w') as fp:
+                json.dump(self.record, fp)
+
             if save_checkpoints:
                 if not os.path.isdir('checkpoint'):
                     os.mkdir('checkpoint')
                 torch.save(state, './checkpoint/ckpt.pth')
 
-        if save_record:#todo reidentar
+
+        if overwrite_record:
             with open('record.json', 'w') as fp:
                 json.dump(self.record, fp)
 
