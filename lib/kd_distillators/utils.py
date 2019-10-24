@@ -130,10 +130,9 @@ def load_student(args, device,base_folder="students"):
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  if args.resume:
+  if args.resume and os.path.isdir('checkpoint'):#Cambiar resume a otra wea
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
-    assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
 
     checkpoint = torch.load('./checkpoint/ckpt.pth')
     net.load_state_dict(checkpoint['net'])
@@ -144,6 +143,7 @@ def load_student(args, device,base_folder="students"):
       print("Number of epochs already trained")
 
   else:
+    print('==> Brand new beginning..')
     best_acc = 0  # best test accuracy
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
