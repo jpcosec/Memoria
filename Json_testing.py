@@ -101,13 +101,14 @@ if __name__ == '__main__':
 
                 print("lasorraaaa")
                 try:
-                    with open(student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
+                    with open("students/"+student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
                         record = json.load(fp)
+                        print(record["test"])
                         e=maj_key(arg)
                         if e >= 99:
                             continue
                 except:
-                    print("TRAINING")
+                    pass
 
-
-                experiment_run(arg, device, teacher, testloader, trainloader)
+                print("TRAINING")
+                #experiment_run(arg, device, teacher, testloader, trainloader)
