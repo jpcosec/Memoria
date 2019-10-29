@@ -34,7 +34,7 @@ def experiment_run(args, device, teacher, testloader, trainloader):
                                  best_acc=best_acc,
                                  args=args
                                  )
-    if exp.record[str(args.epochs)]:
+    if exp.record["test"][args.epochs]:
         print("already trained")
         return None
     print("training from epoch",start_epoch, "to", args.epochs)
