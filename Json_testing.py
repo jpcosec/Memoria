@@ -10,7 +10,7 @@ from lib.kd_distillators.utils import *
 from lib.utils.utils import load_cifar10
 
 
-def experiment_run(args, device, teacher, testloader, trainloader):#todo: arreglar records
+def experiment_run(args, device, teacher, testloader, trainloader):
 
     student, best_acc, start_epoch = load_student(args, device)
     writer = SummaryWriter("tb_logs")
@@ -34,7 +34,9 @@ def experiment_run(args, device, teacher, testloader, trainloader):#todo: arregl
                                  best_acc=best_acc,
                                  args=args
                                  )
-    #todo: arreglar records
+    if exp.record[str(args.epochs)]:
+        print("already trained")
+        return None
     print("training from epoch",start_epoch, "to", args.epochs)
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
@@ -98,4 +100,3 @@ if __name__ == '__main__':
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)
                 experiment_run(arg, device, teacher, testloader, trainloader)
-
