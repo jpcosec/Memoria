@@ -8,6 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
 from lib.utils.utils import load_cifar10
+from lib.utils.records_collector import maj_key
 
 
 def experiment_run(args, device, teacher, testloader, trainloader):
@@ -34,8 +35,8 @@ def experiment_run(args, device, teacher, testloader, trainloader):
                                  best_acc=best_acc,
                                  args=args
                                  )
-    if exp.record["test"][args.epochs]:
-        print("already trained")
+    if maj_key(exp.record) >= 99:
+        print("Already trained")
         return None
     print("training from epoch",start_epoch, "to", args.epochs)
     for epoch in range(start_epoch, args.epochs):
