@@ -1,6 +1,6 @@
 import glob
 import json
-list_jsons = glob.glob("/home/jp/Memoria/repo/Cifar10/ResNet101/student/**/record.json", recursive=True)
+
 
 def maj_key(d):
     maj=-99999999999999
@@ -14,25 +14,28 @@ def maj_key(d):
         raise TypeError("No numerical key in dict" )
     else:
         return maj
-for file_name in list_jsons:
 
-    try:
-        with open(file_name, 'r') as fp:
-            record = json.load(fp)
-            k=maj_key(record["test"])
-            last_record=record["test"][str(k)]
-            print(last_record["acc"]-last_record["teacher/acc"])
-    except:
-        print(file_name, "abrir wea1")
+if __name__ == '__main__':
+    list_jsons = glob.glob("/home/jp/Memoria/repo/Cifar10/ResNet101/student/**/record.json", recursive=True)
+    for file_name in list_jsons:
+
+        try:
+            with open(file_name, 'r') as fp:
+                record = json.load(fp)
+                k=maj_key(record["test"])
+                last_record=record["test"][str(k)]
+                print(last_record["acc"]-last_record["teacher/acc"])
+        except:
+            print(file_name, "abrir wea1")
 
 
 
 
-    try:
-        with open(file_name.replace("record",'config'), 'r') as fp:
-            record = json.load(fp)
-            print(record['student'])
-            print(record['distillation'])
-    #       print(record["test"])#["acc"] - record["test"]["teacher/acc"])
-    except:
-        print(file_name, "abrir wea")
+        try:
+            with open(file_name.replace("record",'config'), 'r') as fp:
+                record = json.load(fp)
+                print(record['student'])
+                print(record['distillation'])
+        #       print(record["test"])#["acc"] - record["test"]["teacher/acc"])
+        except:
+            print(file_name, "abrir wea")
