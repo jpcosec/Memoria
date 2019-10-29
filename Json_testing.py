@@ -9,6 +9,7 @@ from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
 from lib.utils.utils import load_cifar10
 from lib.utils.records_collector import maj_key
+import json
 
 
 def experiment_run(args, device, teacher, testloader, trainloader):
@@ -35,9 +36,6 @@ def experiment_run(args, device, teacher, testloader, trainloader):
                                  best_acc=best_acc,
                                  args=args
                                  )
-    if maj_key(exp.record) >= 99:
-        print("Already trained")
-        return None
     print("training from epoch",start_epoch, "to", args.epochs)
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
@@ -100,4 +98,16 @@ if __name__ == '__main__':
                 os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp1")#funcionalizar
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)
+
+
+                try:
+                    with open(student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
+                        record = json.load(fp)
+                        e=maj_key(arg)
+                        if e >= 99:
+                            continue
+                except:
+                    print(TRAINING)
+
+
                 experiment_run(arg, device, teacher, testloader, trainloader)
