@@ -99,16 +99,14 @@ if __name__ == '__main__':
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)
 
-                print("lasorraaaa")
                 try:
                     with open("students/"+student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
                         record = json.load(fp)
-                        print(record["test"])
-                        e=maj_key(arg)
+                        e=maj_key(record["test"])
                         if e >= 99:
                             continue
                 except:
-                    pass
+                    print("hayproblemo")
 
                 print("TRAINING")
                 #experiment_run(arg, device, teacher, testloader, trainloader)
