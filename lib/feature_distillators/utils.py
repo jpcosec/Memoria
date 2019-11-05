@@ -126,6 +126,6 @@ class HintExperiment(DistillationExperiment):
                 for o in self.regressor_optimizers:
                     o.step()
 
-            self.optimizer.step()#todo: ver que pasa cuando se entrena con hints
+            self.optimizer.step()#todo: ver que pasa cuando se hace pre-train
 
         self.record_step()
