@@ -29,27 +29,37 @@ def main(args):
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
+
+
     flatten = args.student.split("_")[0] == "linear"
+    arr = args.distillation.split("-")
+    alpha=float(arr[1])
+    layer = int(arr[2])
+
+
+    idxs=[layer]
 
     exp = HintExperiment(device=device,  # Todo mover arriba
                          student=student,
                          teacher=teacher,
                          optimizer=optimizer,
                          kd_criterion = KD(T=8.0),
-                         ft_criterion = feature_loss(),
+                         ft_criterion = feature_loss(alpha),
                          eval_criterion=eval_criterion,
                          linear=flatten,
                          writer=writer,
                          testloader=testloader,
                          trainloader=trainloader,
                          best_acc=best_acc,
+                         idxs=idxs,
                          )
-    exp.feature_train=True#funcionalizar
-    exp.kd_train=False
-    for epoch in range(args.pre):
-        exp.train_epoch()
-    exp.feature_train=False
-    exp.kd_train=True
+    #exp.feature_train=True#funcionalizar
+    #exp.kd_train=False
+    #for epoch in range(args.pre):
+    #    exp.train_epoch()
+    #exp.feature_train=False
+    #exp.kd_train=True
+
 
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
@@ -74,9 +84,8 @@ if __name__ == '__main__':
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="feature7",
-                        help="default=T-3.5, chose one method from lib.kd_distillators an put the numerical params "
-                             "separated by , using - instead of =.")
+    parser.add_argument('--distillation', default="feature-0.00001-3",
+                        help="feature-alpha-layer")
     arg = parser.parse_args()
 
     main(arg)

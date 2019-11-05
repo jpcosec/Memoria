@@ -29,7 +29,7 @@ class HintExperiment(DistillationExperiment):
         self.kd_train = True
 
 
-        self.idxs=[4]
+        self.idxs=kwargs['idxs']
 
         self.teacher_features = {}
 
