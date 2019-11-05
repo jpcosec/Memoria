@@ -29,6 +29,7 @@ class HintExperiment(DistillationExperiment):
         self.kd_train = True
 
 
+        # If self.use_features or self.feature_train:
         self.idxs=kwargs['idxs']
 
         self.teacher_features = {}
@@ -48,24 +49,34 @@ class HintExperiment(DistillationExperiment):
                         self.student_features[m]=o
                     layer.register_forward_hook(hook)
 
-        inp = torch.rand(1, 3, 32, 32).to(self.device)
-        self.teacher.eval()
-        self.student.eval()
-        out = self.teacher(inp)
-        out2 = self.student(inp)
+        #self.use_regressor=False
+        if "use_regressor" in kwargs.keys():
+            assert kwargs["use_regressor"] is bool
+            self.use_regressor=kwargs["regressor"]
 
-        sf = list(self.student_features.values())
-        tf = list(self.teacher_features.values())
+        else:
+            self.use_regressor=True
 
-        self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],kernel_size=1
-                                           ).to(self.device) for i in range(len(self.idxs))]
+        if self.use_regressor:
+            inp = torch.rand(1, 3, 32, 32).to(self.device)
+            self.teacher.eval()
+            self.student.eval()
+            out = self.teacher(inp)
+            out2 = self.student(inp)
 
-        self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
+            sf = list(self.student_features.values())
+            tf = list(self.teacher_features.values())
+
+            self.regressors = [torch.nn.Conv2d(sf[i].shape[1],tf[i].shape[1],kernel_size=1
+                                               ).to(self.device) for i in range(len(self.idxs))]
+
+            self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
+
+        self.optimizers= []
 
 
 
-
-    def process_batch(self, inputs, targets, batch_idx):
+    def process_batch(self, inputs, targets, batch_idx): #todo: Cambiar  y loss a dict
 
         s_output, predicted = self.net_forward(inputs)
         t_output, predictedt = self.net_forward(inputs, teacher=True)
@@ -77,10 +88,10 @@ class HintExperiment(DistillationExperiment):
             sf = list(self.student_features.values())
             tf = list(self.teacher_features.values())
 
-            #print("lasorraa\n\n\n\n",sf)
+            if self.use_regressor:
+                sf = self.regressors[0](sf[0])
 
-            r = self.regressors[0](sf[0])
-            floss = self.ft_criterion(tf[0], r)
+            floss = self.ft_criterion(tf[0], sf)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
@@ -96,25 +107,25 @@ class HintExperiment(DistillationExperiment):
 
 
 
-        #print(floss/kd_loss)
+
         self.accumulate_stats(loss=loss.item(),
                               total=targets.size(0))
-        #print(loss)
         self.update_stats(batch_idx)
 
         if not self.test_phase:
 
             self.optimizer.zero_grad()
-            for o in self.regressor_optimizers:
-                o.zero_grad()
+
+            if self.use_regressor:
+                for o in self.regressor_optimizers:
+                    o.zero_grad()
 
             loss.backward(retain_graph=True)
 
-            if self.feature_train:
+            if self.use_regressor:
                 for o in self.regressor_optimizers:
                     o.step()
 
-            if self.kd_train:
-                self.optimizer.step()
+            self.optimizer.step()#todo: ver que pasa cuando se entrena con hints
 
         self.record_step()
