@@ -7,7 +7,7 @@ import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.feature_distillators.losses import feature_loss
+from lib.feature_distillators.losses import fitnets_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, register_hooks
@@ -39,20 +39,20 @@ def main(args):
 
     idxs=[layer]
 
-    exp = HintExperiment(device=device,  # Todo mover arriba
-                         student=student,
-                         teacher=teacher,
-                         optimizer=optimizer,
-                         kd_criterion = KD(T=8.0),
-                         ft_criterion = feature_loss(alpha),
-                         eval_criterion=eval_criterion,
-                         linear=flatten,
-                         writer=writer,
-                         testloader=testloader,
-                         trainloader=trainloader,
-                         best_acc=best_acc,
-                         idxs=idxs,
-                         )
+    exp = FeatureExperiment(device=device,  # Todo mover arriba
+                            student=student,
+                            teacher=teacher,
+                            optimizer=optimizer,
+                            kd_criterion = KD(T=8.0),
+                            ft_criterion = fitnets_loss(alpha),
+                            eval_criterion=eval_criterion,
+                            linear=flatten,
+                            writer=writer,
+                            testloader=testloader,
+                            trainloader=trainloader,
+                            best_acc=best_acc,
+                            idxs=idxs,
+                            )
     #exp.feature_train=True#funcionalizar
     #exp.kd_train=False
     #for epoch in range(args.pre):

@@ -30,8 +30,9 @@ def load_model(args, device):
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
 
+
         if start_epoch >= args.epochs:
-            print("Number of epochs already trained")
+            print("Number of epochs already trained, requested", args.epochs, "trained",start_epoch)
     else:
         os.mkdir(args.model)# Mover a experiment
         os.chdir(args.model)

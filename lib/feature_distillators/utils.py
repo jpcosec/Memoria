@@ -9,7 +9,7 @@ from lib.models.resnet import ResNet as resnet
 
 
 
-class HintExperiment(DistillationExperiment):
+class FeatureExperiment(DistillationExperiment):
 
     def __init__(self, **kwargs):
         self.kd_criterion = kwargs["kd_criterion"]
@@ -17,7 +17,7 @@ class HintExperiment(DistillationExperiment):
         self.ft_criterion = kwargs["ft_criterion"]
         self.criterion = self.kd_criterion
 
-        super(HintExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
+        super(FeatureExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
 
 
         #self.regressors = kwargs["regressors"]
@@ -51,8 +51,7 @@ class HintExperiment(DistillationExperiment):
 
         #self.use_regressor=False
         if "use_regressor" in kwargs.keys():
-            assert kwargs["use_regressor"] is bool
-            self.use_regressor=kwargs["regressor"]
+            self.use_regressor=kwargs["use_regressor"]
 
         else:
             self.use_regressor=True
@@ -85,11 +84,11 @@ class HintExperiment(DistillationExperiment):
         # todo: meter loss en applt loss
         if self.feature_train:
 
-            sf = list(self.student_features.values())
+            sf = list(self.student_features.values())[0]#todo: arreglar para caso multicapa
             tf = list(self.teacher_features.values())
 
             if self.use_regressor:
-                sf = self.regressors[0](sf[0])
+                sf = self.regressors[0](sf)#self.regressors[0](sf[0])
 
             floss = self.ft_criterion(tf[0], sf)
             loss += floss
