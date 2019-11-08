@@ -19,7 +19,7 @@ def main(args):
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
-    feat_loss =  parse_distillation_loss(args.distillation)
+    feat_loss =  parse_distillation_loss(args)
 
     writer = SummaryWriter("tb_logs")
 

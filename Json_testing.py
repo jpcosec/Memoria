@@ -17,7 +17,7 @@ def experiment_run(args, device, teacher, testloader, trainloader):
     student, best_acc, start_epoch = load_student(args, device)
     writer = SummaryWriter("tb_logs")
 
-    criterion = parse_distillation_loss(args.distillation)
+    criterion = parse_distillation_loss(args)
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
