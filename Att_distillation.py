@@ -4,11 +4,11 @@ import argparse
 
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.feature_distillators.losses import att_loss
+from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import KD
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10
+from lib.utils.utils import load_cifar10, auto_change_dir
 
 
 def main(args):
@@ -19,6 +19,7 @@ def main(args):
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
+    feat_loss =  parse_distillation_loss(args.distillation)
 
     writer = SummaryWriter("tb_logs")
 
@@ -26,18 +27,19 @@ def main(args):
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
     flatten = args.student.split("_")[0] == "linear"
-    arr = args.distillation.split("-")
-    alpha = float(arr[1])
-    layer = int(arr[2])
+    #arr = args.distillation.split("-")
+    #alpha = float(arr[1])
+    layer = args.layer
 
     idxs = [layer]
+    auto_change_dir(",".join([str(i) for i in idxs]))
 
     exp = FeatureExperiment(device=device,  # Todo mover arriba
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
                             kd_criterion=KD(T=8.0),
-                            ft_criterion=att_loss(),
+                            ft_criterion=feat_loss,
                             eval_criterion=eval_criterion,
                             linear=flatten,
                             writer=writer,
@@ -45,7 +47,8 @@ def main(args):
                             trainloader=trainloader,
                             best_acc=best_acc,
                             idxs=idxs,
-                            use_regressor=False
+                            use_regressor=False,
+                            args = args
                             )
 
     for epoch in range(start_epoch, args.epochs):
@@ -69,8 +72,9 @@ if __name__ == '__main__':
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="attention-1-5",
-                        help="feature-alpha-layer")
+    parser.add_argument('--distillation', default="att_mean",
+                        help="feature-alpha")
+    parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
     arg = parser.parse_args()
 
     main(arg)

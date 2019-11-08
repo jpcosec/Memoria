@@ -10,15 +10,19 @@ def parse_distillation_loss(args):
   args = dict([i.split("-") for i in fields[1:]])
 
   for k, v in args.items():
-    args[k] = float(v)
+    if k in ["lambda"]:
+      args[k] = float(v)
+    elif k in["p"]:
+      args[k]=int(v)
+
 
   print("Perdida", method, "con parametros", args)
-  losses_list = [, KD_CE]
+  losses_list = [fitnets_loss, att_max,att_mean]
+
   d = dict([(func.__name__, func) for func in losses_list])
 
   # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
-  auto_change_dir("/".join([args.distillation[:args.distillation.find(",")],
-                            args.distillation[args.distillation.find(",") + 1:]]))
+  auto_change_dir(args.distillation.replace(",","/"))
   try:
     loss = d[method]
   except:
@@ -36,10 +40,10 @@ def parse_distillation_loss(args):
   
 """
 
-def fitnets_loss(alpha=1):
+def fitnets_loss():
   def hint_loss(teacher_features, student_features):
 
-    return alpha*torch.nn.MSELoss()(teacher_features,student_features)
+    return torch.nn.MSELoss()(teacher_features,student_features)
 
   return hint_loss
 
@@ -55,12 +59,24 @@ def fitnets_loss(alpha=1):
 #def sum_of_absolutes(activation,p=None):
 #  torch.sum(torch.abs(activation),dim=-1)
 
-def att_loss(): #Att(attention):
+def att_mean(p=2): #Att(attention):
 
   def at(x):#todo: gacer mejor
-    return F.normalize(x.pow(2).max(1)[0].view(x.size(0),-1))#F.normalize(x.pow(2).mean(1).view(x.size(0), -1))
+    return F.normalize(x.pow(p).mean(1).view(x.size(0), -1))
 
   def attention_loss(teacher_features,student_features):
     return (at(student_features) - at(teacher_features)).pow(2).mean()
 
   return attention_loss
+
+
+def att_max(): #Att(attention):
+
+  def at(x):#todo: gacer mejor
+    return F.normalize(x.abs().max(1)[0].view(x.size(0),-1))
+  def attention_loss(teacher_features,student_features):
+    return (at(student_features) - at(teacher_features)).pow(2).mean()
+
+  return attention_loss
+
+

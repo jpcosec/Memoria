@@ -37,7 +37,7 @@ def main(args):
                                  testloader=testloader,
                                  trainloader=trainloader,
                                  best_acc=best_acc,
-
+                                 args=args
                                  )
 
     for epoch in range(start_epoch, args.epochs):

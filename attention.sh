@@ -1,4 +1,4 @@
-python Att_distillation.py --distillation=attention-2-2
-python Att_distillation.py --distillation=attention-2-3
-python Att_distillation.py --distillation=attention-2-4 --resume
-python Att_distillation.py --distillation=attention-2-5
+python Att_distillation.py --distillation=att_max --layer=2
+python Att_distillation.py --distillation=att_max --layer=3
+python Att_distillation.py --distillation=att_max --layer=4
+python Att_distillation.py --distillation=att_max --layer=5

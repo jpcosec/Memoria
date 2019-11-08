@@ -13,6 +13,13 @@ class FeatureExperiment(DistillationExperiment):
 
         self.ft_criterion = kwargs["ft_criterion"]
         self.criterion = self.kd_criterion
+        if "alpha" in kwargs:
+            self.alpha = kwargs["alpha"]
+        else:
+            self.alpha = 1.0
+
+        # If self.use_features or self.feature_train:
+        self.idxs = kwargs['idxs']
 
         super(FeatureExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
 
@@ -21,8 +28,7 @@ class FeatureExperiment(DistillationExperiment):
         self.kd_train = True
 
 
-        # If self.use_features or self.feature_train:
-        self.idxs=kwargs['idxs']
+
 
         self.teacher_features = {}
 
@@ -41,10 +47,9 @@ class FeatureExperiment(DistillationExperiment):
                         self.student_features[m]=o
                     layer.register_forward_hook(hook)
 
-        #self.use_regressor=False
+
         if "use_regressor" in kwargs.keys():
             self.use_regressor=kwargs["use_regressor"]
-
         else:
             self.use_regressor=True
 
@@ -63,7 +68,7 @@ class FeatureExperiment(DistillationExperiment):
 
             self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
-        self.optimizers= []
+        #self.optimizers= []
 
 
 
@@ -82,7 +87,7 @@ class FeatureExperiment(DistillationExperiment):
             if self.use_regressor:
                 sf = self.regressors[0](sf)#self.regressors[0](sf[0])
 
-            floss = self.ft_criterion(tf[0], sf)
+            floss = self.alpha*self.ft_criterion(tf[0], sf)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
