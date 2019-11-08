@@ -7,29 +7,29 @@ from lib.utils.utils import auto_change_dir
 def parse_distillation_loss(args):
   fields = args.distillation.split(",")
   method = fields[0]
-  args = dict([i.split("-") for i in fields[1:]])
+  d_args = dict([i.split("-") for i in fields[1:]])
 
-  for k, v in args.items():
+  for k, v in d_args.items():
     if k in ["lambda"]:
-      args[k] = float(v)
+      d_args[k] = float(v)
     elif k in["p"]:
-      args[k]=int(v)
+      d_args[k]=int(v)
 
 
-  print("Perdida", method, "con parametros", args)
+  print("Perdida", method, "con parametros", d_args)
   losses_list = [fitnets_loss, att_max,att_mean]
 
   d = dict([(func.__name__, func) for func in losses_list])
 
   # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
-  auto_change_dir(args.distillation.replace(",","/"))
+  auto_change_dir(args.distillation.replace(",", "/"))
   try:
     loss = d[method]
   except:
     raise ModuleNotFoundError("Loss not found")
 
   try:
-    return loss(**args)
+    return loss(**d_args)
   except:
     raise NameError("There is an argument error")
 
