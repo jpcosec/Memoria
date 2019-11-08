@@ -15,12 +15,12 @@ def main(args):
 
     print("Using device", device)  # todo: cambiar a logger
 
-    trainloader, testloader, classes = load_cifar10(args)
+    trainloader, testloader, classes = load_cifar10(args)# CD a teacher
     teacher = load_teacher(args, device)
-    student, best_acc, start_epoch = load_student(args, device)
+    student, best_acc, start_epoch = load_student(args, device)# CD a student
     writer = SummaryWriter("tb_logs")
 
-    criterion = parse_distillation_loss(args.distillation)
+    criterion = parse_distillation_loss(args)#  CD a distillation
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 

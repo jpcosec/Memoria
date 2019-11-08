@@ -116,11 +116,8 @@ def load_teacher(args, device):
 
 
 def load_student(args, device,base_folder="students"):
-  # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
-  auto_change_dir("/".join([base_folder,
-                            args.student,
-                            args.distillation[:args.distillation.find(",")],
-                            args.distillation[args.distillation.find(",") + 1:]]))
+
+  auto_change_dir("/".join([base_folder,args.student]))
 
   print('==> Building student model..', args.student)
   net = get_model(args.student)
@@ -130,7 +127,7 @@ def load_student(args, device,base_folder="students"):
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 
-  if args.resume and os.path.isdir('checkpoint'):#Cambiar resume a otra wea
+  try:#if args.resume and os.path.isdir('checkpoint'):#Cambiar resume a otra wea
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
 
@@ -142,7 +139,7 @@ def load_student(args, device,base_folder="students"):
     if start_epoch >= args.epochs:
       print("Number of epochs already trained")
 
-  else:
+  except:#else:
     print('==> Brand new beginning..')
     best_acc = 0  # best test accuracy
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch

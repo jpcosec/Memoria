@@ -1,5 +1,26 @@
 # Resumen
 
+## Compresion de modelo
+
+### A Survey of Model Compression and Acceleration for Deep Neural Networks
+
+Autores: Yu Cheng, Duo Wang, Pan Zhou, Tao Zhang
+
+Año: 2019
+
+En: IEEE
+
+Separan las tecnicas de compresion de modelo en 4 categorias.
+
+* Parameter prunning and sharing, se aprovechan de la redundancia del modelo y quitan parametros redundantes o de poco impacto.
+* Low-rank factorization, usan descomposiciones para estimar los parametros informativos.
+* Transferred/compact convolutional filters, aprovechan estructuras para diseñar filtros que ahorren espacio reduciendo y compartiendo parametros.
+* Knowledge distillation, usan modelos mas pequeños para aprender un modelo destilado de un modelo mayor.
+
+
+
+
+
 ## Capacidad
 
 ### Aproximacion Continua

@@ -1,7 +1,39 @@
 import torch
 import torch.nn.functional as F
+
+from lib.utils.utils import auto_change_dir
+
+
+def parse_distillation_loss(args):
+  fields = args.distillation.split(",")
+  method = fields[0]
+  args = dict([i.split("-") for i in fields[1:]])
+
+  for k, v in args.items():
+    args[k] = float(v)
+
+  print("Perdida", method, "con parametros", args)
+  losses_list = [, KD_CE]
+  d = dict([(func.__name__, func) for func in losses_list])
+
+  # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
+  auto_change_dir("/".join([args.distillation[:args.distillation.find(",")],
+                            args.distillation[args.distillation.find(",") + 1:]]))
+  try:
+    loss = d[method]
+  except:
+    raise ModuleNotFoundError("Loss not found")
+
+  try:
+    return loss(**args)
+  except:
+    raise NameError("There is an argument error")
+
+
+
 """
   Paper: FITNETS: HINTS FOR THIN DEEP NETS
+  
 """
 
 def fitnets_loss(alpha=1):

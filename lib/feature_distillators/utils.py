@@ -2,9 +2,6 @@ import torch
 import torch.optim as optim
 
 from lib.kd_distillators.utils import DistillationExperiment
-from lib.utils.utils import register_hooks
-from lib.models.resnet import ResNet as resnet
-
 
 
 
@@ -18,11 +15,6 @@ class FeatureExperiment(DistillationExperiment):
         self.criterion = self.kd_criterion
 
         super(FeatureExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
-
-
-        #self.regressors = kwargs["regressors"]
-        #self.regressor_optimizers = kwargs["regressor_optim"]
-
 
 
         self.feature_train = True

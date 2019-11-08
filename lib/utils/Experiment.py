@@ -29,6 +29,7 @@ class Experiment:
     print("flat dimensions of", self.flat_dim)
 
     self.load_record()
+
     if "args" in kwargs:
       d = vars(kwargs["args"])
       with open('config.json', 'w') as fp:
