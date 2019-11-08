@@ -23,6 +23,7 @@ def parse_distillation_loss(args):
 
   # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
   auto_change_dir(args.distillation.replace(",", "/"))
+
   try:
     loss = d[method]
   except:
