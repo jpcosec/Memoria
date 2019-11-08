@@ -21,20 +21,20 @@ def main(args):
     student, best_acc, start_epoch = load_student(args, device)
     feat_loss =  parse_distillation_loss(args)
 
-    writer = SummaryWriter("tb_logs")
+
 
     eval_criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(student.parameters(), lr=args.lr)
+    optimizer = optim.Adam(student.parameters(), lr=args.lr)#todo: evaluar si mover en exp
 
     flatten = args.student.split("_")[0] == "linear"
-    #arr = args.distillation.split("-")
-    #alpha = float(arr[1])
     layer = args.layer
 
     idxs = [layer]
     auto_change_dir(",".join([str(i) for i in idxs]))
 
-    exp = FeatureExperiment(device=device,  # Todo mover arriba
+    writer = SummaryWriter("tb_logs")#todo mover dentro de exp
+
+    exp = FeatureExperiment(device=device,
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
