@@ -26,8 +26,7 @@ def fitnets_loss(alpha=1):
 def att_loss(): #Att(attention):
 
   def at(x):#todo: gacer mejor
-    print(x.pow(2).max(1)[0].shape)
-    return F.normalize(x.pow(2).max(1)[0])#F.normalize(x.pow(2).mean(1).view(x.size(0), -1))
+    return F.normalize(x.pow(2).max(1)[0].view(x.size(0),-1))#F.normalize(x.pow(2).mean(1).view(x.size(0), -1))
 
   def attention_loss(teacher_features,student_features):
     return (at(student_features) - at(teacher_features)).pow(2).mean()

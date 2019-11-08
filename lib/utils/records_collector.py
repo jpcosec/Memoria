@@ -37,10 +37,11 @@ if __name__ == '__main__':
             record = json.load(fp)
         #with open(file_name.replace("record", 'config'), 'r') as fp:
         #    config = json.load(fp)
-
+        print(file_name)
         k = maj_key(record["test"])
         for key, value in record["test"][str(k)].items():
             add_entry("test_" + key, value)
+        k = maj_key(record["train"])
         for key, value in record["train"][str(k)].items():
             add_entry("train_" + key, value)
 
@@ -49,6 +50,7 @@ if __name__ == '__main__':
         dist=file_name.split("/")[-2].split("-")
         add_entry('lambda', float(dist[1]))
         add_entry('layer', int(dist[2]))
+        add_entry('distillation', dist[0])
 
         #add_entry('student',config['student'])
         #add_entry('distillation',config['distillation'].split(",")[0])
