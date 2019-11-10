@@ -38,7 +38,7 @@ def parse_distillation_loss(args):
 
 """
   Paper: FITNETS: HINTS FOR THIN DEEP NETS
-  
+  Code: https://github.com/adri-romsor/FitNets (theano)
 """
 
 def fitnets_loss():
@@ -54,7 +54,7 @@ def fitnets_loss():
 """
   Paper: Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via 
   Attention Transfer
-  Git-hub: https://github.com/szagoruyko/attention-transfer
+  Code: https://github.com/szagoruyko/attention-transfer (pytorch)
 """
 
 #def sum_of_absolutes(activation,p=None):
@@ -75,9 +75,45 @@ def att_max(): #Att(attention):
 
   def at(x):#todo: gacer mejor
     return F.normalize(x.abs().max(1)[0].view(x.size(0),-1))
+
+
   def attention_loss(teacher_features,student_features):
     return (at(student_features) - at(teacher_features)).pow(2).mean()
 
   return attention_loss
 
 
+"""
+Paper: Learning Deep Representations with Probabilistic Knowledge Transfer
+Code: https://github.com/passalis/probabilistic_kt
+"""
+
+def PKT(epsilon=0.0000001):
+
+  def KDE(Tensor):#Kernel Density Estimation, Stolen from the original code
+    # Normalize each vector by its norm
+    output_net_norm = torch.sqrt(torch.sum(Tensor ** 2, dim=1, keepdim=True))
+    Tensor = Tensor / (output_net_norm + epsilon)
+    Tensor[Tensor != Tensor] = 0
+    # Calculate the cosine similarity
+    similarity = torch.mm(Tensor, Tensor.transpose(0, 1))
+    # Scale cosine similarity to 0..1
+    similarity = (similarity + 1.0) / 2.0
+    # Transform them into probabilities
+    return similarity / torch.sum(similarity, dim=1, keepdim=True)
+
+  def divergence(teacher, model):
+    target_similarity=KDE(teacher)
+    model_similarity=KDE(model)
+    return torch.mean(target_similarity * torch.log((target_similarity + epsilon) / (model_similarity + epsilon)))
+
+  def pkt_loss(teacher_features, student_features):#no free variable should be in declaration.
+    return divergence(teacher_features,student_features)
+
+  return pkt_loss
+
+
+"""
+paper: Like What You Like: Knowledge Distill via Neuron Selectivity Transfer
+Code: https://github.com/TuSimple/neuron-selectivity-transfer/ (mxnet)
+"""
