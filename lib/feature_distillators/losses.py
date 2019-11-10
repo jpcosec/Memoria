@@ -57,9 +57,6 @@ def fitnets_loss():
   Code: https://github.com/szagoruyko/attention-transfer (pytorch)
 """
 
-#def sum_of_absolutes(activation,p=None):
-#  torch.sum(torch.abs(activation),dim=-1)
-
 def att_mean(p=2): #Att(attention):
 
   def at(x):#todo: gacer mejor
