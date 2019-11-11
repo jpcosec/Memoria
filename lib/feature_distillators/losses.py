@@ -17,7 +17,7 @@ def parse_distillation_loss(args):
 
 
   print("Perdida", method, "con parametros", d_args)
-  losses_list = [fitnets_loss, att_max,att_mean, PKT]
+  losses_list = [fitnets_loss, att_max,att_mean, PKT, nst_gauss, nst_linear, nst_poly]
 
   d = dict([(func.__name__, func) for func in losses_list])
 
@@ -133,7 +133,7 @@ def NST_base(Kernel):
 
   return nst_loss()
 
-def linear_NST():
+def nst_linear():
 
   def Kernel(x,y):
     #x {b,c,w,h}
@@ -143,14 +143,14 @@ def linear_NST():
   return NST_base(Kernel)
 
 
-def poly_NST(d=2,c=0):
+def nst_poly(d=2,c=0):
   def Kernel(x, y):
     # x {b,c,w,h}
     return (torch.matmul(x, y.transpose(-2, -1)).view(x.shape[0], -1) + c).pow(d)
 
   return NST_base(Kernel)
 
-def gauss_NST():
+def nst_gauss():
   def Kernel(x,y):
     pw_dist=torch.add(x.unsqueeze(1), -y.unsqueeze(2)).norm(dim=-1).view(x.shape[0], -1)
     sigma= pw_dist.mean(-1,keepdims=True)
