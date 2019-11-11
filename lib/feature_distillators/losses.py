@@ -17,7 +17,7 @@ def parse_distillation_loss(args):
 
 
   print("Perdida", method, "con parametros", d_args)
-  losses_list = [fitnets_loss, att_max,att_mean]
+  losses_list = [fitnets_loss, att_max,att_mean, PKT]
 
   d = dict([(func.__name__, func) for func in losses_list])
 
@@ -100,8 +100,8 @@ def PKT(epsilon=0.0000001):
     return similarity / torch.sum(similarity, dim=1, keepdim=True)
 
   def divergence(teacher, model):
-    target_similarity=KDE(teacher)
-    model_similarity=KDE(model)
+    target_similarity=KDE(teacher.view(teacher.size(0), -1))
+    model_similarity=KDE(model.view(model.size(0), -1))
     return torch.mean(target_similarity * torch.log((target_similarity + epsilon) / (model_similarity + epsilon)))
 
   def pkt_loss(teacher_features, student_features):#no free variable should be in declaration.
