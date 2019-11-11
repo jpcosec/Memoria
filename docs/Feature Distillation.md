@@ -185,7 +185,7 @@ $$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N} \sum^N_{i=1}\phi(p^i) - \
 
 donde $\phi(.)$ es una funcion explicita de mapeo. Usando el kernel trick  se puede reformular como
 
-$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=1} k (p^i,p^{i'}) + \frac{1}{M^2} \sum^M_{j=1}\sum^M_{j'=1} k (q^j,q^{j'}) -+ \frac{1}{MN} \sum^M_{i=1}\sum^M_{j'=1} k (p^i,q^{j})  $$
+$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=1} k (p^i,p^{i'}) + \frac{1}{M^2} \sum^M_{j=1}\sum^M_{j'=1} k (q^j,q^{j'}) - \frac{1}{MN} \sum^M_{i=1}\sum^M_{j'=1} k (p^i,q^{j})  $$
 
 Lo cual finalmente se aplica usando sampleos  desde $F_T$ y $F_S$, sampleando la activacion a traves de todos los canales y normalizando, $p^i=\frac{f^i_T}{\mid\mid f^i_T \mid\mid_2}$ e identicamente para q con FT
 

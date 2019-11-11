@@ -114,3 +114,54 @@ def PKT(epsilon=0.0000001):
 paper: Like What You Like: Knowledge Distill via Neuron Selectivity Transfer
 Code: https://github.com/TuSimple/neuron-selectivity-transfer/ (mxnet)
 """
+
+def NST_base(Kernel):
+
+
+  def MMD(Ft,Fs):
+    # FT and FS normalization
+    Ft = Ft.view(Fs.shape[0], Ft.shape[1], -1)
+    Ft =Ft / torch.norm(Ft, dim=-1).unsqueeze(-1)
+    Fs = Fs.view(Fs.shape[0], Fs.shape[1], -1)
+    Fs = Fs / torch.norm(Fs, dim=-1).unsqueeze(-1)
+    #Kernel calculation
+    return Kernel(Ft,Ft).mean(1) + Kernel(Fs,Fs).mean(1) - (2* Kernel(Ft,Fs).mean(1))
+
+
+  def nst_loss(teacher_features, student_features):
+    return torch.mean(MMD(teacher_features,student_features))
+
+  return nst_loss()
+
+def linear_NST():
+
+  def Kernel(x,y):
+    #x {b,c,w,h}
+
+    return torch.matmul(x, y.transpose(-2, -1)).view(x.shape[0], -1)
+
+  return NST_base(Kernel)
+
+
+def poly_NST(d=2,c=0):
+  def Kernel(x, y):
+    # x {b,c,w,h}
+    return (torch.matmul(x, y.transpose(-2, -1)).view(x.shape[0], -1) + c).pow(d)
+
+  return NST_base(Kernel)
+
+def gauss_NST():
+  def Kernel(x,y):
+    pw_dist=torch.add(x.unsqueeze(1), -y.unsqueeze(2)).norm(dim=-1).view(x.shape[0], -1)
+    sigma= pw_dist.mean(-1,keepdims=True)
+    return  torch.exp(-pw_dist/(2 *sigma))
+
+  return NST_base(Kernel)
+
+"""
+Paper: A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
+Code: (not original) https://github.com/sseung0703/KD_methods_with_TF
+"""
+
+def FSP():
+  raise NotImplementedError
