@@ -117,11 +117,14 @@ Code: https://github.com/TuSimple/neuron-selectivity-transfer/ (mxnet)
 
 def NST_base(Kernel):
     def MMD(Ft, Fs):
+        #floasprint(1, Ft, 2, Fs)
         # FT and FS normalization
-        Ft = Ft.view(Fs.shape[0], Ft.shape[1], -1)
-        Ft = Ft / torch.norm(Ft, dim=-1).unsqueeze(-1)
+
+        Ft = Ft.view(Ft.shape[0], Ft.shape[1], -1)
+        Ft = F.normalize(Ft, dim=0, p=2)
+
         Fs = Fs.view(Fs.shape[0], Fs.shape[1], -1)
-        Fs = Fs / torch.norm(Fs, dim=-1).unsqueeze(-1)
+        Fs = F.normalize(Fs, dim=0, p=2)
         # Kernel calculation
         return Kernel(Ft, Ft).mean(1) + Kernel(Fs, Fs).mean(1) - (2 * Kernel(Ft, Fs).mean(1))
 

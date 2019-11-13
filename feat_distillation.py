@@ -50,10 +50,14 @@ def main(args):
                             use_regressor=False,
                             args = args
                             )
+    if exp.epoch+1 < args.epochs:
+        print("training",exp.epoch, "-",args.epochs)
+        for epoch in range(exp.epoch, args.epochs):
+            exp.train_epoch()
+            exp.test_epoch()
 
-    for epoch in range(start_epoch, args.epochs):
-        exp.train_epoch()
-        exp.test_epoch()
+    else:
+        print("epochs surpassed")
 
 
 if __name__ == '__main__':
@@ -72,7 +76,7 @@ if __name__ == '__main__':
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="att_mean",
+    parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
     parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
     arg = parser.parse_args()

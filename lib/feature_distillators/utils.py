@@ -84,10 +84,11 @@ class FeatureExperiment(DistillationExperiment):
             sf = list(self.student_features.values())[0]#todo: arreglar para caso multicapa
             tf = list(self.teacher_features.values())
 
+
             if self.use_regressor:
                 sf = self.regressors[0](sf)#self.regressors[0](sf[0])
 
-            floss = self.alpha*self.ft_criterion(tf[0], sf)
+            floss = self.ft_criterion(tf[0], sf) #self.alpha*self.ft_criterion(tf[0], sf)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
