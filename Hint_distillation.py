@@ -7,7 +7,7 @@ import torch.optim as optim
 
 from torch.utils.tensorboard import SummaryWriter
 
-from lib.feature_distillators.losses import fitnets_loss
+from lib.feature_distillators.losses import hint
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, register_hooks
@@ -44,7 +44,7 @@ def main(args):
                             teacher=teacher,
                             optimizer=optimizer,
                             kd_criterion = KD(T=8.0),
-                            ft_criterion = fitnets_loss(alpha),
+                            ft_criterion = hint(alpha),
                             eval_criterion=eval_criterion,
                             linear=flatten,
                             writer=writer,

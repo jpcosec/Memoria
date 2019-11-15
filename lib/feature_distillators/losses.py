@@ -16,7 +16,7 @@ def parse_distillation_loss(args):
             d_args[k] = int(v)
 
     print("Perdida", method, "con parametros", d_args)
-    losses_list = [fitnets_loss, att_max, att_mean, PKT, nst_gauss, nst_linear, nst_poly]
+    losses_list = [hint, att_max, att_mean, PKT, nst_gauss, nst_linear, nst_poly]
 
     d = dict([(func.__name__, func) for func in losses_list])
 
@@ -40,7 +40,7 @@ def parse_distillation_loss(args):
 """
 
 
-def fitnets_loss():
+def hint():
     def hint_loss(teacher_features, student_features):
         return torch.nn.MSELoss()(teacher_features, student_features)
 
