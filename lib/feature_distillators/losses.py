@@ -120,17 +120,17 @@ def NST_base(Kernel):
         #floasprint(1, Ft, 2, Fs)
         # FT and FS normalization
 
-        Ft = Ft.view(Ft.shape[0], Ft.shape[1], -1)
+        Ft = Ft.view(Ft.shape[0],  -1)
         Ft = F.normalize(Ft, dim=0, p=2)
 
-        Fs = Fs.view(Fs.shape[0], Fs.shape[1], -1)
+        Fs = Fs.view(Fs.shape[0], -1)
         Fs = F.normalize(Fs, dim=0, p=2)
         # Kernel calculation
-        print(Kernel(Ft, Ft).mean(1), Kernel(Fs, Fs).mean(1) ,(2 * Kernel(Ft, Fs).mean(1)))
-        return Kernel(Ft, Ft).mean(1) + Kernel(Fs, Fs).mean(1) - (2 * Kernel(Ft, Fs).mean(1))
+        #print(Kernel(Ft, Ft).mean(0), Kernel(Fs, Fs).mean(1) ,(2 * Kernel(Ft, Fs).mean(1)))
+        return Kernel(Ft, Ft).mean(0) + Kernel(Fs, Fs).mean(0) - (2 * Kernel(Ft, Fs).mean(0))
 
     def nst_loss(teacher_features, student_features):
-        return torch.mean(MMD(teacher_features, student_features))
+        return MMD(teacher_features, student_features)
 
     return nst_loss
 
@@ -139,7 +139,7 @@ def nst_linear():
     def Kernel(x, y):
         # x {b,c,w,h}
 
-        return torch.matmul(x, y.transpose(-2, -1)).view(x.shape[0], -1)
+        return torch.matmul(x, y.transpose(-2, -1))
 
     return NST_base(Kernel)
 
@@ -147,15 +147,15 @@ def nst_linear():
 def nst_poly(d=2, c=0):
     def Kernel(x, y):
         # x {b,c,w,h}
-        return (torch.matmul(x, y.transpose(-2, -1)).view(x.shape[0], -1) + c).pow(d)
+        return (torch.matmul(x, y.transpose(-2, -1)) + c).pow(d)
 
     return NST_base(Kernel)
 
 
 def nst_gauss():
     def Kernel(x, y):
-        pw_dist = torch.add(x.unsqueeze(1), -y.unsqueeze(2)).norm(dim=-1).view(x.shape[0], -1)
-        sigma = pw_dist.mean(-1, keepdims=True)
+        pw_dist = torch.add(x.unsqueeze(0), -y.unsqueeze(1)).norm(dim=-1)
+        sigma = pw_dist.mean(0)
         return torch.exp(-pw_dist / (2 * sigma))
 
     return NST_base(Kernel)
