@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
-from lib.kd_distillators.losses import KD, KD_CE
+from lib.kd_distillators.losses import KD_CE
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, auto_change_dir
 

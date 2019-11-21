@@ -54,13 +54,16 @@ def KD_CE(alpha=0.5, T=8):
     :return: Loss function
     """
 
-    def KD_CE_loss(input, teacher_logits, target):
-        KD_loss = nn.KLDivLoss()(F.log_softmax(input / T, dim=1),
+    def KD_loss(input, teacher_logits):
+        return nn.KLDivLoss()(F.log_softmax(input / T, dim=1),
                                  F.softmax(teacher_logits / T, dim=1))
 
-        CE_loss = nn.CrossEntropyLoss()(input.squeeze(), target)
+    def CE_loss(input,target):
+        return  nn.CrossEntropyLoss()(input.squeeze(), target)
 
-        return CE_loss * alpha * T * T + KD_loss * (1 - alpha)
+    def KD_CE_loss(input, teacher_logits, target):
+
+        return CE_loss(input,target) * alpha * T * T + KD_loss(input, teacher_logits) * (1 - alpha)
 
     return KD_CE_loss
 

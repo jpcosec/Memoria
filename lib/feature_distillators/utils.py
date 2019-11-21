@@ -69,7 +69,7 @@ class FeatureExperiment(DistillationExperiment):
             self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
         #self.optimizers= []
-
+        print(self.criterion_fields)
 
 
     def process_batch(self, inputs, targets, batch_idx): #todo: Cambiar  y loss a dict
