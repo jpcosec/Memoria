@@ -78,6 +78,9 @@ if __name__ == '__main__':
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
     parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
+    parser.add_argument('--last_layer', default="KD_CE",
+                        help="")
+
     parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
     arg = parser.parse_args()
 
