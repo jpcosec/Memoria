@@ -126,7 +126,7 @@ def NST_base(Kernel):
         Fs = Fs.view(Fs.shape[0], Fs.shape[1], -1)
         Fs = F.normalize(Fs, dim=0, p=2)
         # Kernel calculation
-        print(Kernel(Ft, Ft).mean(1), Kernel(Fs, Fs).mean(1) ,(2 * Kernel(Ft, Fs).mean(1)))
+        #print(Kernel(Ft, Ft).mean(1), Kernel(Fs, Fs).mean(1) ,(2 * Kernel(Ft, Fs).mean(1)))
         return Kernel(Ft, Ft).mean(1) + Kernel(Fs, Fs).mean(1) - (2 * Kernel(Ft, Fs).mean(1))
 
     def nst_loss(teacher_features, student_features):
