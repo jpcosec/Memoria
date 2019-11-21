@@ -164,6 +164,7 @@ def nst_gauss():
 """
 Paper: A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
 Code: (not original) https://github.com/sseung0703/KD_methods_with_TF
+TODO: Requiere inicialiacion, Fome
 """
 
 

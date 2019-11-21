@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
-from lib.kd_distillators.losses import KD
+from lib.kd_distillators.losses import KD, KD_CE
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, auto_change_dir
 
@@ -38,7 +38,7 @@ def main(args):
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
-                            kd_criterion=KD(T=8.0),
+                            kd_criterion=KD_CE(T=8.0),
                             ft_criterion=feat_loss,
                             eval_criterion=eval_criterion,
                             linear=flatten,
