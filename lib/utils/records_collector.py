@@ -64,7 +64,7 @@ def collect_records(folder):
 
 if __name__ == '__main__':
     #folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp1/students"
-    folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students"
+    folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18"
 
     info=collect_records(folder)
 
@@ -73,8 +73,9 @@ if __name__ == '__main__':
     for key, value in info.items():
         print(key, len(value))
 
-    print(list(zip(info["layer"],info["lambda"],info["distillation"])))
+    #print(list(zip(info["layer"],info["lambda"],info["distillation"])))
 
     print(info)
     csv=pd.DataFrame.from_dict(info)
     csv.to_csv(folder+"/summary.csv")
+    print("done")
