@@ -4,6 +4,8 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 
+import numpy as np
+
 from lib.models.densenet import DenseNet121
 from lib.models.dpn import DPN92
 from lib.models.efficientnet import EfficientNetB0
@@ -31,7 +33,7 @@ def load_cifar10(args):
     auto_change_dir("Cifar10")
 
     def random_return(image):
-      return torch.rand(1, 3, 32, 32)
+      return np.random.random(1, 3, 32, 32)
 
     transform_train = transforms.Compose([
         #transforms.RandomCrop(32, padding=4),
