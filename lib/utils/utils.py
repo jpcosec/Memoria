@@ -33,7 +33,7 @@ def load_cifar10(args):
     auto_change_dir("Cifar10")
 
     def random_return(image):
-      return np.random.random(size=(32, 32, 3))
+      return np.random.randint(127,size=(32, 32, 3),dtype=np.uint8)
 
     transform_train = transforms.Compose([
         #transforms.RandomCrop(32, padding=4),
