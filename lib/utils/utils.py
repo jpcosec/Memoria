@@ -30,11 +30,16 @@ def auto_change_dir(path):
 def load_cifar10(args):
     auto_change_dir("Cifar10")
 
+    def random_return(image):
+      return torch.rand(1, 3, 32, 32)
+
     transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
+        #transforms.RandomCrop(32, padding=4),
+        #transforms.RandomHorizontalFlip(),
+        transforms.Lambda(random_return),
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+
     ])
 
     transform_test = transforms.Compose([

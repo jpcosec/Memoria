@@ -38,7 +38,7 @@ def main(args):
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
-                            kd_criterion=KD_CE(T=8.0),
+                            kd_criterion=KD(T=8.0),
                             ft_criterion=feat_loss,
                             eval_criterion=eval_criterion,
                             linear=flatten,
