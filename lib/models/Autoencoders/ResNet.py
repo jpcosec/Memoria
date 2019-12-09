@@ -172,9 +172,8 @@ class Encoder(nn.Module):
 
 
 encoder = Encoder(Bottleneck, [3, 4, 6, 3])
-encoder.load_state_dict(torch.load(
-  '/home/deepkliv/Downloads/resnet50-19c8e357.pth'))  # ,map_location=lambda storage, loc: storage.cuda(1)),strict=False)
-# loaded_weights = torch.load('/home/siplab/Saket/resnet18-5c106cde.pth')
+#encoder.load_state_dict(torch.load( '/home/deepkliv/Downloads/resnet50-19c8e357.pth'))
+
 # print encoder.layer1[1].conv1.weight.data[0][0]
 encoder.fc = nn.Linear(2048, 48)
 # for param in encoder.parameters():
