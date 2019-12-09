@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 
+
 from lib.kd_distillators.utils import DistillationExperiment
 
 
@@ -40,6 +41,7 @@ class FeatureExperiment(DistillationExperiment):
                     layer.register_forward_hook(hook)
 
         self.student_features = {}
+
         for name, module in self.student._modules.items():
             for id, layer in enumerate(module.children()):
                 if id in self.idxs:

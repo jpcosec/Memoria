@@ -28,59 +28,9 @@ def auto_change_dir(path):
       os.mkdir(folder)
     os.chdir(folder)
 
-""" Dataset STUFF"""
-def load_cifar10(args):
-    auto_change_dir("Cifar10")
 
-    def random_return(image):
-      return np.random.randint(127,size=(32, 32, 3),dtype=np.uint8)
-
-    transform_train = transforms.Compose([
-        #transforms.RandomCrop(32, padding=4),
-        #transforms.RandomHorizontalFlip(),
-        transforms.Lambda(random_return),
-        transforms.ToTensor(),
-        #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-
-    ])
-
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
-
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=2)
-
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
-
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    return trainloader, testloader, classes
-
-def load_mnist(args):
-    # Load MNIST
-    auto_change_dir("Mnist")
-
-    train_data = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transforms.Compose([
-        transforms.ToTensor(),  # ToTensor does min-max normalization.
-    ]), )
-
-    test_data = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transforms.Compose([
-        transforms.ToTensor(),  # ToTensor does min-max normalization.
-    ]), )
-
-    # Create DataLoader
-    dataloader_args = dict(shuffle=True, batch_size=args.train_batch_size, num_workers=2)
-    train_loader = torch.utils.data.DataLoader(train_data, **dataloader_args)
-    test_loader = torch.utils.data.DataLoader(test_data, **dataloader_args)
-
-    return train_loader, test_loader, range(10)
-
-def sample(loader):  # Deprecated
-    data, target = next(iter(loader))
-    data, target = Variable(data.cuda()), Variable(target.cuda())
-    return data, target
+def random_return(image):
+  return np.random.randint(127,size=(32, 32, 3),dtype=np.uint8)
 
 """ Model Stuff"""
 
@@ -112,7 +62,64 @@ def get_model(model_name):
         raise ModuleNotFoundError("Model not found")
 
 
-def register_hooks(net, idxs, feature):
+""" Dataset Loaders"""
+def load_cifar10(args, transform_train=None, transform_test=None):
+    auto_change_dir("Cifar10")
+
+
+    if transform_train is None:
+      transform_train = transforms.Compose([
+          transforms.RandomCrop(32, padding=4),
+          transforms.RandomHorizontalFlip(),
+          transforms.Lambda(random_return),
+          transforms.ToTensor(),
+          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+
+      ])
+
+    if transform_test is None:
+      transform_test = transforms.Compose([
+          transforms.ToTensor(),
+          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+      ])
+
+    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=2)
+
+    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
+
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    return trainloader, testloader, classes
+
+def load_mnist(args):
+    # Load MNIST
+    auto_change_dir("Mnist")
+
+    train_data = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transforms.Compose([
+        transforms.ToTensor(),  # ToTensor does min-max normalization.
+    ]), )
+
+    test_data = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transforms.Compose([
+        transforms.ToTensor(),  # ToTensor does min-max normalization.
+    ]), )
+
+    # Create DataLoader
+    dataloader_args = dict(shuffle=True, batch_size=args.train_batch_size, num_workers=2)
+    train_loader = torch.utils.data.DataLoader(train_data, **dataloader_args)
+    test_loader = torch.utils.data.DataLoader(test_data, **dataloader_args)
+
+    return train_loader, test_loader, range(10)
+
+
+def sample(loader):  # Deprecated
+    data, target = next(iter(loader))
+    data, target = Variable(data.cuda()), Variable(target.cuda())
+    return data, target
+
+
+
+def register_hooks(net, idxs, feature):# Deprecate
   """
   Registers a hook in the module of the net
   :param net:

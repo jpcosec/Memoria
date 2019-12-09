@@ -11,7 +11,7 @@ from lib.feature_distillators.losses import hint
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, register_hooks
-from lib.kd_distillators.losses import KD
+from lib.kd_distillators.losses import KD, KD_CE
 
 
 def main(args):
@@ -43,7 +43,7 @@ def main(args):
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
-                            kd_criterion = KD(T=8.0),
+                            kd_criterion = KD_CE(T=8.0),
                             ft_criterion = hint(alpha),
                             eval_criterion=eval_criterion,
                             linear=flatten,
@@ -52,13 +52,8 @@ def main(args):
                             trainloader=trainloader,
                             best_acc=best_acc,
                             idxs=idxs,
+                            args=args
                             )
-    #exp.feature_train=True#funcionalizar
-    #exp.kd_train=False
-    #for epoch in range(args.pre):
-    #    exp.train_epoch()
-    #exp.feature_train=False
-    #exp.kd_train=True
 
 
     for epoch in range(start_epoch, args.epochs):

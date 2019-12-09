@@ -1,23 +1,29 @@
 
 
+"""
+Refactored from https://github.com/arnaghosh/Auto-Encoder/blob/master/resnet.py
+"""
 
+import os
+import math
+import numpy as np
+from collections import OrderedDict
+import matplotlib.pyplot as plt
 
 import torch
+import torch.nn as nn
 from torch.autograd import Variable
-import torchvision
-import torch.nn as nn
 import torch.nn.functional as F
-from torchvision import datasets, models, transforms
 import torch.optim as optim
-from torch.optim import lr_scheduler
-import numpy as np
-import os
-import matplotlib.pyplot as plt
+from torch.optim import lr_scheduler # todo: Que es esto
 from torch.autograd import Function
-from collections import OrderedDict
-import torch.nn as nn
-import math
 
+import torchvision
+from torchvision import datasets, models, transforms
+
+
+
+#todo: Cachar si se puede bajar
 zsize = 48
 batch_size = 11
 iterations = 500
@@ -26,7 +32,6 @@ learningRate = 0.0001
 import torchvision.models as models
 
 
-# ResNEt#####################################
 def conv3x3(in_planes, out_planes, stride=1):
   """3x3 convolution with padding"""
   return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -104,11 +109,6 @@ class Bottleneck(nn.Module):
 
     return out
 
-
-###############################################################
-
-
-###############################################################
 class Encoder(nn.Module):
 
   def __init__(self, block, layers, num_classes=23):
@@ -169,27 +169,6 @@ class Encoder(nn.Module):
     x = self.fc(x)
 
     return x
-
-
-encoder = Encoder(Bottleneck, [3, 4, 6, 3])
-#encoder.load_state_dict(torch.load( '/home/deepkliv/Downloads/resnet50-19c8e357.pth'))
-
-# print encoder.layer1[1].conv1.weight.data[0][0]
-encoder.fc = nn.Linear(2048, 48)
-# for param in encoder.parameters():
-#    param.requires_grad = False
-encoder = encoder.cuda()
-y = torch.rand(1, 3, 224, 224)
-x = torch.rand(1, 128)
-x = Variable(x.cuda())
-
-
-# print decoder(x)
-# y=Variable(y.cuda())
-# print("\n")
-# encoder(y)
-# print encoder(y)
-##########################################################################
 class Binary(Function):
 
   @staticmethod
@@ -199,12 +178,6 @@ class Binary(Function):
   @staticmethod
   def backward(ctx, grad_output):
     return grad_output
-
-
-binary = Binary()
-
-
-##########################################################################
 class Decoder(nn.Module):
   def __init__(self):
     super(Decoder, self).__init__()
@@ -258,12 +231,6 @@ class Decoder(nn.Module):
     x = F.sigmoid(x)
     # print x
     return x
-
-
-decoder = Decoder()
-
-
-##########################################
 class Autoencoder(nn.Module):
   def __init__(self):
     super(Autoencoder, self).__init__()
@@ -281,13 +248,6 @@ class Autoencoder(nn.Module):
     x = self.decoder(x)
     return x
 
-
-# print Autoencoder()
-
-autoencoder = Autoencoder()
-
-
-# autoencoder = torch.nn.DataParallel(autoencoder, device_ids=[0, 1, 2])
 class Classifier(nn.Module):
   def __init__(self):
     super(Classifier, self).__init__()
@@ -301,12 +261,6 @@ class Classifier(nn.Module):
     x = F.log_softmax(self.L3(x))
     return x
 
-
-# print Classifier()
-classifier = Classifier()
-
-
-# classifier = torch.nn.DataParallel(classifier, device_ids=[0, 1, 2])
 class Classification(nn.Module):
   def __init__(self):
     super(Classification, self).__init__()
@@ -322,28 +276,67 @@ class Classification(nn.Module):
     return x
 
 
+
+use_gpu = torch.cuda.is_available()
+
+encoder = Encoder(Bottleneck, [3, 4, 6, 3])
+#encoder.load_state_dict(torch.load( '/home/deepkliv/Downloads/resnet50-19c8e357.pth'))
+
+encoder.fc = nn.Linear(2048, 48)
+
+# print encoder.layer1[1].conv1.weight.data[0][0]
+# for param in encoder.parameters():
+#    param.requires_grad = False
+
+encoder = encoder.cuda()
+
+y = torch.rand(1, 3, 224, 224)
+x = torch.rand(1, 128)
+x = Variable(x.cuda())
+# print decoder(x)
+# y=Variable(y.cuda())
+# print("\n")
+# encoder(y)
+# print encoder(y)
+
+binary = Binary()
+decoder = Decoder()
+"""Declare Autoencoder"""
+# print Autoencoder()
+autoencoder = Autoencoder()
+"""Declare Classifier"""
+# print Classifier()
+#classifier = Classifier()
+"""Declare Classification"""
 # print Classification()
-classification = Classification()
+#classification = Classification()
+
+# classifier = torch.nn.DataParallel(classifier, device_ids=[0, 1, 2])
+# autoencoder = torch.nn.DataParallel(autoencoder, device_ids=[0, 1, 2])
 
 ##########################
 
 if torch.cuda.is_available():
   autoencoder.cuda()
-  classification.cuda()
+  #classification.cuda()
   decoder.cuda()
   encoder.cuda()
-  classifier.cuda()
+  #classifier.cuda()
 # data
 
-plt.ion()
+plt.ion()#todo: que es eso
 
-use_gpu = torch.cuda.is_available()
 if use_gpu:
   pinMem = True  # Flag for pinning GPU memory
   print('GPU is available!')
 else:
   pinMem = False
+
 net = models.resnet18(pretrained=False)
+
+"""
+    Load dataset
+"""
 transform = transforms.Compose(
   [
     transforms.Scale((224, 224), interpolation=2),
@@ -351,6 +344,8 @@ transform = transforms.Compose(
     # transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),
     # transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
   ])
+
+
 trainset = torchvision.datasets.ImageFolder("/home/deepkliv/Desktop/AE/ram/AE_classifier/fashion/dataset/train",
                                             transform=transform, target_transform=None)
 trainloader = torch.utils.data.DataLoader(trainset, shuffle=True, batch_size=batch_size, num_workers=2)
@@ -359,20 +354,29 @@ testset = torchvision.datasets.ImageFolder("/home/deepkliv/Desktop/AE/ram/AE_cla
 testloader = torch.utils.data.DataLoader(testset, shuffle=True, batch_size=batch_size, num_workers=2)
 
 autoencoder_criterion = nn.MSELoss()
-classification_criterion = nn.NLLLoss()
+#classification_criterion = nn.NLLLoss()
+
+
+"""
+    optimizer
+"""
 
 autoencoder_optimizer = optim.Adam(autoencoder.parameters(), lr=learningRate)
-classification_optimizer = optim.Adam(classification.parameters(), lr=learningRate)
+#classification_optimizer = optim.Adam(classification.parameters(), lr=learningRate)
+
 # encoder_optimizer = optim.Adam(Encoder.parameters(), lr = learningRate)
+
+
+
 list_a_loss = []
-list_c_loss = []
+#list_c_loss = []
 
 # fig = plt.figure()
 for epoch in range(iterations):
   run_loss = 0
-  run_c_loss = 0
+  #run_c_loss = 0
   autoencoder.train(True)  # For training
-  classification.train(True)
+  #classification.train(True)
   for i, data in enumerate(trainloader):
     # print i
     inputs, labels = data
@@ -389,19 +393,18 @@ for epoch in range(iterations):
 
     # print("efc3", autoencoder.encoder.fc3.bias.grad)
 
-    class_pred = classification(inputs)
-
-    c_loss = classification_criterion(class_pred, labels)
+    #class_pred = classification(inputs)
+    #c_loss = classification_criterion(class_pred, labels)
 
     # _,xxpred = torch.max(class_pred.data, 1)
     # print("class_pred")
     # print(xxpred.cpu().numpy())
-    c_loss.backward(retain_graph=True)
-    classification_optimizer.step()
+    #c_loss.backward(retain_graph=True)
+    #classification_optimizer.step()
     # encoder_optimizer.step()
 
     run_loss += a_loss.data[0]
-    run_c_loss += c_loss.data[0]
+    #run_c_loss += c_loss.data[0]
     # print i
     if (i + 1) % 2 == 0:
       print(

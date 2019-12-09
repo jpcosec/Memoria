@@ -28,8 +28,8 @@ def main(args):
 
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
-
     idxs = [layer]
+
     auto_change_dir(",".join([str(i) for i in idxs]))
 
     writer = SummaryWriter("tb_logs")#todo mover dentro de exp
@@ -78,9 +78,8 @@ if __name__ == '__main__':
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
     parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
-    parser.add_argument('--last_layer', default="KD_CE",
+    parser.add_argument('--last_layer', default="KD",
                         help="")
-
     parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
     arg = parser.parse_args()
 
