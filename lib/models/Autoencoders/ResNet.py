@@ -60,6 +60,7 @@ decoder = Decoder()
 
 # print Autoencoder()
 
+
 autoencoder = Autoencoder()
 
 
