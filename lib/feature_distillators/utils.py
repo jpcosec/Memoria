@@ -36,6 +36,7 @@ class FeatureExperiment(DistillationExperiment):
         for name, module in self.teacher._modules.items():
             for id, layer in enumerate(module.children()):
                 if id in self.idxs:
+                    print("hooking",name)
                     def hook(m, i, o):
                         self.teacher_features[m]=o
                     layer.register_forward_hook(hook)
