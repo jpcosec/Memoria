@@ -1,5 +1,4 @@
-python Hint_distillation.py --distillation=feature-1-2
-python Hint_distillation.py --distillation=feature-1-3
-python Hint_distillation.py --distillation=feature-1-4
-python Hint_distillation.py --distillation=feature-1-5
-
+python feat_distillation.py --distillation=hint --layer=2
+python feat_distillation.py --distillation=hint --layer=3
+python feat_distillation.py --distillation=hint --layer=4
+python feat_distillation.py --distillation=hint --layer=5

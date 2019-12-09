@@ -47,7 +47,7 @@ def main(args):
                             trainloader=trainloader,
                             best_acc=best_acc,
                             idxs=idxs,
-                            use_regressor=False,
+                            use_regressor=args.distillation=="hint",
                             args = args
                             )
     if exp.epoch+1 < args.epochs:

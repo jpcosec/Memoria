@@ -44,7 +44,7 @@ def main(args):
                             teacher=teacher,
                             optimizer=optimizer,
                             kd_criterion = KD_CE(T=8.0),
-                            ft_criterion = hint(alpha),
+                            ft_criterion = hint(),
                             eval_criterion=eval_criterion,
                             linear=flatten,
                             writer=writer,
