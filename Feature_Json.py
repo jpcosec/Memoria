@@ -86,6 +86,7 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print("Using device", device)  # todo: cambiar a logger
+    folder="exp2"
     args = fake_arg()
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
@@ -93,21 +94,12 @@ if __name__ == '__main__':
 
 
     for student in [ "MobileNet"]:#todo: terminar
-        for distillation in ["hint", "att_max", "att_mean", "PKT", "nst_gauss", "nst_linear", "nst_poly"]:
-            for layer in [str(i) for i in [1, 5, 10,50, 100, 1000]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp1")#funcionalizar
-                dist = distillation+",T-"+ T
-                arg = fake_arg(distillation=dist, student=student)
+        for distillation in ["hint", "att_max", "att_mean", "PKT", "nst_linear", "nst_poly"]:
+            for layer in [str(i) for i in [2,3,4,5]]:
+                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
 
-                try:
-                    with open("students/"+student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
-                        record = json.load(fp)
-                        e=maj_key(record["test"])
-                        print(e)
-                        if e >= 99:
-                            continue
-                except:
-                    print("hayproblemo")
+                arg = fake_arg(distillation=distillation, student=student,layer=layer)
 
-                print("TRAINING")
+
+                print("TRAINING-%s-%s-%i"%(student,distillation,layer))
                 experiment_run(arg, device, teacher, testloader, trainloader)
