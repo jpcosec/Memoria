@@ -21,7 +21,7 @@ Separan las tecnicas de compresion de modelo en 4 categorias.
 
 
 
-## Capacidad
+## Capacidad (agregado a doc final)
 
 ### Aproximacion Continua
 
