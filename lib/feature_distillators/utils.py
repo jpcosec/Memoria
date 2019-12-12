@@ -128,7 +128,7 @@ class FeatureExperiment(DistillationExperiment):
     loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
     # todo: meter loss en applt loss
     if self.feature_train:
-
+      print(self.student_features.values())
       sf = list(self.student_features.values())[0]  # todo: arreglar para caso multicapa
       tf = list(self.teacher_features.values())
 
