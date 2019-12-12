@@ -48,9 +48,9 @@ class FeatureInspector:
 
     self.teacher.apply(register_teacher_hook)
 
+
     self.student_features = OrderedDict()
     self.student_layers = 1
-
     def register_student_hook(module):
       class_name = str(module.__class__).split(".")[-1].split("'")[0]
       m_key = "%s-%i" % (class_name, self.student_layers)
@@ -68,7 +68,7 @@ class FeatureInspector:
           module.register_forward_hook(hook)
         self.student_layers += 1
 
-      self.student.apply(register_student_hook)
+    self.student.apply(register_student_hook)
 
     inp = torch.rand(128, 3, 32, 32).to(self.device)
 
