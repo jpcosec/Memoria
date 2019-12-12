@@ -11,6 +11,7 @@ class FeatureInspector:
   def __init__(self, **kwargs):
     self.teacher = kwargs['teacher']
     self.student = kwargs['student']
+    self.device = kwargs['device']
 
     self.teacher_features = {}
     print(summary(self.teacher,(3,32,32)))
@@ -50,8 +51,8 @@ class FeatureInspector:
     out = self.teacher(inp)
     out2 = self.student(inp)
 
-    sf = list(self.student_features.values())
-    tf = list(self.teacher_features.values())
+    s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
+    t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
 
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
