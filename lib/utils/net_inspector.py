@@ -13,14 +13,14 @@ class FeatureInspector:
     self.teacher = kwargs['teacher']
     self.student = kwargs['student']
 
-    print(summary(self.teacher))
+    print(summary(self.teacher,(3,32,32)))
 
     for name, module in self.teacher._modules.items():
       print(name,module)
       for id, layer in enumerate(module.children()):
         print(id, layer)
 
-    print(summary(self.student))
+    print(summary(self.student),(3,32,32))
 
     self.student_features = {}
 
