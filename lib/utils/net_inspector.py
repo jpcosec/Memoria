@@ -3,7 +3,7 @@
 
 from collections import OrderedDict
 import argparse
-from torchsummary import summary
+#from torchsummary import summary
 import torch
 from lib.kd_distillators.utils import silent_load
 import torch.nn as nn
@@ -134,8 +134,7 @@ class FeatureInspector:
       print("----------------------------------------------------------------")
       return summary
 
-    c = summary(self.teacher)
-    print(c)
+    print(summary(self.teacher,(3,32,32)))
 
     """
     i=0
