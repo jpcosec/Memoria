@@ -17,8 +17,8 @@ class FeatureInspector:
 
     for name, module in self.teacher._modules.items():
       print("..",name,module)
-      for id, layer in enumerate(module.children()):
-        print("....",id, layer)
+      for id, block in enumerate(module.children()):
+        print("....",id, block)
 
     print(summary(self.student,(3,32,32)))
 
@@ -26,8 +26,8 @@ class FeatureInspector:
 
     for name, module in self.student._modules.items():
       print("..", name, module)
-      for id, layer in enumerate(module.children()):
-        print("....", id, layer)
+      for id, block in enumerate(module.children()):
+        print("....", id, block)
 
 
 

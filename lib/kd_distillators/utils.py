@@ -114,9 +114,9 @@ def load_teacher(args, device):
 
   return net
 
-def silent_load(args, device):
-    print('==> Building teacher model..', args.teacher)
-    net = get_model(args.teacher)
+def silent_load(model, device):
+    print('==> Building model..', model)
+    net = get_model(model)
     net = net.to(device)
 
     for param in net.parameters():
