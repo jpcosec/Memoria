@@ -34,6 +34,7 @@ class FeatureInspector:
       def hook(mod, inp, out):
           self.teacher_features[m_key] = out
 
+      print(m_key)
       if self.teacher_layers in self.teacher_keys:
         module.register(hook())
       self.teacher_layers += 1
