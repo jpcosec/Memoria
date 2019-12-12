@@ -1,5 +1,7 @@
 import torch
 import torch.optim as optim
+import torch.nn as nn
+from collections import OrderedDict
 
 from lib.kd_distillators.utils import DistillationExperiment
 
@@ -7,6 +9,10 @@ from lib.kd_distillators.utils import DistillationExperiment
 class FeatureExperiment(DistillationExperiment):
 
   def __init__(self, **kwargs):
+    self.teacher_keys = kwargs["teacher_layers"]
+    self.student_keys = kwargs["student_layers"]
+
+
     self.kd_criterion = kwargs["kd_criterion"]
 
     self.ft_criterion = kwargs["ft_criterion"]
@@ -37,27 +43,51 @@ class FeatureExperiment(DistillationExperiment):
       self.__create_regressors()
 
   def __create_feature_extraction(self):
-    self.teacher_features = {}
+    self.teacher_features = OrderedDict()
+    self.teacher_layers = 1
 
-    for name, module in self.teacher._modules.items():
-      for id, layer in enumerate(module.children()):
-        if id in self.idxs:
-          def hook(m, i, o):
-            self.teacher_features[m] = o
+    def register_teacher_hook(module):
+      class_name = str(module.__class__).split(".")[-1].split("'")[0]
+      m_key = "%s-%i" % (class_name, self.teacher_layers)
 
-          layer.register_forward_hook(hook)
+      def hook(mod, inp, out):
+        self.teacher_features[m_key] = out
 
-    self.student_features = {}
+      if (
+          not isinstance(module, nn.Sequential)
+          and not isinstance(module, nn.ModuleList)
+          and not (module == self.teacher)
+      ):
+        print(m_key)
+        if self.teacher_layers in self.teacher_keys:
+          module.register_forward_hook(hook)
+        self.teacher_layers += 1
 
-    for name, module in self.student._modules.items():
-      for id, layer in enumerate(module.children()):
-        if id in self.idxs:
-          def hook(m, i, o):
-            self.student_features[m] = o
+    self.teacher.apply(register_teacher_hook)
 
-          layer.register_forward_hook(hook)
+    self.student_features = OrderedDict()
+    self.student_layers = 1
 
-    inp = torch.rand(1, 3, 32, 32).to(self.device)
+    def register_student_hook(module):
+      class_name = str(module.__class__).split(".")[-1].split("'")[0]
+      m_key = "%s-%i" % (class_name, self.student_layers)
+
+      def hook(mod, inp, out):
+        self.student_features[m_key] = out
+
+      if (
+          not isinstance(module, nn.Sequential)
+          and not isinstance(module, nn.ModuleList)
+          and not (module == self.student)
+      ):
+        print(m_key)
+        if self.student_layers in self.student_keys:
+          module.register_forward_hook(hook)
+        self.student_layers += 1
+
+      self.student.apply(register_student_hook)
+
+    inp = torch.rand(128, 3, 32, 32).to(self.device)
 
     self.teacher.eval()
     self.student.eval()
@@ -68,9 +98,9 @@ class FeatureExperiment(DistillationExperiment):
     s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
     t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
 
-    print("teacher sizes ", t_sizes)
-    print("student sizes ", s_sizes)
-    # self.optimizers= []
+    for s,t in zip[s_sizes,t_sizes]:
+      if s[-1] != t[-1] or s[-2] != t[-2]:
+        raise AttributeError( "size mismatch")
 
   def __create_regressors(self):
     inp = torch.rand(1, 3, 32, 32).to(self.device)
@@ -79,11 +109,11 @@ class FeatureExperiment(DistillationExperiment):
     out = self.teacher(inp)
     out2 = self.student(inp)
 
-    sf = list(self.student_features.values())
-    tf = list(self.teacher_features.values())
+    s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
+    t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
 
-    self.regressors = [torch.nn.Conv2d(sf[i].shape[1],
-                                       tf[i].shape[1],
+    self.regressors = [torch.nn.Conv2d(s_sizes[i].shape[1],
+                                       t_sizes[i].shape[1],
                                        kernel_size=1
                                        ).to(self.device) for i in range(len(self.idxs))]
 
