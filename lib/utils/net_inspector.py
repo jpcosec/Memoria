@@ -18,7 +18,7 @@ class FeatureInspector:
     self.student = kwargs['student']
     self.device = kwargs['device']
 
-    self.teacher_keys=["BatchNorm2d-27"]
+    self.teacher_keys=[27]
 
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
@@ -34,7 +34,7 @@ class FeatureInspector:
       def hook(mod, inp, out):
           self.teacher_features[m_key] = out
 
-      if m_key in self.teacher_keys:
+      if self.teacher_layers in self.teacher_keys:
         module.register(hook())
       self.teacher_layers += 1
 
