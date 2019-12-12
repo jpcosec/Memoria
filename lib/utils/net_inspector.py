@@ -16,18 +16,18 @@ class FeatureInspector:
     print(summary(self.teacher,(3,32,32)))
 
     for name, module in self.teacher._modules.items():
-      print("..",name,module)
+      print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
-        print("....",id, block)
+        print(" block id....",id, block)
 
     print(summary(self.student,(3,32,32)))
 
     self.student_features = {}
 
     for name, module in self.student._modules.items():
-      print("..", name, module)
+      print("Student Network..", name)
       for id, block in enumerate(module.children()):
-        print("....", id, block)
+        print("block id....", id, block)
 
 
 
@@ -37,8 +37,8 @@ def main(args):
     print("Using device", device)  # todo: cambiar a logger
 
     #trainloader, testloader, classes = load_cifar10(args)
-    teacher = silent_load(args, device)
-    student = silent_load(args, device)
+    teacher = silent_load(args.teacher, device)
+    student = silent_load(args.student, device)
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
 
