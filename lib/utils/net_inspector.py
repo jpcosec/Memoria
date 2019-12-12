@@ -66,7 +66,7 @@ class FeatureInspector:
     c = collect_modules(self.teacher)
     print(c)
 
-
+    """
     i=0
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
@@ -78,7 +78,6 @@ class FeatureInspector:
           #  self.teacher_features[m] = o
           #block.register_forward_hook(hook)
 
-    print(self.teacher.layers)
 
     self.student_features = {}
 
@@ -117,7 +116,7 @@ class FeatureInspector:
 
     print(t_sizes)
     print(s_sizes)
-
+  """
 
 
 def main(args):
