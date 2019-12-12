@@ -34,10 +34,15 @@ class FeatureInspector:
       def hook(mod, inp, out):
           self.teacher_features[m_key] = out
 
-      print(m_key)
-      if self.teacher_layers in self.teacher_keys:
-        module.register(hook())
-      self.teacher_layers += 1
+      if (
+          not isinstance(module, nn.Sequential)
+          and not isinstance(module, nn.ModuleList)
+          and not (module == self.teacher)
+      ):
+        print(m_key)
+        if self.teacher_layers in self.teacher_keys:
+          module.register(hook())
+        self.teacher_layers += 1
 
     self.teacher.apply(register_teacher_hook)
 
