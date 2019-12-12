@@ -58,7 +58,7 @@ class FeatureExperiment(DistillationExperiment):
           and not isinstance(module, nn.ModuleList)
           and not (module == self.teacher)
       ):
-        print(m_key)
+        #print(m_key)
         if self.teacher_layers in self.teacher_keys:
           module.register_forward_hook(hook)
         self.teacher_layers += 1
@@ -80,7 +80,7 @@ class FeatureExperiment(DistillationExperiment):
           and not isinstance(module, nn.ModuleList)
           and not (module == self.student)
       ):
-        print(m_key)
+        #print(m_key)
         if self.student_layers in self.student_keys:
           module.register_forward_hook(hook)
         self.student_layers += 1
@@ -98,7 +98,7 @@ class FeatureExperiment(DistillationExperiment):
     s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
     t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
 
-    for s,t in zip[s_sizes,t_sizes]:
+    for s,t in zip(s_sizes,t_sizes):
       if s[-1] != t[-1] or s[-2] != t[-2]:
         raise AttributeError( "size mismatch")
 
