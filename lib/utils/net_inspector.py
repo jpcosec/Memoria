@@ -9,25 +9,25 @@ from lib.kd_distillators.utils import silent_load
 class FeatureInspector:
 
   def __init__(self, **kwargs):
-    self.teacher_features = {}
     self.teacher = kwargs['teacher']
     self.student = kwargs['student']
 
+    self.teacher_features = {}
     print(summary(self.teacher,(3,32,32)))
 
     for name, module in self.teacher._modules.items():
-      print(name,module)
+      print("..",name,module)
       for id, layer in enumerate(module.children()):
-        print(id, layer)
+        print("....",id, layer)
 
     print(summary(self.student),(3,32,32))
 
     self.student_features = {}
 
     for name, module in self.student._modules.items():
-      print(name, module)
+      print("..", name, module)
       for id, layer in enumerate(module.children()):
-        print(id,layer)
+        print("....", id, layer)
 
 
 
