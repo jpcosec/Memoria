@@ -16,17 +16,17 @@ class FeatureInspector:
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
 
-
+    idxs=[2]
 
     self.teacher_features = {}
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
         #print(" block id....",id, block)
-
-        def hook(m, i, o):
-          self.teacher_features[m] = o
-        block.register_forward_hook(hook)
+        if id in idxs:
+          def hook(m, i, o):
+            self.teacher_features[m] = o
+          block.register_forward_hook(hook)
 
 
 
@@ -36,12 +36,12 @@ class FeatureInspector:
       print("Student Network..", name)
       for id, block in enumerate(module.children()):
         #print("block id....", id, block)
+        if id in idxs:
+          def hook(m, i, o):
+            self.student_features[m] = o
+          block.register_forward_hook(hook)
 
-        def hook(m, i, o):
-          self.student_features[m] = o
-        block.register_forward_hook(hook)
-
-    inp = torch.rand(1, 3, 32, 32).to(self.device)
+    inp = torch.rand(128, 3, 32, 32).to(self.device)
 
     #self.teacher.eval()
     self.student.eval()
