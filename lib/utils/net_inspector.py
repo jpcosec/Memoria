@@ -4,7 +4,7 @@
 import argparse
 from torchsummary import summary
 import torch
-from lib.kd_distillators.utils import load_student, load_teacher,
+from lib.kd_distillators.utils import silent_load
 
 class FeatureInspector:
 
@@ -37,8 +37,8 @@ def main(args):
     print("Using device", device)  # todo: cambiar a logger
 
     #trainloader, testloader, classes = load_cifar10(args)
-    teacher = load_teacher(args, device)
-    student, best_acc, start_epoch = load_student(args, device)
+    teacher = silent_load(args, device)
+    student, best_acc, start_epoch = silent_load(args, device)
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
 

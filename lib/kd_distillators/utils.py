@@ -114,6 +114,18 @@ def load_teacher(args, device):
 
   return net
 
+def silent_load(args, device):
+    print('==> Building teacher model..', args.teacher)
+    net = get_model(args.teacher)
+    net = net.to(device)
+
+    for param in net.parameters():
+      param.requires_grad = False
+
+    if device == 'cuda':
+      net = torch.nn.DataParallel(net)
+      cudnn.benchmark = True
+    return net
 
 def load_student(args, device,base_folder="students"):
 
