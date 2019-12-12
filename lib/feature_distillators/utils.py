@@ -113,8 +113,8 @@ class FeatureExperiment(DistillationExperiment):
     s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
     t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
 
-    self.regressors = [torch.nn.Conv2d(s_sizes[i].shape[1],
-                                       t_sizes[i].shape[1],
+    self.regressors = [torch.nn.Conv2d(s_sizes[i][1],
+                                       t_sizes[i][1],
                                        kernel_size=1
                                        ).to(self.device) for i in range(len(self.idxs))]
 
