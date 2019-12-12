@@ -19,7 +19,7 @@ class FeatureInspector:
     self.device = kwargs['device']
 
     self.teacher_keys=[26]
-    self.teacher_keys = [5]
+    self.student_keys = [5]
 
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
