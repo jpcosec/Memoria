@@ -42,8 +42,6 @@ class FeatureExperiment(DistillationExperiment):
     for name, module in self.teacher._modules.items():
       for id, layer in enumerate(module.children()):
         if id in self.idxs:
-
-
           def hook(m, i, o):
             self.teacher_features[m] = o
 
@@ -59,8 +57,19 @@ class FeatureExperiment(DistillationExperiment):
 
           layer.register_forward_hook(hook)
 
+    inp = torch.rand(1, 3, 32, 32).to(self.device)
 
+    self.teacher.eval()
+    self.student.eval()
 
+    _ = self.teacher(inp)
+    _ = self.student(inp)
+
+    s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
+    t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
+
+    print("teacher sizes ", t_sizes)
+    print("student sizes ", s_sizes)
     # self.optimizers= []
 
   def __create_regressors(self):
