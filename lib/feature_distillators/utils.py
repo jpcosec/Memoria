@@ -9,8 +9,8 @@ from lib.kd_distillators.utils import DistillationExperiment
 class FeatureExperiment(DistillationExperiment):
 
   def __init__(self, **kwargs):
-    self.teacher_keys =  [kwargs["args"].teacher_layers]# todo: arreglar para multicapa
-    self.student_keys = [kwargs["args"].student_layers]
+    self.teacher_keys =  [kwargs["args"].teacher_layer]# todo: arreglar para multicapa
+    self.student_keys = [kwargs["args"].student_layer]
 
 
     self.kd_criterion = kwargs["kd_criterion"]
