@@ -31,6 +31,7 @@ class FeatureInspector:
     def register_teacher_hook(module):
       class_name = str(module.__class__).split(".")[-1].split("'")[0]
       m_key = "%s-%i" % (class_name, self.teacher_layers)
+
       def hook(mod, inp, out):
           self.teacher_features[m_key] = out
 
@@ -41,22 +42,32 @@ class FeatureInspector:
       ):
         print(m_key)
         if self.teacher_layers in self.teacher_keys:
-          module.register_forward_hook(hook())
+          module.register_forward_hook(hook)
         self.teacher_layers += 1
 
     self.teacher.apply(register_teacher_hook)
 
-    self.student_features = {}
+    self.student_features = OrderedDict()
+    self.student_layers = 1
 
-    for name, module in self.student._modules.items():
-      print("Student Network..", name)
-      for id, block in enumerate(module.children()):
-        #print("block id....", id, block)
-        def hook(m, i, o):
-          self.student_features[m] = o
-        block.register_forward_hook(hook)
+    def register_student_hook(module):
+      class_name = str(module.__class__).split(".")[-1].split("'")[0]
+      m_key = "%s-%i" % (class_name, self.student_layers)
 
+      def hook(mod, inp, out):
+        self.student_features[m_key] = out
 
+      if (
+          not isinstance(module, nn.Sequential)
+          and not isinstance(module, nn.ModuleList)
+          and not (module == self.student)
+      ):
+        print(m_key)
+        if self.student_layers in self.student_keys:
+          module.register_forward_hook(hook)
+        self.student_layers += 1
+
+      self.student.apply(register_student_hook)
 
     inp = torch.rand(128, 3, 32, 32).to(self.device)
 

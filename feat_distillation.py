@@ -68,7 +68,7 @@ if __name__ == '__main__':
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')
-    parser.add_argument('--student', default="ResNet18",
+    parser.add_argument('--student', default="MobileNet",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
@@ -80,7 +80,8 @@ if __name__ == '__main__':
                         help="feature-alpha")
     parser.add_argument('--last_layer', default="KD-CE",
                         help="")
-    parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
+    parser.add_argument("--student_layer",type=int,default= 5)# Arreglar para caso multicapa
+    parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso multicapa
     arg = parser.parse_args()
 
     main(arg)
