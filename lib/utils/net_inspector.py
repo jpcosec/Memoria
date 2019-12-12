@@ -39,7 +39,7 @@ class FeatureInspector:
         print("block id....", id, block)
 
         def hook(m, i, o):
-          self.teacher_features[m] = o
+          self.student_features[m] = o
 
         block.register_forward_hook(hook)
 
