@@ -22,7 +22,7 @@ class FeatureInspector:
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
-        print(" block id....",id, block)
+        #print(" block id....",id, block)
 
         def hook(m, i, o):
           self.teacher_features[m] = o
@@ -36,7 +36,7 @@ class FeatureInspector:
     for name, module in self.student._modules.items():
       print("Student Network..", name)
       for id, block in enumerate(module.children()):
-        print("block id....", id, block)
+        #print("block id....", id, block)
 
         def hook(m, i, o):
           self.student_features[m] = o
