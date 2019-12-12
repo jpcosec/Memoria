@@ -44,7 +44,7 @@ class FeatureInspector:
             hooks.append(module.register_forward_hook(hook))
 
 
-        device = device.lower()
+        #device = device.lower()
 
         assert device in [
           "cuda",
@@ -76,7 +76,7 @@ class FeatureInspector:
 
     c = collect_modules(self.teacher)
     print(c)
-
+    i=0
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for block in module.children():
