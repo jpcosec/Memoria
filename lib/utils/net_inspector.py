@@ -54,6 +54,9 @@ class FeatureInspector:
     s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
     t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
 
+    print(t_sizes)
+    print(s_sizes)
+
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
