@@ -29,7 +29,6 @@ def main(args):
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
     idxs = [layer]
-
     auto_change_dir(",".join([str(i) for i in idxs]))
 
     writer = SummaryWriter("tb_logs")#todo mover dentro de exp
