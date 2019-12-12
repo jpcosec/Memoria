@@ -20,7 +20,7 @@ class FeatureInspector:
       for id, layer in enumerate(module.children()):
         print("....",id, layer)
 
-    print(summary(self.student),(3,32,32))
+    print(summary(self.student,(3,32,32)))
 
     self.student_features = {}
 
