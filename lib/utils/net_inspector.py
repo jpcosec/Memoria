@@ -37,6 +37,7 @@ class FeatureInspector:
         module.register(hook())
       self.teacher_layers += 1
 
+    self.teacher.apply(register_teacher_hook)
 
     self.student_features = {}
 
