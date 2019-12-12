@@ -97,7 +97,7 @@ class FeatureExperiment(DistillationExperiment):
 
     s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
     t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
-    print(self.student_features.values())
+
 
     for s,t in zip(s_sizes,t_sizes):
       if s[-1] != t[-1] or s[-2] != t[-2]:
@@ -129,7 +129,6 @@ class FeatureExperiment(DistillationExperiment):
     loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
     # todo: meter loss en applt loss
     if self.feature_train:
-      print(self.student_features.values())
       sf = list(self.student_features.values())[0]  # todo: arreglar para caso multicapa
       tf = list(self.teacher_features.values())
 
