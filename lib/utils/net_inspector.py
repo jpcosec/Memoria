@@ -17,7 +17,8 @@ class FeatureInspector:
     self.teacher = kwargs['teacher']
     self.student = kwargs['student']
     self.device = kwargs['device']
-    self.teacher_layers="BatchNorm2d-27"
+
+    self.teacher_keys=["BatchNorm2d-27"]
 
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
