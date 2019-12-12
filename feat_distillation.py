@@ -81,7 +81,9 @@ if __name__ == '__main__':
     parser.add_argument('--last_layer', default="KD-CE",
                         help="")
     parser.add_argument("--student_layer",type=int,default= 5)# Arreglar para caso multicapa
-    parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso multicapa
+    parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso
+    parser.add_argument("--layer", type=int, default=2)  # solo para el nombre
+
     arg = parser.parse_args()
 
     main(arg)
