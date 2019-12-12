@@ -18,15 +18,18 @@ class FeatureInspector:
 
 
     self.teacher_features = {}
+    i=0
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
-      for id, block in enumerate(module.children()):
-        #print(" block id....",id, block)
-        def hook(m, i, o):
-          self.teacher_features[m] = o
-        block.register_forward_hook(hook)
+      for block in module.children():
+        for layer in block.children():
+          print(" block id....",i, layer)
+          i+=1
+          #def hook(m, i, o):
+          #  self.teacher_features[m] = o
+          #block.register_forward_hook(hook)
 
-
+    print(self.teacher.layers)
 
     self.student_features = {}
 
