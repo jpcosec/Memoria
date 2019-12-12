@@ -38,7 +38,7 @@ def main(args):
 
     #trainloader, testloader, classes = load_cifar10(args)
     teacher = silent_load(args, device)
-    student, best_acc, start_epoch = silent_load(args, device)
+    student = silent_load(args, device)
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
 
