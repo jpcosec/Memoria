@@ -85,7 +85,7 @@ class FeatureExperiment(DistillationExperiment):
           module.register_forward_hook(hook)
         self.student_layers += 1
 
-      self.student.apply(register_student_hook)
+    self.student.apply(register_student_hook)
 
     inp = torch.rand(128, 3, 32, 32).to(self.device)
 
