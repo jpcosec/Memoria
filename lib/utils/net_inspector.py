@@ -13,12 +13,12 @@ class FeatureInspector:
     self.student = kwargs['student']
     self.device = kwargs['device']
 
-    self.teacher_features = {}
     print(summary(self.teacher,(3,32,32)))
     print(summary(self.student, (3, 32, 32)))
 
 
 
+    self.teacher_features = {}
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
@@ -26,7 +26,6 @@ class FeatureInspector:
 
         def hook(m, i, o):
           self.teacher_features[m] = o
-
         block.register_forward_hook(hook)
 
 
@@ -40,7 +39,6 @@ class FeatureInspector:
 
         def hook(m, i, o):
           self.student_features[m] = o
-
         block.register_forward_hook(hook)
 
     inp = torch.rand(1, 3, 32, 32).to(self.device)
