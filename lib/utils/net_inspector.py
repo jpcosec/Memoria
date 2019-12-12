@@ -24,58 +24,61 @@ class FeatureInspector:
 
     self.teacher_features = {}
 
-    def collect_modules(model, input_size, batch_size=-1, device="cuda"):
+    def collect_modules(model,  device="cuda"):
 
-        def register_hook(module):
+      device=self.device
 
-          def hook(module, input, output):
-            class_name = str(module.__class__).split(".")[-1].split("'")[0]
-            module_idx = len(collector)
+      def register_hook(module):
 
-            m_key = "%s-%i" % (class_name, module_idx + 1)
-            collector[m_key] = OrderedDict()
+        def hook(module, input, output):
+          class_name = str(module.__class__).split(".")[-1].split("'")[0]
+          module_idx = len(collector)
 
-            collector[m_key]["module"] = module
-          if (
-              not isinstance(module, nn.Sequential)
-              and not isinstance(module, nn.ModuleList)
-              and not (module == model)
-          ):
-            hooks.append(module.register_forward_hook(hook))
+          m_key = "%s-%i" % (class_name, module_idx + 1)
+          collector[m_key] = OrderedDict()
 
-
-        #device = device.lower()
-
-        assert device in [
-          "cuda",
-          "cpu",
-        ], "Input device is not valid, please specify 'cuda' or 'cpu'"
-
-        if device == "cuda" and torch.cuda.is_available():
-          dtype = torch.cuda.FloatTensor
-        else:
-          dtype = torch.FloatTensor
+          collector[m_key]["module"] = module
+        if (
+            not isinstance(module, nn.Sequential)
+            and not isinstance(module, nn.ModuleList)
+            and not (module == model)
+        ):
+          hooks.append(module.register_forward_hook(hook))
 
 
-        # create properties
-        collector = OrderedDict()
-        hooks = []
+      #device = device.lower()
 
-        # register hook
-        model.apply(register_hook)
+      assert device in [
+        "cuda",
+        "cpu",
+      ], "Input device is not valid, please specify 'cuda' or 'cpu'"
 
-        ## make a forward pass
-        # print(x.shape)
-        #model(*x)
+      if device == "cuda" and torch.cuda.is_available():
+        dtype = torch.cuda.FloatTensor
+      else:
+        dtype = torch.FloatTensor
 
-        # remove these hooks
-        #for h in hooks:
-         # h.remove()
-        return  collector
 
+      # create properties
+      collector = OrderedDict()
+      hooks = []
+
+      # register hook
+      model.apply(register_hook)
+
+      ## make a forward pass
+      # print(x.shape)
+      #model(*x)
+
+      # remove these hooks
+      #for h in hooks:
+       # h.remove()
+      return  collector
 
     c = collect_modules(self.teacher)
     print(c)
+
+
     i=0
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
