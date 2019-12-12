@@ -14,13 +14,21 @@ class FeatureInspector:
 
     self.teacher_features = {}
     print(summary(self.teacher,(3,32,32)))
+    print(summary(self.student, (3, 32, 32)))
+
+
 
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
         print(" block id....",id, block)
 
-    print(summary(self.student,(3,32,32)))
+        def hook(m, i, o):
+          self.teacher_features[m] = o
+
+        block.register_forward_hook(hook)
+
+
 
     self.student_features = {}
 
@@ -29,7 +37,21 @@ class FeatureInspector:
       for id, block in enumerate(module.children()):
         print("block id....", id, block)
 
+        def hook(m, i, o):
+          self.teacher_features[m] = o
 
+        block.register_forward_hook(hook)
+
+    inp = torch.rand(1, 3, 32, 32).to(self.device)
+
+    self.teacher.eval()
+    self.student.eval()
+
+    out = self.teacher(inp)
+    out2 = self.student(inp)
+
+    sf = list(self.student_features.values())
+    tf = list(self.teacher_features.values())
 
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
