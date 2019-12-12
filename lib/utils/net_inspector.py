@@ -134,7 +134,9 @@ class FeatureInspector:
       print("----------------------------------------------------------------")
       return summary
 
-    print(summary(self.teacher,(3,32,32)))
+
+    for c in summary(self.teacher,(3,32,32)):
+      print("....",c)
 
     """
     i=0
