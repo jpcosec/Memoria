@@ -13,8 +13,8 @@ class FeatureInspector:
     self.student = kwargs['student']
     self.device = kwargs['device']
 
-    print(summary(self.teacher,(3,32,32)))
-    print(summary(self.student, (3, 32, 32)))
+    #print(summary(self.teacher,(3,32,32)))
+    #print(summary(self.student, (3, 32, 32)))
 
 
 
@@ -43,16 +43,16 @@ class FeatureInspector:
 
     inp = torch.rand(1, 3, 32, 32).to(self.device)
 
-    self.teacher.eval()
+    #self.teacher.eval()
     self.student.eval()
 
-    _ = self.teacher(inp)
+    #_ = self.teacher(inp)
     _ = self.student(inp)
 
     s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
-    t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
+    #t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
 
-    print(t_sizes)
+    #print(t_sizes)
     print(s_sizes)
 
 def main(args):
