@@ -1,4 +1,24 @@
-python feat_distillation.py --distillation=att_max --layer=2 --student=MobileNet
-#python feat_distillation.py --distillation=att_max --layer=3
-#python feat_distillation.py --distillation=att_max --layer=4
-#python feat_distillation.py --distillation=att_max --layer=5
+python feat_distillation.py --distillation=hint --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=hint --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=hint --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=hint --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
+python feat_distillation.py --distillation=att_max --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=att_max --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=att_max --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=att_max --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
+python feat_distillation.py --distillation=att_mean --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=att_mean --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=att_mean --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=att_mean --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
+python feat_distillation.py --distillation=PKT --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=PKT --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=PKT --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=PKT --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
+python feat_distillation.py --distillation=nst_linear --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=nst_linear --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=nst_linear --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=nst_linear --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
+python feat_distillation.py --distillation=nst_poly --layer=0 --student=MobileNet --student_layer=6 --teacher_layer=26
+python feat_distillation.py --distillation=nst_poly --layer=1 --student=MobileNet --student_layer=15 --teacher_layer=56
+python feat_distillation.py --distillation=nst_poly --layer=2 --student=MobileNet --student_layer=26 --teacher_layer=219
+python feat_distillation.py --distillation=nst_poly --layer=3 --student=MobileNet --student_layer=55 --teacher_layer=39
