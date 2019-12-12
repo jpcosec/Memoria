@@ -48,8 +48,8 @@ class FeatureInspector:
     self.teacher.eval()
     self.student.eval()
 
-    out = self.teacher(inp)
-    out2 = self.student(inp)
+    _ = self.teacher(inp)
+    _ = self.student(inp)
 
     s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
     t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
