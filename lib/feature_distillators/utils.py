@@ -43,7 +43,7 @@ class FeatureExperiment(DistillationExperiment):
       self.__create_regressors()
 
   def __create_feature_extraction(self):
-    self.teacher_features = OrderedDict()
+    self.teacher_features = {}
     self.teacher_layers = 1
 
     def register_teacher_hook(module):
@@ -65,7 +65,7 @@ class FeatureExperiment(DistillationExperiment):
 
     self.teacher.apply(register_teacher_hook)
 
-    self.student_features = OrderedDict()
+    self.student_features = {}
     self.student_layers = 1
 
     def register_student_hook(module):
