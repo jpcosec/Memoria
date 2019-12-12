@@ -136,7 +136,7 @@ class FeatureInspector:
 
 
     for c in summary(self.teacher,(3,32,32)):
-      print("....",c)
+      print("....",c["module"])
 
     """
     i=0
