@@ -26,7 +26,6 @@ class FeatureInspector:
 
     def collect_modules(model,  device="cuda"):
 
-      device=self.device
 
       def register_hook(module):
 
@@ -46,17 +45,6 @@ class FeatureInspector:
           hooks.append(module.register_forward_hook(hook))
 
 
-      #device = device.lower()
-
-      assert device in [
-        "cuda",
-        "cpu",
-      ], "Input device is not valid, please specify 'cuda' or 'cpu'"
-
-      if device == "cuda" and torch.cuda.is_available():
-        dtype = torch.cuda.FloatTensor
-      else:
-        dtype = torch.FloatTensor
 
 
       # create properties
