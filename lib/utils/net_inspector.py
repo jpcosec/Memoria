@@ -18,7 +18,7 @@ class FeatureInspector:
     self.student = kwargs['student']
     self.device = kwargs['device']
 
-    self.teacher_keys=[27]
+    self.teacher_keys=[26]
 
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
@@ -41,7 +41,7 @@ class FeatureInspector:
       ):
         print(m_key)
         if self.teacher_layers in self.teacher_keys:
-          module.register(hook())
+          module.register_forward_hook(hook())
         self.teacher_layers += 1
 
     self.teacher.apply(register_teacher_hook)
