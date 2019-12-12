@@ -71,9 +71,12 @@ def att_mean(p=2):  # Att(attention):
 def att_max():  # Att(attention):
 
     def at(x):  # todo: gacer mejor
+
         return F.normalize(x.abs().max(1)[0].view(x.size(0), -1))
 
     def attention_loss(teacher_features, student_features):
+        print(student_features.shape)
+        print(teacher_features.shape)
         return (at(student_features) - at(teacher_features)).pow(2).mean()
 
     return attention_loss
