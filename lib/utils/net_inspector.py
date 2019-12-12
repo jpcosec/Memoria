@@ -16,17 +16,15 @@ class FeatureInspector:
     #print(summary(self.teacher,(3,32,32)))
     #print(summary(self.student, (3, 32, 32)))
 
-    idxs=[2]
 
     self.teacher_features = {}
     for name, module in self.teacher._modules.items():
       print("Teacher Network..", name)
       for id, block in enumerate(module.children()):
         #print(" block id....",id, block)
-        if id in idxs:
-          def hook(m, i, o):
-            self.teacher_features[m] = o
-          block.register_forward_hook(hook)
+        def hook(m, i, o):
+          self.teacher_features[m] = o
+        block.register_forward_hook(hook)
 
 
 
@@ -36,23 +34,22 @@ class FeatureInspector:
       print("Student Network..", name)
       for id, block in enumerate(module.children()):
         #print("block id....", id, block)
-        if id in idxs:
-          def hook(m, i, o):
-            self.student_features[m] = o
-          block.register_forward_hook(hook)
+        def hook(m, i, o):
+          self.student_features[m] = o
+        block.register_forward_hook(hook)
 
     inp = torch.rand(128, 3, 32, 32).to(self.device)
 
-    #self.teacher.eval()
+    self.teacher.eval()
     self.student.eval()
 
-    #_ = self.teacher(inp)
+    _ = self.teacher(inp)
     _ = self.student(inp)
 
     s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
-    #t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
+    t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
 
-    #print(t_sizes)
+    print(t_sizes)
     print(s_sizes)
 
 def main(args):
@@ -84,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')
-    parser.add_argument('--student', default="ResNet18",
+    parser.add_argument('--student', default="MobileNet",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
