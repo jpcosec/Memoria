@@ -63,7 +63,7 @@ def fake_arg(**kwargs):
 
     def add_field(field,default):
         if field in kwargs:
-            d[field] = kwargs["lr"]
+            d[field] = kwargs[field]
         else:
             d[field] = default
 
@@ -77,6 +77,8 @@ def fake_arg(**kwargs):
     add_field('last_layer',"KD")
     add_field("layer", 5)# Arreglar para caso multicapa
     add_field('pre',50)
+    add_field("student_layer",5)
+    add_field("teacher_layer",26)
 
     args.resume=True
     return args
@@ -88,18 +90,19 @@ if __name__ == '__main__':
     print("Using device", device)  # todo: cambiar a logger
     folder="exp2"
     args = fake_arg()
-    trainloader, testloader, classes = load_cifar10(args)
-    teacher = load_teacher(args, device)
+    #trainloader, testloader, classes = load_cifar10(args)
+    #teacher = load_teacher(args, device)
 
-
-
+    blocs ={"ResNet101": [26,56,219,39],#Completar
+            "MobileNet": [6,15,26,55]
+             }
     for student in [ "MobileNet"]:#todo: terminar
         for distillation in ["hint", "att_max", "att_mean", "PKT", "nst_linear", "nst_poly"]:
-            for layer in [str(i) for i in [2,3,4,5]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
+            for layer,(s_layer,t_layer) in enumerate(zip(blocs["MobileNet"],blocs["ResNet101"])):
+                #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
 
-                arg = fake_arg(distillation=distillation, student=student,layer=layer)
+                #arg = fake_arg(distillation=distillation, student=student,layer=layer,student_layer=s_layer,teacher_layer=t_layer)
 
-
-                print("TRAINING-%s-%s-%i"%(student,distillation,layer))
-                experiment_run(arg, device, teacher, testloader, trainloader)
+                print("python feat_distillation.py --distillation=%s --layer=%i --student=MobileNet --student_layer=%i --teacher_layer=%i"%(distillation,layer,s_layer,t_layer))
+                #print("TRAINING-%s-%s-%i"%(student,distillation,layer))
+                #experiment_run(arg, device, teacher, testloader, trainloader)
