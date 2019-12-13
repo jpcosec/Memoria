@@ -48,7 +48,7 @@ def fake_arg(**kwargs):
     if 'lr' in kwargs:
         args.lr = kwargs["lr"]
     else:
-        args.lr = 0.1
+        args.lr = 0.01
 
     if 'epochs' in kwargs:
         args.epochs = kwargs["epochs"]
