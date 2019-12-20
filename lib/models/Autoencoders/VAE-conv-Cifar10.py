@@ -14,7 +14,7 @@ os.chdir("../../../Cifar10")
 print(os.getcwd())
 
 parser = argparse.ArgumentParser(description='VAE MNIST Example')
-parser.add_argument('--batch-size', type=int, default=128, metavar='N',
+parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 128)')
 parser.add_argument('--epochs', type=int, default=400, metavar='N',
                     help='number of epochs to train (default: 10)')
@@ -86,20 +86,23 @@ class VAE(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_decoder(self):
-        cfg = [[512, 512], [512, 512], [256, 256], [128],[64],[3]]
+        cfg = [ [512], [256], [128],[64],[64]]
         layers = []
         in_channels = 128
+
         for x in cfg:
-            for i in x[:-1]:
-                layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1),
-                           nn.BatchNorm2d(x),
-                           nn.ReLU(inplace=True)]
-                in_channels = i
-            layers += [nn.Conv2d(in_channels, x[-1], kernel_size=3, padding=1,dilation=2),
-                       nn.BatchNorm2d(x),
-                       nn.ReLU(inplace=True)]
-            in_channels =x[-1]
-        layers += [nn.Conv2d(in_channels, 3, kernel_size=3, padding=1, dilation=2)]
+            layers += [nn.ConvTranspose2d(in_channels, x[0], kernel_size=3),
+                       #nn.BatchNorm2d(x),
+                       nn.ReLU(True)]
+            in_channels =x[0]
+            """for i in x[1:]:
+                layers += [nn.ConvTranspose2d(in_channels, i, kernel_size=3, stride=2,padding=1),
+                           #nn.BatchNorm2d(x),
+                           nn.ReLU(True)]
+                in_channels = i"""
+
+        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3,[64])]
+        print(layers)
 
         return nn.Sequential(*layers)
 
