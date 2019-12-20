@@ -55,7 +55,7 @@ class VAE(nn.Module):
     def __init__(self):
         super(VAE, self).__init__()
 
-        cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
+        cfg=[3, 64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
 
         self.encoder = self._make_layers(cfg)
 
@@ -71,7 +71,7 @@ class VAE(nn.Module):
     def _make_layers(self, cfg, encoder=True):
 
         layers = []
-        in_channels = 3
+        #in_channels = 3
         if not encoder:
             cfg=cfg.reverse
         for x in cfg:
