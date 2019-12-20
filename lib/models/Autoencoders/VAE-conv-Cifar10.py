@@ -56,9 +56,8 @@ class VAE(nn.Module):
         super(VAE, self).__init__()
 
         cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
-        rcfg = [512, 512, 'M', 512, 512, 'M', 256, 256, 'M', 128, 'M', 64]
 
-        self.encoder = self._make_layers(cfg)
+        self.encoder = self._make_encoder(cfg)
 
         self.mu = nn.Linear(512, 128)
         self.logvar = nn.Linear(512, 128)
@@ -67,19 +66,15 @@ class VAE(nn.Module):
 
         self.decoder0 = nn.Linear(128, 512)
 
-        self.decoder=self._make_layers(rcfg, encoder=False)
+        self.decoder=self._make_decoder( encoder=False)
 
-    def _make_layers(self, cfg, encoder=True):
+    def _make_encoder(self, cfg, encoder=True):
 
         layers = []
         in_channels = 3
-        if not encoder:
-            in_channels=128
         for x in cfg:
-            if x == 'M' and encoder:
+            if x == 'M':
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
-            elif x == 'M' and not encoder:
-                layers += [nn.MaxPool2d(kernel_size=1, stride=1,dilation=2)]
             else:
 
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
@@ -88,8 +83,24 @@ class VAE(nn.Module):
                 in_channels = x
         if encoder:
             layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
-        else:
-            layers += nn.Conv2d(in_channels, 3, kernel_size=3, padding=1,dilation=2)
+        return nn.Sequential(*layers)
+
+    def _make_decoder(self):
+        cfg = [[512, 512], [512, 512], [256, 256], 128,[64,3]]
+        layers = []
+        in_channels = 128
+        for x in cfg:
+            if len(x)>1:
+                for i in x[:-1]:
+                    layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1),
+                               nn.BatchNorm2d(x),
+                               nn.ReLU(inplace=True)]
+                    in_channels = x
+                layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1,dilation=2),
+                           nn.BatchNorm2d(x),
+                           nn.ReLU(inplace=True)]
+                in_channels = x
+
         return nn.Sequential(*layers)
 
     def encode(self, x):
