@@ -55,19 +55,33 @@ class VAE(nn.Module):
     def __init__(self):
         super(VAE, self).__init__()
 
+        cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
 
-        self.encoder1 = nn.Linear(3072, 1600)
-        self.encoder2 = nn.Linear(1600, 800)
-        self.encoder3 = nn.Linear(800, 400)
+        self.encoder = self._make_layers(cfg)
 
-        self.mu = nn.Linear(400, 32)
-        self.logvar = nn.Linear(400, 32)
+        self.mu = nn.Linear(512, 32)
+        self.logvar = nn.Linear(512, 32)
 
-        self.decoder1 = nn.Linear(400, 800)
-        self.decoder2 = nn.Linear(800, 1600)
-        self.decoder3 = nn.Linear(1600, 3072)
 
-        self.decoder0 = nn.Linear(32, 400)
+
+        self.decoder0 = nn.Linear(32, 512)
+
+    def _make_layers(self, cfg, encoder=True):
+
+        layers = []
+        in_channels = 3
+        if not encoder:
+            cfg=cfg.reverse
+        for x in cfg:
+            if x == 'M' and encoder:
+                layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+            else:
+                layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
+                           nn.BatchNorm2d(x),
+                           nn.ReLU(inplace=True)]
+                in_channels = x
+        layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
+        return nn.Sequential(*layers)
 
     def encode(self, x):
         h = F.relu(self.encoder1(x))
