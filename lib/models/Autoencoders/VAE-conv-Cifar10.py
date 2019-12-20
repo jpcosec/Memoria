@@ -66,7 +66,7 @@ class VAE(nn.Module):
 
         self.decoder0 = nn.Linear(128, 512)
 
-        self.decoder=self._make_decoder( encoder=False)
+        self.decoder=self._make_decoder()
 
     def _make_encoder(self, cfg, encoder=True):
 
@@ -86,20 +86,20 @@ class VAE(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_decoder(self):
-        cfg = [[512, 512], [512, 512], [256, 256], 128,[64,3]]
+        cfg = [[512, 512], [512, 512], [256, 256], [128],[64],[3]]
         layers = []
         in_channels = 128
         for x in cfg:
-            if len(x)>1:
-                for i in x[:-1]:
-                    layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1),
-                               nn.BatchNorm2d(x),
-                               nn.ReLU(inplace=True)]
-                    in_channels = x
-                layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1,dilation=2),
+            for i in x[:-1]:
+                layers += [nn.Conv2d(in_channels, i, kernel_size=3, padding=1),
                            nn.BatchNorm2d(x),
                            nn.ReLU(inplace=True)]
-                in_channels = x
+                in_channels = i
+            layers += [nn.Conv2d(in_channels, x[-1], kernel_size=3, padding=1,dilation=2),
+                       nn.BatchNorm2d(x),
+                       nn.ReLU(inplace=True)]
+            in_channels =x[-1]
+        layers += [nn.Conv2d(in_channels, 3, kernel_size=3, padding=1, dilation=2)]
 
         return nn.Sequential(*layers)
 
@@ -118,7 +118,7 @@ class VAE(nn.Module):
         out = self.decoder0(z)
         out = out.view(out.size(0),2,2, -1)
         out = self.decoder(out)
-        return torch.sigmoid(self.decoder3(out))
+        return torch.sigmoid(out)
 
     def forward(self, x):
         mu, logvar = self.encode(x)
