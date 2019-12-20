@@ -7,8 +7,11 @@ from lib.utils.utils import auto_change_dir
 loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}
 """
 
-def parse_distillation_loss(args):
-    fields = args.distillation.split(",")
+def parse_distillation_loss(args, string_input=False):
+    if string_input:
+        fields=args.split(",")
+    else:
+        fields = args.distillation.split(",")
     method = fields[0]
     args = dict([i.split("-") for i in fields[1:]])
     for k, v in args.items():
@@ -23,15 +26,17 @@ def parse_distillation_loss(args):
         loss = d[method]
     except:
         raise ModuleNotFoundError("Loss not found")
+    if not string_input:
 
-    try:
-        # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
-        auto_change_dir("/".join([args.distillation[:args.distillation.find(",")],
-                                  args.distillation[args.distillation.find(",") + 1:]]))
-        return loss(**args)
-    except:
-        raise NameError("There is an argument error")
-
+        try:
+            # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
+            auto_change_dir("/".join([args.distillation[:args.distillation.find(",")],
+                                      args.distillation[args.distillation.find(",") + 1:]]))
+            return loss(**args)
+        except:
+            raise NameError("There is an argument error")
+    else:
+        return loss(**args)#todo: ordenar
 
 def KD(T=8):
     """

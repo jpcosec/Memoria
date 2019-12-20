@@ -6,7 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
-from lib.kd_distillators.losses import KD_CE
+from lib.kd_distillators.losses import parse_distillation_loss as last_layer_loss_parser
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, auto_change_dir
 
@@ -20,7 +20,7 @@ def main(args):
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
     feat_loss =  parse_distillation_loss(args)
-
+    kd_loss=last_layer_loss_parser(args.last_layer,string_input=True)
 
 
     eval_criterion = torch.nn.CrossEntropyLoss()
@@ -37,7 +37,7 @@ def main(args):
                             student=student,
                             teacher=teacher,
                             optimizer=optimizer,
-                            kd_criterion=KD_CE(T=8.0),
+                            kd_criterion=kd_loss,
                             ft_criterion=feat_loss,
                             eval_criterion=eval_criterion,
                             linear=flatten,
@@ -77,7 +77,7 @@ if __name__ == '__main__':
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
     parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
-    parser.add_argument('--last_layer', default="KD-CE",
+    parser.add_argument('--last_layer', default="KD,T-8",
                         help="")
     parser.add_argument("--student_layer",type=int,default= 5)# Arreglar para caso multicapa
     parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso

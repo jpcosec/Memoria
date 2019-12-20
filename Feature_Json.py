@@ -93,7 +93,7 @@ if __name__ == '__main__':
     #trainloader, testloader, classes = load_cifar10(args)
     #teacher = load_teacher(args, device)
 
-    blocs ={"ResNet101": [26,56,219,39],#Completar
+    blocs ={"ResNet101": [26,56,219,239],#Completar
             "MobileNet": [6,15,26,55]
              }
     for student in [ "MobileNet"]:#todo: terminar
