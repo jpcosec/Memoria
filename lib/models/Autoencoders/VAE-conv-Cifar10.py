@@ -77,6 +77,8 @@ class VAE(nn.Module):
         for x in cfg:
             if x == 'M' and encoder:
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+            if x == 'M' and not encoder:
+                layers += [nn.MaxPool2d(kernel_size=1, stride=1, dilation=1)]
             else:
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
                            nn.BatchNorm2d(x),
