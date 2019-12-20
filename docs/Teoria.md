@@ -314,11 +314,11 @@ Extrañamente, al transferir pesos entre la misma tarea se nota un comportamient
 
 
 
-**Comparacion segun diferencia de task**
+**Comparacion segun diferencia de domino**
 
 Se repite el experimento anterior sin realizar fine-tuning sobre la red completa comparando el decaimiento observado al realizar las particiones del dataset aleatorias con una particion del dataset entre imagenes naturales e imagenes de objetos hechos por el hombre y con una inicializacion aleatoria de los pesos de las primeras capas. 
 
 Se logra notar que en el caso de los features aleatorios el accuracy decrece exponencialmente a partir de la segunda capa. Comparando las otras dos, la separacion aleatoria del dataset suele mostrar un ligero mejor comportamiento a partir de la segunda capa con respecto a la separacion entre imagenes naturales y de objetos hechos por el hombre, incrementandose la diferencia a medida aumenta la profundidad, llegando a una diferencia de $0.2$ en accuracy entre ambas en la capa 7. 
 
-De esta manera se prueba por un lado que una separacion mayor entre las tasks entre las que se realiza la transferencia ocasiona un ligeramente peor resultado (sin fine tuning sobre toda la red de por medio) y que una inicializacion aleatoria de las primeras capas no es capaz de detectar correctamente patrones sobre la imagen.
+De esta manera se prueba por un lado que una separacion mayor entre las dominio entre las que se realiza la transferencia ocasiona un ligeramente peor resultado (sin fine tuning sobre toda la red de por medio) y que una inicializacion aleatoria de las primeras capas no es capaz de detectar correctamente patrones sobre la imagen.
 

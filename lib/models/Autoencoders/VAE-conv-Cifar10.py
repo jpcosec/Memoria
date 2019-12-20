@@ -59,12 +59,14 @@ class VAE(nn.Module):
 
         self.encoder = self._make_layers(cfg)
 
-        self.mu = nn.Linear(512, 32)
-        self.logvar = nn.Linear(512, 32)
+        self.mu = nn.Linear(512, 128)
+        self.logvar = nn.Linear(512, 128)
 
 
 
-        self.decoder0 = nn.Linear(32, 512)
+        self.decoder0 = nn.Linear(128, 512)
+
+        self.decoder=self._make_layers(cfg, encoder=False)
 
     def _make_layers(self, cfg, encoder=True):
 
@@ -84,10 +86,10 @@ class VAE(nn.Module):
         return nn.Sequential(*layers)
 
     def encode(self, x):
-        h = F.relu(self.encoder1(x))
-        h2 = F.relu(self.encoder2(h))
-        h3 = F.relu(self.encoder3(h2))
-        return self.mu(h3), self.logvar(h3)
+
+        out = self.encoder(x)
+        out = out.view(out.size(0), -1)
+        return self.mu(out), self.logvar(out)
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
@@ -95,10 +97,10 @@ class VAE(nn.Module):
         return mu + eps * std
 
     def decode(self, z):
-        h0 = F.relu(self.decoder0(z))
-        h = F.relu(self.decoder1(h0))
-        h2 = F.relu(self.decoder2(h))
-        return torch.sigmoid(self.decoder3(h2))
+        out = self.decoder0(z)
+        out = out.view(out.size(0),2,2, -1)
+        out = self.decoder(out)
+        return torch.sigmoid(self.decoder3(out))
 
     def forward(self, x):
         mu, logvar = self.encode(x.view(-1, 3072))
