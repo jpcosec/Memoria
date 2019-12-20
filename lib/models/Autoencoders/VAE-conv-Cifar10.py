@@ -116,7 +116,7 @@ class VAE(nn.Module):
 
     def decode(self, z):
         out = self.decoder0(z)
-        out = out.view(out.size(0),2,2, -1)
+        out = out.view(out.size(0),128,2,2)
         out = self.decoder(out)
         return torch.sigmoid(out)
 
