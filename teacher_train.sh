@@ -1,2 +1,2 @@
-git pull
-python teacher_train.py --model=ResNet101 --epochs=500 --resume
+#git pull
+python teacher_train.py --model=MobileNet --epochs=193 --resume
