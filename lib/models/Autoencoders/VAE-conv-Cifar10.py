@@ -86,7 +86,7 @@ class VAE(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_decoder(self):
-        cfg = [ [512], [256], [128],[64],[64]]
+        cfg = [ [512], [256], [128],[64],[64],[64]]
         layers = []
         in_channels = 128
 
@@ -101,7 +101,7 @@ class VAE(nn.Module):
                            nn.ReLU(True)]
                 in_channels = i"""
 
-        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3,[64])]
+        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3)]
         print(layers)
 
         return nn.Sequential(*layers)
@@ -120,6 +120,8 @@ class VAE(nn.Module):
     def decode(self, z):
         out = self.decoder0(z)
         out = out.view(out.size(0),128,2,2)
+
+
         print(out.shape)
         out = self.decoder(out)
         print(out.shape)
@@ -205,3 +207,6 @@ if __name__ == "__main__":
         }
         torch.save(state, './checkpoint/ckpt.pth')
 # © 2019 GitHub, Inc.
+
+#def calc(h_in,kernel_size,stride=1,output_padding=0,padding=0,dilation=1):
+#    return (h_in-1)* stride-2*padding + dilation*(kernel_size-1)+output_padding+1
