@@ -56,6 +56,7 @@ class VAE(nn.Module):
         super(VAE, self).__init__()
 
         cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
+        rcfg = [512, 512, 'M', 512, 512, 'M', 256, 256, 'M', 128, 'M', 64, 'M']
 
         self.encoder = self._make_layers(cfg)
 
@@ -66,18 +67,19 @@ class VAE(nn.Module):
 
         self.decoder0 = nn.Linear(128, 512)
 
-        self.decoder=self._make_layers(cfg, encoder=False)
+        self.decoder=self._make_layers(rcfg, encoder=False)
 
     def _make_layers(self, cfg, encoder=True):
 
         layers = []
         in_channels = 3
         if not encoder:
-            cfg.reverse()
-            in_channels=512
+            in_channels=128
         for x in cfg:
             if x == 'M' and encoder:
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+            elif x == 'M' and not encoder:
+                layers += [nn.MaxPool2d(kernel_size=1, stride=1,dilation=2)]
             else:
 
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
@@ -86,6 +88,10 @@ class VAE(nn.Module):
                 in_channels = x
         if encoder:
             layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
+        else:
+            layers += [nn.Conv2d(in_channels, 3, kernel_size=3, padding=1),
+                       nn.BatchNorm2d(x),
+                       nn.ReLU(inplace=True)]
         return nn.Sequential(*layers)
 
     def encode(self, x):
