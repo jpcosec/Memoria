@@ -86,12 +86,12 @@ class VAE(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_decoder(self):
-        cfg = [ [512], [256], [128],[64],[64],[64]]
+        cfg = [ [512], [256], [128]]
         layers = []
         in_channels = 128
 
         for x in cfg:
-            layers += [nn.ConvTranspose2d(in_channels, x[0], kernel_size=3),
+            layers += [nn.ConvTranspose2d(in_channels, x[0], kernel_size=3,output_padding=1,padding=1,stride=2),
                        #nn.BatchNorm2d(x),
                        nn.ReLU(True)]
             in_channels =x[0]
@@ -101,7 +101,7 @@ class VAE(nn.Module):
                            nn.ReLU(True)]
                 in_channels = i"""
 
-        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3)]
+        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3,output_padding=1,padding=1,stride=2)]
         print(layers)
 
         return nn.Sequential(*layers)
@@ -122,9 +122,9 @@ class VAE(nn.Module):
         out = out.view(out.size(0),128,2,2)
 
 
-        print(out.shape)
+        #print(out.shape)
         out = self.decoder(out)
-        print(out.shape)
+        #print(out.shape)
         return torch.sigmoid(out)
 
     def forward(self, x):
@@ -158,7 +158,7 @@ def train(epoch):
         data = data.to(device)
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
-        print("oli")
+        #print("oli")
         loss = loss_function(recon_batch, data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
