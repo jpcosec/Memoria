@@ -55,7 +55,7 @@ class VAE(nn.Module):
     def __init__(self):
         super(VAE, self).__init__()
 
-        cfg=[3, 64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
+        cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
 
         self.encoder = self._make_layers(cfg)
 
@@ -71,20 +71,21 @@ class VAE(nn.Module):
     def _make_layers(self, cfg, encoder=True):
 
         layers = []
-        #in_channels = 3
+        in_channels = 3
         if not encoder:
-            cfg=cfg.reverse
+            cfg.reverse()
+            in_channels=512
         for x in cfg:
             if x == 'M' and encoder:
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
-            if x == 'M' and not encoder:
-                layers += [nn.MaxPool2d(kernel_size=1, stride=1, dilation=1)]
             else:
+
                 layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
                            nn.BatchNorm2d(x),
                            nn.ReLU(inplace=True)]
                 in_channels = x
-        layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
+        if encoder:
+            layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
         return nn.Sequential(*layers)
 
     def encode(self, x):
@@ -105,8 +106,9 @@ class VAE(nn.Module):
         return torch.sigmoid(self.decoder3(out))
 
     def forward(self, x):
-        mu, logvar = self.encode(x.view(-1, 3072))
+        mu, logvar = self.encode(x)
         z = self.reparameterize(mu, logvar)
+
         return self.decode(z), mu, logvar
 
 
@@ -134,6 +136,7 @@ def train(epoch):
         data = data.to(device)
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
+        print("oli")
         loss = loss_function(recon_batch, data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
