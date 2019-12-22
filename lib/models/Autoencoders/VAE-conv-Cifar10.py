@@ -10,13 +10,17 @@ from torch.nn import functional as F
 from torchvision import datasets, transforms
 from torchvision.utils import save_image
 
+from lib.utils.utils import auto_change_dir
+
 os.chdir("../../../Cifar10")
 print(os.getcwd())
 
 parser = argparse.ArgumentParser(description='VAE MNIST Example')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 128)')
-parser.add_argument('--epochs', type=int, default=400, metavar='N',
+parser.add_argument('--epochs', type=int, default=8
+
+ 00, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='enables CUDA training')
@@ -33,76 +37,66 @@ device = torch.device("cuda" if args.cuda else "cpu")
 print(device)
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 transformc = transforms.Compose([
-          transforms.RandomCrop(32, padding=4),
-          transforms.RandomHorizontalFlip(),
-          #transforms.Lambda(random_return),
-          transforms.ToTensor(),
-          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomHorizontalFlip(),
+    # transforms.Lambda(random_return),
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
-      ])
+])
 
 trainset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transformc)
 train_loader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size, shuffle=True, **kwargs)
 
-
 testset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transformc)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, **kwargs)
-
-os.chdir('VAE_FC')
+auto_change_dir('VAE_CONV3')
+auto_change_dir("results")
+os.chdir("..")
 
 
 class VAE(nn.Module):
     def __init__(self):
         super(VAE, self).__init__()
 
-        cfg=[64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M']
+        self.encoder = self._make_encoder()
+        self.encoder0 = nn.Linear(8192, 128)
 
-        self.encoder = self._make_encoder(cfg)
+        self.mu = nn.Linear(128, 128)
+        self.logvar = nn.Linear(128, 128)
 
-        self.mu = nn.Linear(512, 128)
-        self.logvar = nn.Linear(512, 128)
+        self.decoder = self._make_decoder()
+        self.decoder0 = nn.Sequential(nn.Linear(128, 128),
+                                      nn.ReLU(True),
+                                      nn.Linear(128, 8192),
+                                      nn.ReLU(True))
 
-
-
-        self.decoder0 = nn.Linear(128, 512)
-
-        self.decoder=self._make_decoder()
-
-    def _make_encoder(self, cfg, encoder=True):
-
+    def _make_encoder(self):
+        cfg = [(3, 1), (32, 2), (32, 1), (32, 1)]
         layers = []
         in_channels = 3
-        for x in cfg:
-            if x == 'M':
-                layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
-            else:
 
-                layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1),
-                           nn.BatchNorm2d(x),
-                           nn.ReLU(inplace=True)]
-                in_channels = x
-        if encoder:
-            layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
+        for x, s in cfg:
+            layers += [nn.Conv2d(in_channels, x, kernel_size=3, stride=s,padding=1),
+                       # nn.BatchNorm2d(x),
+                       nn.ReLU(inplace=True)]
+            in_channels = x
+
         return nn.Sequential(*layers)
 
     def _make_decoder(self):
-        cfg = [ [512], [256], [128]]
+        cfg = [(32, 1), (32, 1)]
         layers = []
-        in_channels = 128
+        in_channels = 32
 
-        for x in cfg:
-            layers += [nn.ConvTranspose2d(in_channels, x[0], kernel_size=3,output_padding=1,padding=1,stride=2),
-                       #nn.BatchNorm2d(x),
+        for x, s in cfg:
+            layers += [nn.ConvTranspose2d(in_channels, x, kernel_size=3, stride=s,padding=1),
                        nn.ReLU(True)]
-            in_channels =x[0]
-            """for i in x[1:]:
-                layers += [nn.ConvTranspose2d(in_channels, i, kernel_size=3, stride=2,padding=1),
-                           #nn.BatchNorm2d(x),
-                           nn.ReLU(True)]
-                in_channels = i"""
+            in_channels = x
+        layers += [nn.ConvTranspose2d(in_channels, 32,kernel_size=3,padding=1,output_padding=1,stride=2),
+                   nn.ReLU(True)]
 
-        layers += [nn.ConvTranspose2d(in_channels, 3, kernel_size=3,output_padding=1,padding=1,stride=2)]
-        print(layers)
+        layers += [nn.Conv2d(32, 3, kernel_size=3, stride=1,padding=1)]
 
         return nn.Sequential(*layers)
 
@@ -110,6 +104,7 @@ class VAE(nn.Module):
 
         out = self.encoder(x)
         out = out.view(out.size(0), -1)
+        out = self.encoder0(out)
         return self.mu(out), self.logvar(out)
 
     def reparameterize(self, mu, logvar):
@@ -119,12 +114,8 @@ class VAE(nn.Module):
 
     def decode(self, z):
         out = self.decoder0(z)
-        out = out.view(out.size(0),128,2,2)
-
-
-        #print(out.shape)
+        out = out.view(out.size(0), 32, 16, 16)
         out = self.decoder(out)
-        #print(out.shape)
         return torch.sigmoid(out)
 
     def forward(self, x):
@@ -135,7 +126,21 @@ class VAE(nn.Module):
 
 
 model = VAE().to(device)
+
+if os.path.isdir("checkpoint"):  # todo: cambiar a non initialized
+    # Load checkpoint.
+    print('==> Resuming from checkpoint..')
+
+    checkpoint = torch.load('./checkpoint/ckpt.pth')
+    model.load_state_dict(checkpoint['net'])
+    start_epoch = checkpoint['epoch']
+else:
+    auto_change_dir("checkpoint")
+    os.chdir("..")
+
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+
 
 
 # Reconstruction + KL divergence losses summed over all elements and batch
@@ -158,7 +163,7 @@ def train(epoch):
         data = data.to(device)
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
-        #print("oli")
+        # print("oli")
         loss = loss_function(recon_batch, data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
@@ -193,20 +198,20 @@ def test(epoch):
 
 
 if __name__ == "__main__":
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(start_epoch, args.epochs + 1):
         train(epoch)
         test(epoch)
         with torch.no_grad():
-            sample = torch.randn(64, 32).to(device)
+            sample = torch.randn(64, 128).to(device)
             sample = model.decode(sample).cpu()
             save_image(sample.view(64, 3, 32, 32),
                        'results/sample_' + str(epoch) + '.png')
         state = {
             'net': model.state_dict(),
-            'epoch':epoch
+            'epoch': epoch
         }
         torch.save(state, './checkpoint/ckpt.pth')
 # © 2019 GitHub, Inc.
 
-#def calc(h_in,kernel_size,stride=1,output_padding=0,padding=0,dilation=1):
+# def calc(h_in,kernel_size,stride=1,output_padding=0,padding=0,dilation=1):
 #    return (h_in-1)* stride-2*padding + dilation*(kernel_size-1)+output_padding+1
