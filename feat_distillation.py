@@ -15,8 +15,14 @@ def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print("Using device", device)  # todo: cambiar a logger
+    transform_train = transforms.Compose([
+      transforms.Lambda(random_return),
+      transforms.ToTensor(),
+      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
-    trainloader, testloader, classes = load_cifar10(args, transform_train=transforms.Lambda(random_return),)
+    ])
+
+    trainloader, testloader, classes = load_cifar10(args, transform_train=transforms.Lambda(transform_train),)
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
     feat_loss =  parse_distillation_loss(args)
