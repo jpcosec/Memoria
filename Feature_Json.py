@@ -67,8 +67,8 @@ def fake_arg(**kwargs):
         else:
             d[field] = default
 
-    add_field('lr' ,0.1)
-    add_field('epochs' ,100)
+    add_field('lr' ,0.01)
+    add_field('epochs' ,50)
     add_field('train_batch_size' ,128)
     add_field('test_batch_size' ,100)
     add_field('student' ,"ResNet18")
@@ -86,6 +86,10 @@ def fake_arg(**kwargs):
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print("Using device", device)  # todo: cambiar a logger
+    args = fake_arg()
+    trainloader, testloader, classes = load_cifar10(args)
+    teacher = load_teacher(args, device)
 
     print("Using device", device)  # todo: cambiar a logger
     folder="exp2"
@@ -94,15 +98,16 @@ if __name__ == '__main__':
     #teacher = load_teacher(args, device)
 
     blocs ={"ResNet101": [26,56,219,239],#Completar
-            "MobileNet": [6,15,26,55]
+            "MobileNet": [6,15,26,55],
+
              }
     for student in [ "MobileNet"]:#todo: terminar
         for distillation in ["hint", "att_max", "att_mean", "PKT", "nst_linear", "nst_poly"]:
             for layer,(s_layer,t_layer) in enumerate(zip(blocs["MobileNet"],blocs["ResNet101"])):
-                #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
+                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
 
-                #arg = fake_arg(distillation=distillation, student=student,layer=layer,student_layer=s_layer,teacher_layer=t_layer)
+                arg = fake_arg(distillation=distillation, student=student,layer=layer,student_layer=s_layer,teacher_layer=t_layer)
 
-                print("python feat_distillation.py --distillation=%s --layer=%i --student=MobileNet --student_layer=%i --teacher_layer=%i"%(distillation,layer,s_layer,t_layer))
-                #print("TRAINING-%s-%s-%i"%(student,distillation,layer))
-                #experiment_run(arg, device, teacher, testloader, trainloader)
+                #print("python feat_distillation.py --distillation=%s --layer=%i --student=MobileNet --student_layer=%i --teacher_layer=%i"%(distillation,layer,s_layer,t_layer))
+                print("TRAINING-%s-%s-%i"%(student,distillation,layer))
+                experiment_run(arg, device, teacher, testloader, trainloader)

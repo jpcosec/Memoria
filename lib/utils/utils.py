@@ -92,6 +92,9 @@ def load_cifar10(args, transform_train=None, transform_test=None):
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
     return trainloader, testloader, classes
 
+
+
+
 def load_mnist(args):
     # Load MNIST
     auto_change_dir("Mnist")

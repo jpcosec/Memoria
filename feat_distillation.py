@@ -8,15 +8,15 @@ from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import parse_distillation_loss as last_layer_loss_parser
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10, auto_change_dir
+from lib.utils.utils import load_cifar10, auto_change_dir, random_return
 
-
+import torchvision.transforms as transforms
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print("Using device", device)  # todo: cambiar a logger
 
-    trainloader, testloader, classes = load_cifar10(args)
+    trainloader, testloader, classes = load_cifar10(args, transform_train=transforms.Lambda(random_return),)
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)
     feat_loss =  parse_distillation_loss(args)

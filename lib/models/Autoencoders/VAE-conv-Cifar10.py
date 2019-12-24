@@ -41,7 +41,7 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 test_loader , train_loader = load_dataset(args,kwargs)
 
 
-auto_change_dir('VAE_CONV7')
+auto_change_dir('VAE_CONV8')
 auto_change_dir("results")
 os.chdir("..")
 
