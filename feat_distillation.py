@@ -60,7 +60,7 @@ def main(args):
         for epoch in range(exp.epoch, args.epochs):
             exp.train_epoch()
             exp.test_epoch()
-
+        exp.save_model()
     else:
         print("epochs surpassed")
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
     parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
+    parser.add_argument('--epochs', default=20, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')

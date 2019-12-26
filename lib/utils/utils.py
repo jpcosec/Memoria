@@ -30,7 +30,8 @@ def auto_change_dir(path):
 
 
 def random_return(image):
-  return np.random.randint(127,size=(32, 32, 3),dtype=np.uint8)
+    #print(image.getpixel((1, 1)))
+    return np.random.randint(256,size=(32, 32, 3),dtype=np.uint8)
 
 """ Model Stuff"""
 
