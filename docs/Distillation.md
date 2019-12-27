@@ -124,44 +124,6 @@ Abstract: Deep neural networks based methods have been proved to achieve outstan
 
 
 
-### Object detection at 200 Frames Per Second  [Completar]
-
-año: mayo 2019
-
-tipo: video distillation, yolo, arquitectura
-
-
-
-
-
-El paper object distillation at 200 FPS es uno de los ejemplos que vale la pena revisar. Realizan algunas modificaciones a tiny yolo y lo entrenan usando destilacion para obtener un modelo que funcina a 200+ FPS y no pierde mAp.
-
-Entre las modificaciones cuentan reduccion de profundidad y cantidad de canales en features, uso de stacking layers (adicion de primeras capas a capas finales), introduccion de una modificacion de non maximum supression basada en features y la modificacion de la funcion de perdida en la componente de objectness de yolo. Se explicaran las 3 ultimas modificaciones
-
-- **Modificaciones de arquitectura**
-
-En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para computaciones.
-
-- **FN-NMS**
-
-En yolo, en los casos que un objeto corresponda a multiples celdas o bounding boxes la transferencia de conocimiento a una red estudiante puede resultar redundancia que ocasione perdida de desempeño. Yolo usa non máximum supresion para entrenar en estos casos, en la destilacion planteada en el paper se evita esta redundancia usando un filtro que mapee desde todas las detecciones cercanas de una misma clase a la de mayor objectness. Luego se entrena sobre esa deteccion.
-
-- **Destilacion y perdida escalada por objectness**: 
-
-La forma de predecir de yolo es bastante especial ya que divide la imagen de entrada en un campo de 13x13 celdas sobre las que se predicen simultaneamente los scores de la clasificación clases, las bounding boxes de las imagenes y  el objectness (probabilidad de que en cierta zona de la imagen haya algo). Para clasificacion la perdida suele ser crossentropy, para bounding box y objectness distancia $L_1$ o $L_2$.
-
-$$ \mathcal{L}_{yolo} = \mathcal{L}_{cl}(p_i,\hat{p_i})+\mathcal{L}_{bb}(b_i,\hat{b_i})+ \mathcal{L}_{obj}(o_i,\hat{o_i}) $$
-
-Una problematica de la formulacion de la perdida en este caso es que al entrenar simulataneamente todo, se realiza aprendizaje de clases y bounding boxess en aquellas celdas donde no hay nada todo:[es problematico quitar de la nada esto ya que es posible que hayan perdidas en el aprendizaje de las features.]. Evitan este problema escalando según objectness las perdidas distintas de objectnes. Definiendo una ganancia $\lambda_D$, $o^{gt}$ como el ground truth, $\hat{o}$ como la salida de la red estudiante y $o^T$ como la salida de la red tutora la perdida de objectness pasa a ser.
-
-$$\mathcal{L}'_{obj}(o_i,\hat{o_i}) =  \mathcal{L}_{obj}(o^{gt}_i,\hat{o_i}) + \lambda_D \mathcal{L}_{obj}(o^T_i,\hat{o_i}) $$
-
-Similarmente, las perdidas de clasificacion y bounding box pasan a ser las siguientes. Notese la presencia de objectness escalando el peso de la perdida.
-
-$$\mathcal{L}'_{cl}(o_i,\hat{o_i}) =  \mathcal{L}_{cl}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{cl}(o^T_i,\hat{o_i}) $$
-
-$$\mathcal{L}'_{bb}(o_i,\hat{o_i}) =  \mathcal{L}_{bb}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{bb}(o^T_i,\hat{o_i}) $$
-
 
 
 
@@ -176,9 +138,9 @@ tipo: survey
 
 Abstract. As a new classification platform, deep learning has recently received increasing attention from researchers and has been success- fully applied to many domains. In some domains, like bioinformatics and robotics, it is very difficult to construct a large-scale well-annotated dataset due to the expense of data acquisition and costly annotation, which limits its development. Transfer learning relaxes the hypothesis that the training data must be independent and identically distributed (i.i.d.) with the test data, which motivates us to use transfer learning to solve the problem of insufficient training data. This survey focuses on reviewing the current researches of transfer learning by using deep neural network and its applications. We defined deep transfer learning, category and review the recent research works based on the techniques used in deep transfer learning.
 
-- Hacen una introduccion a una definicion formal al problema del transfer learning en contexto de deep learning. Luego separan taxonómicamente en 4 clases las tendencias que estan pasando actualmente.
+* [ ] Hacen una introduccion a una definicion formal al problema del transfer learning en contexto de deep learning. Luego separan taxonómicamente en 4 clases las tendencias que estan pasando actualmente.
 
-- La definicion de transfer learning la analogan al aprovechamiento o adaptacion de un modelo entrenado en un par dominio-tarea particular a otro par dominio tarea.
+* [ ] La definicion de transfer learning la analogan al aprovechamiento o adaptacion de un modelo entrenado en un par dominio-tarea particular a otro par dominio tarea.
 
   Un dominio se puede definir como $\mathcal{D} = \{ \chi,P(X) \}$ es decir un par compuesto por $\chi$, el espacio de características y $P(X)$, una probabilidad de distribucion sobre $X=\{x_1,\dots,x_n \} \in \chi$. Tomando como ejemplo el popular dataset MNIST, $\chi$ podria tratarse de todos los arreglos $\mathcal{b}^{28 \times 28} $  donde $ \mathcal{b}=\{0 \dots 255\} $ son todos los enteros representables en 8 bits, $X$ las 70.000 imagenes del dataset y $P(X)$ todos los digitos manuscritos que puedan ser escritos en esa resolución.
 
@@ -186,7 +148,7 @@ Abstract. As a new classification platform, deep learning has recently received 
 
   Dadas estas definiciones, transfer learning corresponde a que dado una tarea *source* $\mathcal{T}_{s}$ razonablemente resuelta sobre un dominio *source* $\mathcal{D}_s$ y una tarea *target* $\mathcal{T}_t$ sobre un dominio target $\mathcal{D}_t$ no resueltas y donde ambos o uno de $\mathcal{D}_s \neq \mathcal{D}_t$ y  $\mathcal{T}_s \neq \mathcal{T}_t$ se cumplen, se hace uso del conocimiento latente del par *source* para mejorar el desempeño del par target. En el caso que hayan estructuras deep metidas entre medios, se puede hablar de deep transfer learning.
 
-- La primera categoria descrita corresponde a habiendo cierta coincidencia entre los conjuntos $D_s$ y $D_t$, usar instancias ponderadas de estos para la prediccion objetivo, ejemplo de esto serían los algoritmos tipo ensemble. Otra se refiere al uso de parte de la red base que define $f_t(x)$ para extraer características que luego pueden clasificarse mediante un reentrenamiento de las capas no usadas o el uso de otros algoritmos. Finalmente quedan dos categorías, la primera referida al uso de funciones de mapeo entre uno y otro dominio para aprovechar el conocimiento de uno en otro y la segunda referida al uso de algoritmos adversariales para este  mismo fin.
+* [ ] La primera categoria descrita corresponde a habiendo cierta coincidencia entre los conjuntos $D_s$ y $D_t$, usar instancias ponderadas de estos para la prediccion objetivo, ejemplo de esto serían los algoritmos tipo ensemble. Otra se refiere al uso de parte de la red base que define $f_t(x)$ para extraer características que luego pueden clasificarse mediante un reentrenamiento de las capas no usadas o el uso de otros algoritmos. Finalmente quedan dos categorías, la primera referida al uso de funciones de mapeo entre uno y otro dominio para aprovechar el conocimiento de uno en otro y la segunda referida al uso de algoritmos adversariales para este  mismo fin.
 
 
 
@@ -233,6 +195,22 @@ año: mayo 2019
 - Usan un generador, una red estudiante y una red tutora pre-entrenada. Suman a la perdida de la red estudiante el uso de una perdida que incluye attention maps en algunos bloques comunes de la red estudiante con la red tutoria, de la misma manera que las vistas en las de layer level distillation.
 - La perdida para el generador es basicamente menos la divergencia KL entre la red estudiante y la red tutora. Para la red estudiante es la divergencia KL entre a red estudiante y la red tutora mas un termino de regularizacion sobre la atencion en las features de la red.
 - Funciona relativamente bien en datasets pequeños del tipo cifar 10.
+
+
+
+### Casos especiales
+
+#### Knowledge Transfer with Jacobian Matching
+
+Autores: Suraj Srinivas, Francois Fleuret
+
+Año: 2018
+
+En: ICML
+
+
+
+Proponen un entrenamiento mediante matching de los jacobianos en alguna capa intermedia. El jacobiano se calcula con respecto al pixel de mayor intensidad dentro del espacio de entrada. Al parecer usan la red como un metodo de pre-inicializacion para finalmente entrenar con cross entropy. No tiene demasiado sentido la tecnica.
 
 ### Adversarial Distillation of Bayesian Neural Network Posteriors
 año 2018

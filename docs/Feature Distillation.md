@@ -6,194 +6,13 @@
 
 Dado el problema planteado se pasará a detallar algunas investigaciones que comparten en comun el hacer uso de los features para transferencia de conocimiento.
 
-### A Comprehensive Overhaul of Feature Distillation 
+## En tarea de clasificacion
 
-Año: 2019
+### Transferencia usando red neuronal
 
-Autores: Byeongho Heo, Jeesoo Kim, Sangdoo Yun, Hyojin Park, Nojun Kwak, Jin Yor Choi
+#### FITNETS: HINTS FOR THIN DEEP NETS
 
-En:
-
-Definen feature distillation de manera generalizada como un setting de transfer learning en el cual se usan las features de la red tutora para el entrenamiento de la red estudiante. Definiendo una medida de distancia $d$ y una función de adaptacion dimensional para cada red $T_T$, $T_S$, las cuales son aplicadas sobre las features de cada red $F_T$ y $F_S$, la perdida de cualquier destilacion de features puede ser definida de la siguiente forma:
-
-$$\mathcal{L}_{FD}= d \left[ T_T \left( F_T\right),T_S \left( F_S\right)\right]$$
-
-Además, definen toda perdida en terminos de transformada en los terminos expuestos, es decir, las transformaciones $T_T$ y $T_S$ y la distancia $d$ a lo que agregan una caracteristica de perdida de información, como por ejemplo las dimensiones de canal en Attention Transfer o el valor de los features en activation boundary. 
-
-En funcion de esto define un metodo de destilacion basado en el trabajo anterior del mismo autor,  Activation boundaries con la diferencia que en vez de binarizar la expresion de ReLU como en el caso anterior, usa una modificacion llamada Margin Relu $\sigma_{\textrm{MReLU }}=max(x,m)$, siendo m un valor negativo. En esta version setean el margen como al esperanza del valor de las respuestas negativas sobre todas las imagenes, el cual puede ser calculado online en el entrenamiento o usando el los parametros de la ultima batch normalization. Esto es usado en las features de la red tutora, mientras que la red estudiante usa una adaptacion de convoluciones de 1x1 y batch normalization.
-
-Además, como funcion de distancia se propone una distancia L2 parcial, que transfiere el conocimiento de la red tutora para una posicion i-esima en el tensor de activacion en caso que la respuesta del estudiante sea menor que la del tutor y menor que 0.
-
-$$d_p(T,S)=\sum^{WHC}_i\begin{cases}
- 0& \text{ si } F_{S_i}  \leq F_{Ti} \leq 0 \\ 
-\left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
-\end{cases}$$
-
-
-
-### Mimicking Very Efficient Network for Object Detection
-
-Autores:  Quanquan Li, Shengying Jin, Junjie Yan
-
-Año: 2017
-
-En: CVPR
-
-Parten desde la arquitectura de R-CNN, es decir una red de propuesta de regiones y una red de clasificacion sobre esas propuestas. Hacen basicamente lo mismo que en fitnets pero considerando solo aquellas zonas donde hay un region propuesta por la RPN. Definen sus perdidas como $L=\lambda_1 L_m + L_{gt}$, donde $L_{gt}=L_{cls}+\lambda_2 L_{reg}$, es decir la perdida de clasificacion y regresion de las regiones propuestas y la destilacion se realiza similarmente a fitnets usando un regreso r, sobre los espacios de las features originales indicadas por el pooling espacial de la RPNu. $L_m=\frac{1}{2N}\sum_i \frac{1}{m_i}\| u_T -r (u_s) \|_2^2$
-
-
-
-
-
-### Structured Knowledge Distillation for Semantic Segmentation
-
-Autores: Yifan Liu, Ke Chen, Chris Liu, Zengchang Qin, Zhenbo Luo, Jingdong Wang
-
-Año: 2019
-
-En: CVPR
-
-El problema de segmentacion semántica consiste en la prediccion de un mapa $Q$ score de clases para cada uno de los pixeles de una imagen, cosa que hace no a lugar el uso de cualquier tecnica usada en clasificacion o detección. Sin embargo, suele partirse desde un backbone ya entrenado en algun otro task. El paper usa varias perdidas distintas, una de destilacion en feature map y en la predicción, una de segmentacion y otra discriminativa para destilar un modelo de segmentacion semantica basado en un backbone preentrenado en un modelo mas pequeño. 
-
-**Destilacion de Ground truth**, se usa simplemente cross entropy entre la salida de la red y el ground truth para cada uno de los pixeles.
-
-**Destilacion a nivel de pixel**, se usa un promedio a nivel de imagen de clasificacion de Hinton, es decir, la divergencia KL entre los logits de la red tutora y la red estudiante. $L_{\text{pi}}=\frac{1}{N_wN_H} \sum_{i,j \in W,H} KL \left( q_{i,j}^S \| q_{i,j}^T \right)$.
-
-**Pairwise distillation**, se usa una medida de similaridad entre dos pixeles calculada como $a_{ij}=f_i^\top f_j /\left ( \left \| f_i \right \|_2 \left \| f_j \right \|_2 \right )$, la cual luego es comparada para cada uno de los pixeles de los feature maps de ambas redes. $L_{\text{pa}}=\frac{1}{(N_wN_H )^2} \sum_{i \in W,H}\sum_{j \in W,H} \left (  a_{ij}^S - a_{ij}^T \right)^2$
-
-**Hollistic (Adversarial) distillation**, consiste en el uso de un discriminador $D$ que actúa a modo de red de embeding usando a la red de segmentación como si fuese un generador. Luego, usando la distancia wasserstein se compara la distribución de ambas salidas. $L_{\text{ho}} = \mathbb{E}[D(Q^{S})]-\mathbb{E}[D(Q^T)]$
-
-
-
-### Knowledge Distillation with Feature Maps for Image Classification
-
-Año: 2019
-
-Autores: Wei-Chun Chen, Chia-Che Chang, Chien-Yu Lu, and Che-Rung Lee
-
-En: ACCV
-
-Usan GAN para entrenar redes que reproducen features. El sistema completo se compone de un generador $G$ que se usa para imitar los features, un discriminador $D$ que sirve para entrenar el generador y un clasificador $C$ mediante el cual se clasifica y que toma como entrada las features generadas por G. 
-
-$$L_{\text{adv}D}=\frac{1}{2}\left[D(G(x))	\right]^2-\frac{1}{2}\left[D(F_T(x))-1	\right]^2$$
-
-$$L_{\text{adv}G}=\frac{1}{2}\left[D(G(x))	\right]^2$$
-
-La perdida total para el generador es, esta se entrena de forma separada a la del discriminador.
-
-$$L_G=L_{\text{adv}G}+\alpha L_{KD}$$
-
-### Distilling Object Detectors with Fine-grained Feature Imitation
-
-Año: 2019
-
-Autores: Tao Wang, Li Yuan, Xiaopeng Zhang, Jiashi Feng
-
-En: CVPR
-
-El estudio se centra en destilacion en el contexto de deteccion de objetos. Ya que a diferencia de la clasificion, en la cual se obtiene una sola etiqueta de clase para toda la imagen, en deteccion el objetivo es diferenciar los objetos del fondo y clasificar cada uno por separado (paralela o secuencialmente). De partida esto introduce dos diferencias importantisimas con respecto a la clasificacion, las cuales tienen consecuencias importantes al momento de destilar;
-
-1. Los fondos en las imagenes pueden ser mucho mas variados que los objetos de primer plano, de esta manera en deteccion gran parte de la informacion de la imagen es o inutil o ruido que puede condicionar al detector a obtener respuestas falsas.
-2. La destilacion propuesta por hinton debe ser completamente modificada ya que la etiqueta deja de ser solo un valor de clase, si no de bounding box y clase por cada objeto presente en la imagen.
-
-El metodo de destilacion propuesto imita las features de una manera no muy distinta a como se imitan las features en Fitnets, pero lo hace solamente en una region particular. Es decir, para una posicion $i$,$j$ en el feature map se define la perdida local $l$ como.
-
- $$l_{ij}=\sum_{c=1}^C \left ( r \left ( F_s \right )_{ijc} - F_{T_{ijc}} \right )^2 $$
-
-Así la perdida completa del metodo es la siguiente.
-
-$$L_{\text{FGFI}} = \frac{1}{2N_p}  \sum_{i,j  \in W,H} \mathbb{I}_{ij}*l_{ij} $$
-
-Donde $\mathbb{I}_{i,j}$ es un valor binario que es 1 cuando la posicion pertenece a la mascara de imitacion y 1 cuando no pertenece y $N_p=\sum_{i,j  \in W,H} \mathbb{I}_{ij}$ es el area de la mascara.
-
-La mascara de imitacion se calcula combiando mediante OR todos los anchors que tienen un iou mayor que algun threshold con el bounding box.
-
-### An Embarrassingly Simple Approach for Knowledge Distillation
-
-Año: 2019
-
-Autores: Mengya Gao, Yujun Shen, Quanquan Li, Junjie Yan, Liang Wan, Dahua Lin, Chen Change Loy, Xiao Tang 
-
-En: Arxiv, aun no publicado.
-
-En general en los aprendizajes multi-task es necesario usar varias perdidas distintas, cada una de ellas ponderada por un hiperparametro $\lambda$ para ponderar cuanto afecta cada una de las perdidas al momento de realizar backpropagation. La eleccion de estos hiperparametros puede ser una tarea dificil, especialmente considerando que el valor optimo suele cambiar de dataset a dataset sin otra forma de encontrarlo que el uso de varias instancias de prueba y error. El paper postula una manera simple y eficiente de evitar este problema desacoplando las etapas de aprendizaje en el caso de destilacion de features.
-
-En general, la mayoria de las redes puede separarse entre una etapa de extraccion de features llamada backbone y una de clasificacion llamada task-head. Como se puede ver en How transferable are features in deep neural networks? estas suelen ser bastante independientes del task, cosa que se aprovecha en este paper para separar los entrenamientos en una etapa de aprendizaje "greedy" de las features de una red tutora y una etapa de aprendizaje de las labels finales usando ground truth y el backbone fijo.
-
-Para la primera etapa se hace uso de un entrenamiento bloque por bloque, es decir, se toma cierta profundidad de capa a reproducir y se reproducen las features de la red tutora en la red estudiante, luego se fijan los pesos en la red estudiante y se aprenden los features a una profundidad un poco mayor y asi sucesivamente hasta destilar el backbone completo. Finalmente se reproduce la ultima capa usando solo la red estudiante y el ground truth del task a entrenarse. El aprendijaze de los features se realiza usando una perdida de distancia L2 entre los features de la red tutora y estudiante.
-
-$$L_{SSKD}= \|f_t^2-f_s^2 \|_2$$
-
-### Learning Student Networks via Feature Embedding
-
-Año: 2018
-
-Autores: Hanting Chen, Yunhe Wang, Chang Xu, Chao Xu and Dacheng Tao
-
-En: IEEE (submited)
-
-Los autores realizan transferencia del conocimiento de los features de una manera un poco distinta a la vista hasta el momento ya que lejos de intentar acercar la respuesta de la red estudiante a la de la red tutora según alguna forma, buscan replicar la distancia relativa entre las respuestas de la red estudiante a dos samples $x_j$,$x_{i}$ del dataset arbitrarios. De esta forma introducen una perdida llama local preserving loss, la cual toma la siguiente forma:
-
-$$\mathcal{L}_{\text{LP}}=\frac{1}{m}\sum_{i,j}\alpha_{i,j} \|f_{s}^i-f_s^j\|_2^2$$
-
-Donde $m$ es el tamaño del minibatch, y $\alpha_{i,j}$ es un coeficiente que toma un valor positivo en caso que las features del sample $j$ en la red tutora, $f_T^j$ sea el vecino mas cercano de las features del sample $i$, $f_T^i$ y toma valor 0 en cualquier otro caso, es decir:
-
-$$\alpha_{i,j}=\left\{\begin{matrix}
- exp(\|f_{T}^i-f_T^j\|_2^2) & \text{si } j \in N(i) \\ 
- 0 &  \text{en otro caso}
-\end{matrix}\right.$$
-
-
-
-
-
-### FD-GAN: Pose-guided Feature Distilling GAN for Robust Person Re-identification
-
-Año: 2018
-
-Autores:  Yixiao Ge, Zhuowan Li, Haiyu Zhao, Guojun Yin, Shuai Yi, Xiaogang Wang, Hongsheng Li
-
-En: Nips
-
-El problema de la re-identificacion de personas consiste en la comparacion de alguna representacion de dos imagenes para dilucidar si se trata del mismo sujeto. Para esto suele hacerse uso de una arquitectura llama red siamesa, la cual basicamente consiste en instanciar una red dos o mas veces y entrenar reduciendo la distancia entre las representaciones obtenidas de las distintas instancias para una misma persona o alejandola para personas distintas. 
-
-El paper mezcla 4 tasks distintas en una misma arquitectura siamesa para lograr un aprendizaje de una representacion consistente de identidad entre individuos, desacoplada de la pose (orientacion de cuerpo y posicion de extremidades con respecto al cuerpo). La base es un encoder basado en resnet que recibe una imagen, una pose y ruido.  Sobre esta cual se acopla un generador que crea imagenes falsas del sujeto en la pose especificada. Estas imagenes son luego pasadas por un discriminador de pose y de identidad para comparar con el dato de entrada. La parte siamesa viene por replicar toda esta arquitectura usando dos imagenes de entrada que pueden tratarse de un mismo sujeto o no. Al momento de evaluar se usa solamente el encoder basado en resnet.
-
-El resultado es bastante bueno, sin embargo la tecnica no corresponde mucho al concepto de destilacion como hemos visto en el resto de los  ya que en vez de usarse una red estudiante para aprender lo sabido por una red tutora lo que se hace es sumar mas tasks a una estructura ya entrenada para realizar fine-tuning. De todas maneras el trabajo es bastante cercano y hace uso de transfer learning, junto con features de algo ya entrenado. 
-
-
-
-### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer 
-
-Año: DEC 2017
-
-Autores: Zehao Huang, Naiyan Wang
-
-En: ICLR
-
-En NST interpretan el mapa de activacion de cada posicion como si fuera un sampleo de como la red neuronal interpreta la imagen de entrada, con esto se puede ver en que se centra la red neuronal para realizar la deteccion. Basado en esto evitan hacer un match directo de los feature maps ya que esto ignora la densidad de sampleo en el espacio de las features de la red tutora. En vez de eso busca realizar un alineamiento de las distribuciones de la red tutora y estudiante.  
-
-Definen entonces el conocimiento selectivo de las neuronas como la activacion de cada neurona para un patron particular encontrado en la entrada $X$ bajo un una tarea particular.  Desde esto el metodo propuesto es neural selectivity transfer, o la transferencia de este conocimiento. Para el entrenamiento se usan dos perdidas distintas, una para los feature maps y otra para la clasificacion. Clasificacion se pena con cross entropy y feature maps con MMD, discrepancia maxima de media.
-
-$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
-
-
-
-El MMD se calcula de la siguiente forma. Dos sets de samples $S_p=\{p^i\}^N_{i=1}$ $S_q=\{q^i\}^m_{i=1}$, luego, la distancia MMD es:
-
-$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N} \sum^N_{i=1}\phi(p^i) - \frac{1}{M} \sum^M_{j=1}\phi(q^j) \mid \mid$$
-
-donde $\phi(.)$ es una funcion explicita de mapeo. Usando el kernel trick  se puede reformular como
-
-$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=1} k (p^i,p^{i'}) + \frac{1}{M^2} \sum^M_{j=1}\sum^M_{j'=1} k (q^j,q^{j'}) - \frac{1}{MN} \sum^M_{i=1}\sum^M_{j'=1} k (p^i,q^{j})  $$
-
-Lo cual finalmente se aplica usando sampleos  desde $F_T$ y $F_S$, sampleando la activacion a traves de todos los canales y normalizando, $p^i=\frac{f^i_T}{\mid\mid f^i_T \mid\mid_2}$ e identicamente para q con FT
-
-Sobre el k usado, se usaron kernel lineal, polinomial de $d=2$ y $c=0$ y gaussiano con $\sigma^2$ igual al ECM entre los pares. El caso lineal tiene ciertas semejanzas con Att y el caso polinomial de orden 2 da la matriz de gramm usada en FSP. En general funciona mejor que todos los puntos con los que se compara el paper. En el caso de pascal VOC 2007 funciona mejor incluso que la base (Faster R-CNN). Un detalle interesante, si bien no lo probaron con GAN lo postulan como una forma interesante a probar en adelante ya que permite recorrer de mejor manera el espacio de las features.
-
-### FITNETS: HINTS FOR THIN DEEP NETS
-
-Año: MAR 2015 
+Año: Marzo 2015 
 
 Autores: Adriana Romero, Nicolas Ballas, Samira Ebrahimi Kahou, Antoine Chassang, Carlo Gatta, Yoshua Bengio
 
@@ -211,7 +30,102 @@ $$ \mathcal{L}_{NST}(W_S) =\mathcal{L}_{ce}(Y_{true},ps)+\lambda \mathcal{L}_{HT
 
 El estudio se centra en el uso de redes estudiantes mas profundas que las redes destiladas pero de menor ancho y por lo mismo menor cantidad de parametros. El funcionamiento es ligeramente mejor al de hinton.
 
-### Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer
+
+
+#### Layer-Level Knowledge Distillation for Deep Neural Network Learning
+
+año: abril 2019
+
+Autores:Hao-Ting Li, Shih-Chieh Lin, Cheng-Yeh Chen and Chen-Kuo Chiang
+
+En: MDPI
+
+
+
+El modelo consiste de dos partes, lsp o layer selectivity procedure que usa el hessiano entre capas para determinar que features linkear y ALs o auxiliary structure learning que realiza la transferencia de conocimiento entre las features de los modelos tutor y estudiantes .
+
+ALS basicamente consiste en usar capas para proyectar las features de un modelo al otro. Mediante una capa de projeccion por modelo que mapee los features a un vector de una dimensionalidad en $\mathbb{R}^n$ y otra capa densa de alineamiento mediante las que penar las diferencias.
+
+$$\mathcal{L}_{Align}^{(K)}(t,s) = \| X_t^{(i)} -X_s^{(j)}  \|_2$$
+
+La perdida final incorpora la suma de todas las perdidas de todas las etapas de  ALS.
+
+$$\mathcal{L}_{total}=\sum_{k=1}^n \mathcal{L}_{Align}^{(k)} + \mathcal{L}_{model}^{(p)} $$
+
+La otra etapa, LSP consiste en seleccionar que capas de la la red tutora transferir usando el argumento minimo del grammiamo inter clases sumado al grammiano entre capas. El funcionamiento es ligeramente mejor a Fitnets.
+
+#### Paraphrasing Complex Network: Network Compression via Factor Transfer
+
+Año: 2018
+
+Autores: Jangho Kim, SeongUk Park, Nojun Kwak
+
+En: NIPS
+
+Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factores".  
+
+El traspaso de informacion se realiza en 2 niveles, primero se entrena un parafreasador desde la red tutora, reconstruyendo el input desde la capa desde la cual se quiere realizar el traspaso de informacion. Se minimiza entonces la siguiente perdida en esta etapa, $P(x)$.
+
+$$\mathcal{L}_{rec}=\left \| x - P(x) \right \| ^2$$
+
+Luego de entrenado el parafraseador, se entrena la red estudiante ubicando una capa de interfaz que sirve de traductor entre el factor (salida del parafraseador) y la salida de la red estudiante. Luego, se usa la misma funcion de perdida de attention transfer entre las salidas del traductor y el parafraseador, a lo cual se suma la perdida de cross entropy para la salida.
+
+Funciona regularmente bien, no demasiado, si regularmente
+
+### Transferencia usando reduccion matematica
+
+#### Learning Deep Representations with Probabilistic Knowledge Transfer
+
+año: Marzo 2018
+
+Autores: Nikolaos Passalis, Anastasios Tefas
+
+En: ECCV
+
+Rather than hacer un matching directo entre los features como en casi todos los casos de layer level, hacen aproximan la distribución de probabilidades de la red estudiante a la red tutora.
+
+El uso de probabilidades permite realizar knowledge transfer usando
+
+- Cross-modal knowledge
+- Features creados a mano (sift, etc)
+- Transferir features usando tasks distintos al buscado
+- Incorporar domain-knowledge
+
+Al ser difícil de obtener de manera directa la distribucion completa de las features de la red se minimiza una distribucion condicional. Esta se estima usando kernel density estimation. Tomando un kernel $K$, la distribucion condicional para la red tutora es:
+
+$$p^t_{i \mid j}= \frac{K( F_t^{i} F_t^j; 2\sigma_t^2)}{\sum^N_{k=1,k\neq j} K( F_t^{i} F_t^j; 2\sigma_t^2)} \in [0,1]$$ 
+
+La distribucion para la red estudiante es equivalente cambiando los features $F_s^{i} $ y la varianza $\sigma_s^2$. Como kernels se proponen el uso del kernel gaussiano y una mejora interesante, la distancia coseno $K=\frac{1}{2} \frac{a^{\top}b}{\|a\|_2\|b\|_2}+1\in [0]$.
+
+Ambas distribuciones se aproximan minimizando la divergencia Kullback-Leibler en su variante batch sobre muestras $D_{\mathrm{KL}}(P\|Q) = \sum_{i=1}^N \sum_{j=1, j\neq i}^N p(x) \ln \frac{p(x)}{q(x)} $, entrena usando adam en batches de 64 y 128.
+
+Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
+
+Funciona bien. todo:profundizar
+
+#### A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
+
+Año: 2017
+
+Autores: Junho Yim, Donggyu Joo, Jihoon Bae, Junmo Kim
+
+En: CVPR
+
+Usan distiliacion para resolver tres tareas distintas pero complementarias; Optimizacion del entrenamiento de la red estudiante mediante inicializacion inteligente de los pesos, mejorar el performance en tiempo de la red estudiante dado su tamaño y mejorar el performace en accuracy dada la transferencia de conocimiento de la red.
+
+En vez de destilar directamente las features de la red tutora, centran su problema en la destilacion del flujo del procedimiento de resolución (FSP *Flow of Solution Procedure*) de la red tutora, definida como la relacion entre dos features intermedios. Matematicamente hablando, definen este FSP entre dos capas como la matriz Gramiana entre los features de ambas. En el caso de dos capas $1$ y $2$, un input $x$ y pesos $W$, este valor sería:
+
+$$G_{i,j}(x,W)= \sum_{s=1}^h \sum_{t=1}^w\frac{ F^1_{s,t,i}(x,W)  F^2_{s,t,i}(x,W)}{h \times w}$$
+
+Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. De tal forma la perdida se define como la distancia $L_2$ entre las FSPs de ambas redes, donde se deja libre un parametro $\lambda_i$ sobre las n posiciones de las matrices para poder ponderar entre redes. En el caso expuesto este lambda se deja libre.
+
+$$\mathcal{L}_{FSP} = \frac{1}{N} \sum_x \sum_{i=1}^n \lambda_i \left \| G_i^T(x;W_T)-G_i^S(x;W_S)  \right \|_2$$
+
+Al momento del entrenamiento, el entrenamiento se divide en dos fases, inicializacion y entrenamiento sobre la tarea principal. La inicializacion se realiza seteando $W_S$ de tal forma que minimice $\mathcal{L}_{FSP}$ entre ambas redes, para seguidamente realizar un finetunning entrenando de manera regular contra los labels originales.
+
+El funcionamiento ws regular, muy posiblemente por la manera de pos-entrenamiento (No hay entrenamiento al momento de destilar, solo en la inicializacion de los pesos).
+
+#### Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer
 
 Año: Dec. 2016
 
@@ -255,100 +169,88 @@ $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \left 
 
 En general ambos metodos funcionan bien.
 
-### Paraphrasing Complex Network: Network Compression via Factor Transfer
+#### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer
 
-Año: 2018
+Año: DEC 2017
 
-Autores: Jangho Kim, SeongUk Park, Nojun Kwak
+Autores: Zehao Huang, Naiyan Wang
 
-En: NIPS
+En: ICLR
 
-Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factores".  
+En NST interpretan el mapa de activacion de cada posicion como si fuera un sampleo de como la red neuronal interpreta la imagen de entrada, con esto se puede ver en que se centra la red neuronal para realizar la deteccion. Basado en esto evitan hacer un match directo de los feature maps ya que esto ignora la densidad de sampleo en el espacio de las features de la red tutora. En vez de eso busca realizar un alineamiento de las distribuciones de la red tutora y estudiante.  
 
-El traspaso de informacion se realiza en 2 niveles, primero se entrena un parafreasador desde la red tutora, reconstruyendo el input desde la capa desde la cual se quiere realizar el traspaso de informacion. Se minimiza entonces la siguiente perdida en esta etapa, $P(x)$.
+Definen entonces el conocimiento selectivo de las neuronas como la activacion de cada neurona para un patron particular encontrado en la entrada $X$ bajo un una tarea particular.  Desde esto el metodo propuesto es neural selectivity transfer, o la transferencia de este conocimiento. Para el entrenamiento se usan dos perdidas distintas, una para los feature maps y otra para la clasificacion. Clasificacion se pena con cross entropy y feature maps con MMD, discrepancia maxima de media.
 
-$$\mathcal{L}_{rec}=\left \| x - P(x) \right \| ^2$$
-
-Luego de entrenado el parafraseador, se entrena la red estudiante ubicando una capa de interfaz que sirve de traductor entre el factor (salida del parafraseador) y la salida de la red estudiante. Luego, se usa la misma funcion de perdida de attention transfer entre las salidas del traductor y el parafraseador, a lo cual se suma la perdida de cross entropy para la salida.
-
-Funciona regularmente bien, no demasiado, si regularmente
-
-### Layer-Level Knowledge Distillation for Deep Neural Network Learning
-
-año: abril 2019
-
-Autores:Hao-Ting Li, Shih-Chieh Lin, Cheng-Yeh Chen and Chen-Kuo Chiang
-
-En: MDPI
+$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
 
 
 
-El modelo consiste de dos partes, lsp o layer selectivity procedure que usa el hessiano entre capas para determinar que features linkear y ALs o auxiliary structure learning que realiza la transferencia de conocimiento entre las features de los modelos tutor y estudiantes .
+El MMD se calcula de la siguiente forma. Dos sets de samples $S_p=\{p^i\}^N_{i=1}$ $S_q=\{q^i\}^m_{i=1}$, luego, la distancia MMD es:
 
-ALS basicamente consiste en usar capas para proyectar las features de un modelo al otro. Mediante una capa de projeccion por modelo que mapee los features a un vector de una dimensionalidad en $\mathbb{R}^n$ y otra capa densa de alineamiento mediante las que penar las diferencias.
+$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N} \sum^N_{i=1}\phi(p^i) - \frac{1}{M} \sum^M_{j=1}\phi(q^j) \mid \mid$$
 
-$$\mathcal{L}_{Align}^{(K)}(t,s) = \| X_t^{(i)} -X_s^{(j)}  \|_2$$
+donde $\phi(.)$ es una funcion explicita de mapeo. Usando el kernel trick  se puede reformular como
 
-La perdida final incorpora la suma de todas las perdidas de todas las etapas de  ALS.
+$$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=1} k (p^i,p^{i'}) + \frac{1}{M^2} \sum^M_{j=1}\sum^M_{j'=1} k (q^j,q^{j'}) - \frac{1}{MN} \sum^M_{i=1}\sum^M_{j'=1} k (p^i,q^{j})  $$
 
-$$\mathcal{L}_{total}=\sum_{k=1}^n \mathcal{L}_{Align}^{(k)} + \mathcal{L}_{model}^{(p)} $$
+Lo cual finalmente se aplica usando sampleos  desde $F_T$ y $F_S$, sampleando la activacion a traves de todos los canales y normalizando, $p^i=\frac{f^i_T}{\mid\mid f^i_T \mid\mid_2}$ e identicamente para q con FT
 
-La otra etapa, LSP consiste en seleccionar que capas de la la red tutora transferir usando el argumento minimo del grammiamo inter clases sumado al grammiano entre capas. El funcionamiento es ligeramente mejor a Fitnets.
-
-### A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
-
-Año: 2017
-
-Autores: Junho Yim, Donggyu Joo, Jihoon Bae, Junmo Kim
-
-En: CVPR
-
-Usan distiliacion para resolver tres tareas distintas pero complementarias; Optimizacion del entrenamiento de la red estudiante mediante inicializacion inteligente de los pesos, mejorar el performance en tiempo de la red estudiante dado su tamaño y mejorar el performace en accuracy dada la transferencia de conocimiento de la red.
-
-En vez de destilar directamente las features de la red tutora, centran su problema en la destilacion del flujo del procedimiento de resolución (FSP *Flow of Solution Procedure*) de la red tutora, definida como la relacion entre dos features intermedios. Matematicamente hablando, definen este FSP entre dos capas como la matriz Gramiana entre los features de ambas. En el caso de dos capas $1$ y $2$, un input $x$ y pesos $W$, este valor sería:
-
-$$G_{i,j}(x,W)= \sum_{s=1}^h \sum_{t=1}^w\frac{ F^1_{s,t,i}(x,W)  F^2_{s,t,i}(x,W)}{h \times w}$$
-
-Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. De tal forma la perdida se define como la distancia $L_2$ entre las FSPs de ambas redes, donde se deja libre un parametro $\lambda_i$ sobre las n posiciones de las matrices para poder ponderar entre redes. En el caso expuesto este lambda se deja libre.
-
-$$\mathcal{L}_{FSP} = \frac{1}{N} \sum_x \sum_{i=1}^n \lambda_i \left \| G_i^T(x;W_T)-G_i^S(x;W_S)  \right \|_2$$
-
-Al momento del entrenamiento, el entrenamiento se divide en dos fases, inicializacion y entrenamiento sobre la tarea principal. La inicializacion se realiza seteando $W_S$ de tal forma que minimice $\mathcal{L}_{FSP}$ entre ambas redes, para seguidamente realizar un finetunning entrenando de manera regular contra los labels originales.
-
-El funcionamiento ws regular, muy posiblemente por la manera de pos-entrenamiento (No hay entrenamiento al momento de destilar, solo en la inicializacion de los pesos).
+Sobre el k usado, se usaron kernel lineal, polinomial de $d=2$ y $c=0$ y gaussiano con $\sigma^2$ igual al ECM entre los pares. El caso lineal tiene ciertas semejanzas con Att y el caso polinomial de orden 2 da la matriz de gramm usada en FSP. En general funciona mejor que todos los puntos con los que se compara el paper. En el caso de pascal VOC 2007 funciona mejor incluso que la base (Faster R-CNN). Un detalle interesante, si bien no lo probaron con GAN lo postulan como una forma interesante a probar en adelante ya que permite recorrer de mejor manera el espacio de las features.
 
 
 
-### Learning Deep Representations with Probabilistic Knowledge Transfer
+### Transferencia de borde
 
-año: Marzo 2018
+#### A Comprehensive Overhaul of Feature Distillation
 
-Autores: Nikolaos Passalis, Anastasios Tefas
+Año: 2019
 
-En: ECCV
+Autores: Byeongho Heo, Jeesoo Kim, Sangdoo Yun, Hyojin Park, Nojun Kwak, Jin Yor Choi
 
-Rather than hacer un matching directo entre los features como en casi todos los casos de layer level, hacen aproximan la distribución de probabilidades de la red estudiante a la red tutora.
+En:
 
-El uso de probabilidades permite realizar knowledge transfer usando
+Definen feature distillation de manera generalizada como un setting de transfer learning en el cual se usan las features de la red tutora para el entrenamiento de la red estudiante. Definiendo una medida de distancia $d$ y una función de adaptacion dimensional para cada red $T_T$, $T_S$, las cuales son aplicadas sobre las features de cada red $F_T$ y $F_S$, la perdida de cualquier destilacion de features puede ser definida de la siguiente forma:
 
-- Cross-modal knowledge
-- Features creados a mano (sift, etc)
-- Transferir features usando tasks distintos al buscado
-- Incorporar domain-knowledge
+$$\mathcal{L}_{FD}= d \left[ T_T \left( F_T\right),T_S \left( F_S\right)\right]$$
 
-Al ser difícil de obtener de manera directa la distribucion completa de las features de la red se minimiza una distribucion condicional. Esta se estima usando kernel density estimation. Tomando un kernel $K$, la distribucion condicional para la red tutora es:
+Además, definen toda perdida en terminos de transformada en los terminos expuestos, es decir, las transformaciones $T_T$ y $T_S$ y la distancia $d$ a lo que agregan una caracteristica de perdida de información, como por ejemplo las dimensiones de canal en Attention Transfer o el valor de los features en activation boundary. 
 
-$$p^t_{i \mid j}= \frac{K( F_t^{i} F_t^j; 2\sigma_t^2)}{\sum^N_{k=1,k\neq j} K( F_t^{i} F_t^j; 2\sigma_t^2)} \in [0,1]$$ 
+En funcion de esto define un metodo de destilacion basado en el trabajo anterior del mismo autor,  Activation boundaries con la diferencia que en vez de binarizar la expresion de ReLU como en el caso anterior, usa una modificacion llamada Margin Relu $\sigma_{\textrm{MReLU }}=max(x,m)$, siendo m un valor negativo. En esta version setean el margen como al esperanza del valor de las respuestas negativas sobre todas las imagenes, el cual puede ser calculado online en el entrenamiento o usando el los parametros de la ultima batch normalization. Esto es usado en las features de la red tutora, mientras que la red estudiante usa una adaptacion de convoluciones de 1x1 y batch normalization.
 
-La distribucion para la red estudiante es equivalente cambiando los features $F_s^{i} $ y la varianza $\sigma_s^2$. Como kernels se proponen el uso del kernel gaussiano y una mejora interesante, la distancia coseno $K=\frac{1}{2} \frac{a^{\top}b}{\|a\|_2\|b\|_2}+1\in [0]$.
+Además, como funcion de distancia se propone una distancia L2 parcial, que transfiere el conocimiento de la red tutora para una posicion i-esima en el tensor de activacion en caso que la respuesta del estudiante sea menor que la del tutor y menor que 0.
 
-Ambas distribuciones se aproximan minimizando la divergencia Kullback-Leibler en su variante batch sobre muestras $D_{\mathrm{KL}}(P\|Q) = \sum_{i=1}^N \sum_{j=1, j\neq i}^N p(x) \ln \frac{p(x)}{q(x)} $, entrena usando adam en batches de 64 y 128.
+$$d_p(T,S)=\sum^{WHC}_i\begin{cases}
+ 0& \text{ si } F_{S_i}  \leq F_{Ti} \leq 0 \\ 
+\left ( F_{Ti}-F_{S_i}  \right )& \text{ en cualquier otro caso } 
+\end{cases}$$
 
-Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
 
-Funciona bien. todo:profundizar
 
-### Knowledge Transfer via Distillation of Activation Boundaries Formed by Hidden Neurons
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Knowledge Transfer via Distillation of Activation Boundaries Formed by Hidden Neurons
 
 Autores: Byeongho Heo, Minsik Lee, Sangdoo Yun, Jin Young Choi
 
@@ -380,11 +282,70 @@ En casos en que hayan tamaños distintos en la cantidad de neuronas se usa un re
 
 El desempeño es bastante real
 
+### Reduccion dentro de batch
+
+Los casos en esta seccion siguen formas distintas al esquema de $d(T_T(F_T),T_S(F_S))$.
+
+#### Learning Student Networks via Feature Embedding
+
+Año: 2018
+
+Autores: Hanting Chen, Yunhe Wang, Chang Xu, Chao Xu and Dacheng Tao
+
+En: IEEE (submited)
+
+Los autores realizan transferencia del conocimiento de los features de una manera un poco distinta a la vista hasta el momento ya que lejos de intentar acercar la respuesta de la red estudiante a la de la red tutora según alguna forma, buscan replicar la distancia relativa entre las respuestas de la red estudiante a dos samples $x_j$,$x_{i}$ del dataset arbitrarios. De esta forma introducen una perdida llama local preserving loss, la cual toma la siguiente forma:
+
+$$\mathcal{L}_{\text{LP}}=\frac{1}{m}\sum_{i,j}\alpha_{i,j} \|f_{s}^i-f_s^j\|_2^2$$
+
+Donde $m$ es el tamaño del minibatch, y $\alpha_{i,j}$ es un coeficiente que toma un valor positivo en caso que las features del sample $j$ en la red tutora, $f_T^j$ sea el vecino mas cercano de las features del sample $i$, $f_T^i$ y toma valor 0 en cualquier otro caso, es decir:
+
+$$\alpha_{i,j}=\left\{\begin{matrix}
+ exp(\|f_{T}^i-f_T^j\|_2^2) & \text{si } j \in N(i) \\ 
+ 0 &  \text{en otro caso}
+\end{matrix}\right.$$
 
 
 
+## Otras tareas
 
-### Learning Efficient Object Detection Models with Knowledge Distillation
+
+
+### Segmentacion Semantica
+
+#### Structured Knowledge Distillation for Semantic Segmentation
+
+Autores: Yifan Liu, Ke Chen, Chris Liu, Zengchang Qin, Zhenbo Luo, Jingdong Wang
+
+Año: 2019
+
+En: CVPR
+
+El problema de segmentacion semántica consiste en la prediccion de un mapa $Q$ score de clases para cada uno de los pixeles de una imagen, cosa que hace inaplicable el uso de cualquier tecnica usada en clasificacion o detección. Sin embargo, suele partirse desde un backbone ya entrenado en algun otro task. El paper usa varias perdidas distintas, una de destilacion en feature map y en la predicción, una de segmentacion y otra discriminativa para destilar un modelo de segmentacion semantica basado en un backbone preentrenado en un modelo mas pequeño. 
+
+**Destilacion de Ground truth**, se usa simplemente cross entropy entre la salida de la red y el ground truth para cada uno de los pixeles.
+
+**Destilacion a nivel de pixel**, se usa un promedio a nivel de imagen de clasificacion de Hinton, es decir, la divergencia KL entre los logits de la red tutora y la red estudiante. $L_{\text{pi}}=\frac{1}{N_wN_H} \sum_{i,j \in W,H} KL \left( q_{i,j}^S \| q_{i,j}^T \right)$.
+
+**Pairwise distillation**, se usa una medida de similaridad entre dos pixeles calculada como $a_{ij}=f_i^\top f_j /\left ( \left \| f_i \right \|_2 \left \| f_j \right \|_2 \right )$, la cual luego es comparada para cada uno de los pixeles de los feature maps de ambas redes. $L_{\text{pa}}=\frac{1}{(N_wN_H )^2} \sum_{i \in W,H}\sum_{j \in W,H} \left (  a_{ij}^S - a_{ij}^T \right)^2$
+
+**Hollistic (Adversarial) distillation**, consiste en el uso de un discriminador $D$ que actúa a modo de red de embeding usando a la red de segmentación como si fuese un generador. Luego, usando la distancia wasserstein se compara la distribución de ambas salidas. $L_{\text{ho}} = \mathbb{E}[D(Q^{S})]-\mathbb{E}[D(Q^T)]$
+
+### Deteccion
+
+#### Mimicking Very Efficient Network for Object Detection
+
+Autores:  Quanquan Li, Shengying Jin, Junjie Yan
+
+Año: 2017
+
+En: CVPR
+
+Parten desde la arquitectura de R-CNN, es decir una red de propuesta de regiones y una red de clasificacion sobre esas propuestas. Hacen basicamente lo mismo que en fitnets pero considerando solo aquellas zonas donde hay un region propuesta por la RPN. Definen sus perdidas como $L=\lambda_1 L_m + L_{gt}$, donde $L_{gt}=L_{cls}+\lambda_2 L_{reg}$, es decir la perdida de clasificacion y regresion de las regiones propuestas y la destilacion se realiza similarmente a fitnets usando un regreso r, sobre los espacios de las features originales indicadas por el pooling espacial de la RPNu. $L_m=\frac{1}{2N}\sum_i \frac{1}{m_i}\| u_T -r (u_s) \|_2^2$
+
+
+
+#### Learning Efficient Object Detection Models with Knowledge Distillation
 
 Autores: Guobin Chen, Wongun Choi, Xiang Yu, Tony Han, Manmohan Chandraker
 
@@ -429,19 +390,102 @@ $$L_reg=L_{S}+ \nu L_b$$
 
 
 
-### Knowledge Transfer with Jacobian Matching 
+#### Distilling Object Detectors with Fine-grained Feature Imitation
 
-Autores: Suraj Srinivas, Francois Fleuret
+Año: 2019
 
-Año: 2018
+Autores: Tao Wang, Li Yuan, Xiaopeng Zhang, Jiashi Feng
 
-En: ICML
+En: CVPR
 
-Proponen un entrenamiento mediante matching de los jacobianos en alguna capa intermedia. El jacobiano se calcula con respecto al pixel de mayor intensidad dentro del espacio de entrada. Al parecer usan la red como un metodo de pre-inicializacion para finalmente entrenar con cross entropy. No tiene demasiado sentido la tecnica.
+El estudio se centra en destilacion en el contexto de deteccion de objetos. Ya que a diferencia de la clasificion, en la cual se obtiene una sola etiqueta de clase para toda la imagen, en deteccion el objetivo es diferenciar los objetos del fondo y clasificar cada uno por separado (paralela o secuencialmente). De partida esto introduce dos diferencias importantisimas con respecto a la clasificacion, las cuales tienen consecuencias importantes al momento de destilar;
+
+1. Los fondos en las imagenes pueden ser mucho mas variados que los objetos de primer plano, de esta manera en deteccion gran parte de la informacion de la imagen es o inutil o ruido que puede condicionar al detector a obtener respuestas falsas.
+2. La destilacion propuesta por hinton debe ser completamente modificada ya que la etiqueta deja de ser solo un valor de clase, si no de bounding box y clase por cada objeto presente en la imagen.
+
+El metodo de destilacion propuesto imita las features de una manera no muy distinta a como se imitan las features en Fitnets, pero lo hace solamente en una region particular. Es decir, para una posicion $i$,$j$ en el feature map se define la perdida local $l$ como.
+
+ $$l_{ij}=\sum_{c=1}^C \left ( r \left ( F_s \right )_{ijc} - F_{T_{ijc}} \right )^2 $$
+
+Así la perdida completa del metodo es la siguiente.
+
+$$L_{\text{FGFI}} = \frac{1}{2N_p}  \sum_{i,j  \in W,H} \mathbb{I}_{ij}*l_{ij} $$
+
+Donde $\mathbb{I}_{i,j}$ es un valor binario que es 1 cuando la posicion pertenece a la mascara de imitacion y 1 cuando no pertenece y $N_p=\sum_{i,j  \in W,H} \mathbb{I}_{ij}$ es el area de la mascara.
+
+La mascara de imitacion se calcula combiando mediante OR todos los anchors que tienen un iou mayor que algun threshold con el bounding box.
+
+#### Object detection at 200 Frames Per Second  [Completar]
+
+año: mayo 2019
+
+tipo: video distillation, yolo, arquitectura
+
+El paper object distillation at 200 FPS es uno de los ejemplos que vale la pena revisar. Realizan algunas modificaciones a tiny yolo y lo entrenan usando destilacion para obtener un modelo que funcina a 200+ FPS y no pierde mAp.
+
+Entre las modificaciones cuentan reduccion de profundidad y cantidad de canales en features, uso de stacking layers (adicion de primeras capas a capas finales), introduccion de una modificacion de non maximum supression basada en features y la modificacion de la funcion de perdida en la componente de objectness de yolo. Se explicaran las 3 ultimas modificaciones
+
+- **Modificaciones de arquitectura**
+
+En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para computaciones.
+
+- **FN-NMS**
+
+En yolo, en los casos que un objeto corresponda a multiples celdas o bounding boxes la transferencia de conocimiento a una red estudiante puede resultar redundancia que ocasione perdida de desempeño. Yolo usa non máximum supresion para entrenar en estos casos, en la destilacion planteada en el paper se evita esta redundancia usando un filtro que mapee desde todas las detecciones cercanas de una misma clase a la de mayor objectness. Luego se entrena sobre esa deteccion.
+
+- **Destilacion y perdida escalada por objectness**: 
+
+La forma de predecir de yolo es bastante especial ya que divide la imagen de entrada en un campo de 13x13 celdas sobre las que se predicen simultaneamente los scores de la clasificación clases, las bounding boxes de las imagenes y  el objectness (probabilidad de que en cierta zona de la imagen haya algo). Para clasificacion la perdida suele ser crossentropy, para bounding box y objectness distancia $L_1$ o $L_2$.
+
+$$ \mathcal{L}_{yolo} = \mathcal{L}_{cl}(p_i,\hat{p_i})+\mathcal{L}_{bb}(b_i,\hat{b_i})+ \mathcal{L}_{obj}(o_i,\hat{o_i}) $$
+
+Una problematica de la formulacion de la perdida en este caso es que al entrenar simulataneamente todo, se realiza aprendizaje de clases y bounding boxess en aquellas celdas donde no hay nada todo:[es problematico quitar de la nada esto ya que es posible que hayan perdidas en el aprendizaje de las features.]. Evitan este problema escalando según objectness las perdidas distintas de objectnes. Definiendo una ganancia $\lambda_D$, $o^{gt}$ como el ground truth, $\hat{o}$ como la salida de la red estudiante y $o^T$ como la salida de la red tutora la perdida de objectness pasa a ser.
+
+$$\mathcal{L}'_{obj}(o_i,\hat{o_i}) =  \mathcal{L}_{obj}(o^{gt}_i,\hat{o_i}) + \lambda_D \mathcal{L}_{obj}(o^T_i,\hat{o_i}) $$
+
+Similarmente, las perdidas de clasificacion y bounding box pasan a ser las siguientes. Notese la presencia de objectness escalando el peso de la perdida.
+
+$$\mathcal{L}'_{cl}(o_i,\hat{o_i}) =  \mathcal{L}_{cl}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{cl}(o^T_i,\hat{o_i}) $$
+
+$$\mathcal{L}'_{bb}(o_i,\hat{o_i}) =  \mathcal{L}_{bb}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{bb}(o^T_i,\hat{o_i}) $$
+
+### Reproduccion  de features
+
+#### An Embarrassingly Simple Approach for Knowledge Distillation
+
+Año: 2019
+
+Autores: Mengya Gao, Yujun Shen, Quanquan Li, Junjie Yan, Liang Wan, Dahua Lin, Chen Change Loy, Xiao Tang 
+
+En: Arxiv, aun no publicado.
+
+En general en los aprendizajes multi-task es necesario usar varias perdidas distintas, cada una de ellas ponderada por un hiperparametro $\lambda$ para ponderar cuanto afecta cada una de las perdidas al momento de realizar backpropagation. La eleccion de estos hiperparametros puede ser una tarea dificil, especialmente considerando que el valor optimo suele cambiar de dataset a dataset sin otra forma de encontrarlo que el uso de varias instancias de prueba y error. El paper postula una manera simple y eficiente de evitar este problema desacoplando las etapas de aprendizaje en el caso de destilacion de features.
+
+En general, la mayoria de las redes puede separarse entre una etapa de extraccion de features llamada backbone y una de clasificacion llamada task-head. Como se puede ver en How transferable are features in deep neural networks? estas suelen ser bastante independientes del task, cosa que se aprovecha en este paper para separar los entrenamientos en una etapa de aprendizaje "greedy" de las features de una red tutora y una etapa de aprendizaje de las labels finales usando ground truth y el backbone fijo.
+
+Para la primera etapa se hace uso de un entrenamiento bloque por bloque, es decir, se toma cierta profundidad de capa a reproducir y se reproducen las features de la red tutora en la red estudiante, luego se fijan los pesos en la red estudiante y se aprenden los features a una profundidad un poco mayor y asi sucesivamente hasta destilar el backbone completo. Finalmente se reproduce la ultima capa usando solo la red estudiante y el ground truth del task a entrenarse. El aprendijaze de los features se realiza usando una perdida de distancia L2 entre los features de la red tutora y estudiante.
+
+$$L_{SSKD}= \|f_t^2-f_s^2 \|_2$$
 
 
 
+#### Knowledge Distillation with Feature Maps for Image Classification
 
+Año: 2019
+
+Autores: Wei-Chun Chen, Chia-Che Chang, Chien-Yu Lu, and Che-Rung Lee
+
+En: ACCV
+
+Usan GAN para entrenar redes que reproducen features. El sistema completo se compone de un generador $G$ que se usa para imitar los features, un discriminador $D$ que sirve para entrenar el generador y un clasificador $C$ mediante el cual se clasifica y que toma como entrada las features generadas por G. 
+
+$$L_{\text{adv}D}=\frac{1}{2}\left[D(G(x))	\right]^2-\frac{1}{2}\left[D(F_T(x))-1	\right]^2$$
+
+$$L_{\text{adv}G}=\frac{1}{2}\left[D(G(x))	\right]^2$$
+
+La perdida total para el generador es, esta se entrena de forma separada a la del discriminador.
+
+$$L_G=L_{\text{adv}G}+\alpha L_{KD}$$
 
 
 
