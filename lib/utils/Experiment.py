@@ -121,10 +121,10 @@ class Experiment:
     for key, value in arg_dict.items():
       stats_dict[key] = value
 
-  def save_model(self, save_checkpoints=True, overwrite_record=True):
+  def save_model(self, save_checkpoints=True, overwrite_record=True, overwrite_epoch=True):
     # Early stoping, # Save checkpoint.
 
-    if self.last_acc > self.best_acc:
+    if self.last_acc > self.best_acc or overwrite_epoch:
       print('Saving..')
       state = {
         'net': self.net.state_dict(),

@@ -28,6 +28,10 @@ def auto_change_dir(path):
       os.mkdir(folder)
     os.chdir(folder)
 
+def add_noise(t):
+    def tensor_random_noise(input):
+        return input + torch.rand_like(input) * t
+    return tensor_random_noise
 
 def random_return(image):
     #print(image.getpixel((1, 1)))

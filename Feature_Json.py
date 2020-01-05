@@ -11,14 +11,16 @@ from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import KD
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10, auto_change_dir
+
+from lib.utils.utils import load_cifar10, auto_change_dir, add_noise
+import torchvision.transforms as transforms
 
 
 
 def experiment_run(args, device, teacher, testloader, trainloader):
 
     student, best_acc, start_epoch = load_student(args, device)
-    writer = SummaryWriter("tb_logs")
+
 
     feat_loss =  parse_distillation_loss(args)
     eval_criterion = torch.nn.CrossEntropyLoss()
@@ -29,6 +31,7 @@ def experiment_run(args, device, teacher, testloader, trainloader):
     idxs = [layer]
 
     auto_change_dir(",".join([str(i) for i in idxs]))
+    writer = SummaryWriter("tb_logs")
 
     exp = FeatureExperiment(device=device,  # Todo mover arriba
                                  student=student,
@@ -43,7 +46,7 @@ def experiment_run(args, device, teacher, testloader, trainloader):
                                  trainloader=trainloader,
                                  best_acc=best_acc,
                                  idxs=idxs,
-                                 use_regressor=args.use_regressor,
+                                 use_regressor=args.distillation=="hint",
                                  args=args
                                  )
 
@@ -69,8 +72,8 @@ def fake_arg(**kwargs):
 
     add_field('lr' ,0.01)
     add_field('epochs' ,50)
-    add_field('train_batch_size' ,128)
-    add_field('test_batch_size' ,100)
+    add_field('train_batch_size',64)
+    add_field('test_batch_size', 64)
     add_field('student' ,"ResNet18")
     add_field('teacher' ,"ResNet101")
     add_field('distillation' ,"nst_linear")
@@ -85,29 +88,55 @@ def fake_arg(**kwargs):
 
 
 if __name__ == '__main__':
+    folder = "exp4"
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Using device", device)  # todo: cambiar a logger
     args = fake_arg()
-    trainloader, testloader, classes = load_cifar10(args)
+
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Lambda(add_noise(0.1)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+
+    ])
+
+    trainloader, testloader, classes = load_cifar10(args, transform_train=transform_train)
     teacher = load_teacher(args, device)
 
     print("Using device", device)  # todo: cambiar a logger
-    folder="exp2"
+
+
+
     args = fake_arg()
     #trainloader, testloader, classes = load_cifar10(args)
     #teacher = load_teacher(args, device)
 
     blocs ={"ResNet101": [26,56,219,239],#Completar
             "MobileNet": [6,15,26,55],
+            "ResNet18": [10, 23, 35, 46]
+            }
 
-             }
-    for student in [ "MobileNet"]:#todo: terminar
-        for distillation in ["hint", "att_max", "att_mean", "PKT", "nst_linear", "nst_poly"]:
-            for layer,(s_layer,t_layer) in enumerate(zip(blocs["MobileNet"],blocs["ResNet101"])):
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)#funcionalizar
 
-                arg = fake_arg(distillation=distillation, student=student,layer=layer,student_layer=s_layer,teacher_layer=t_layer)
 
-                #print("python feat_distillation.py --distillation=%s --layer=%i --student=MobileNet --student_layer=%i --teacher_layer=%i"%(distillation,layer,s_layer,t_layer))
-                print("TRAINING-%s-%s-%i"%(student,distillation,layer))
-                experiment_run(arg, device, teacher, testloader, trainloader)
+
+    for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
+        for distillation in ["att_max","hint", "PKT", "nst_linear", "nst_poly", "att_mean", ]:
+            for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
+                    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
+
+                    arg = fake_arg(distillation=distillation,
+                                   student=student,
+                                   layer=layer,
+                                   student_layer=s_layer,
+                                   teacher_layer=t_layer,
+                                   )
+
+                    #print("python feat_distillation.py --distillation=%s --layer=%i --student=%s --student_layer=%i --teacher_layer=%i"%(distillation,layer,student,s_layer,t_layer))
+                    print("TRAINING-%s-%s-%i"%(student,distillation,layer))
+                    experiment_run(arg, device, teacher, testloader, trainloader)
+                    torch.cuda.empty_cache()
+
+    #print(" ")

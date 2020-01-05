@@ -13,11 +13,11 @@ def parse_distillation_loss(args, string_input=False):
     else:
         fields = args.distillation.split(",")
     method = fields[0]
-    args = dict([i.split("-") for i in fields[1:]])
-    for k, v in args.items():
-        args[k] = float(v)
+    ar = dict([i.split("-") for i in fields[1:]])
+    for k, v in ar.items():
+        ar[k] = float(v)
 
-    print("Perdida", method, "con parametros", args)
+    print("Perdida", method, "con parametros", ar)
     losses_list=[KD, KD_CE]
     d = dict([(func.__name__, func) for func in losses_list])
 
@@ -32,8 +32,9 @@ def parse_distillation_loss(args, string_input=False):
             # folder: -> [dataset]/[teacher]/students/[student_model]/[distilation type]/[]
             auto_change_dir("/".join([args.distillation[:args.distillation.find(",")],
                                       args.distillation[args.distillation.find(",") + 1:]]))
-            return loss(**args)
+            return loss(**ar)
         except:
+
             raise NameError("There is an argument error")
     else:
         return loss(**args)#todo: ordenar

@@ -109,7 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')
-    parser.add_argument('--student', default="MobileNet",
+    parser.add_argument('--student', default="ResNet18",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")

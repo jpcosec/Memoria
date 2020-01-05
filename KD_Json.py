@@ -7,7 +7,8 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
-from lib.utils.utils import load_cifar10
+from lib.utils.utils import load_cifar10, auto_change_dir, add_noise
+import torchvision.transforms as transforms
 from lib.utils.records_collector_deprecated import maj_key
 import json
 
@@ -15,14 +16,14 @@ import json
 def experiment_run(args, device, teacher, testloader, trainloader):
 
     student, best_acc, start_epoch = load_student(args, device)
-    writer = SummaryWriter("tb_logs")
+
 
     criterion = parse_distillation_loss(args)
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
     flatten = args.student.split("_")[0] == "linear"
-
+    writer = SummaryWriter("tb_logs")
     exp = DistillationExperiment(device=device,  # Todo mover arriba
                                  student=student,
                                  teacher=teacher,
@@ -40,48 +41,30 @@ def experiment_run(args, device, teacher, testloader, trainloader):
     for epoch in range(start_epoch, args.epochs):
         exp.train_epoch()
         exp.test_epoch()
-
+    exp.save_model()
 
 def fake_arg(**kwargs):
     args = argparse.Namespace()
+    d = vars(args)
 
-    if 'lr' in kwargs:
-        args.lr = kwargs["lr"]
-    else:
-        args.lr = 0.01
+    def add_field(field,default):
+        if field in kwargs:
+            d[field] = kwargs[field]
+        else:
+            d[field] = default
 
-    if 'epochs' in kwargs:
-        args.epochs = kwargs["epochs"]
-    else:
-        args.epochs = 100
+    add_field('lr' ,0.01)
+    add_field('epochs' ,50)
+    add_field('train_batch_size' ,128)
+    add_field('test_batch_size' ,100)
+    add_field('student' ,"ResNet18")
+    add_field('teacher' ,"ResNet101")
+    add_field('distillation' ,"KD,T-8")
 
-    if 'train_batch_size' in kwargs:
-        args.train_batch_size = kwargs["train_batch_size"]
-    else:
-        args.train_batch_size = 128
-
-    if 'test_batch_size' in kwargs:
-        args.test_batch_size = kwargs["test_batch_size"]
-    else:
-        args.test_batch_size = 100
-
-    if 'student' in kwargs:
-        args.student = kwargs["student"]
-    else:
-        args.student = "ResNet18"
-
-    if 'teacher' in kwargs:
-        args.teacher = kwargs["teacher"]
-    else:
-        args.teacher = "ResNet101"
-
-    if 'distillation' in kwargs:
-        args.distillation = kwargs["distillation"]
-    else:
-        args.distillation = "KD,T-8"
 
     args.resume=True
     return args
+
 
 
 if __name__ == '__main__':
@@ -89,13 +72,17 @@ if __name__ == '__main__':
 
     print("Using device", device)  # todo: cambiar a logger
     args = fake_arg()
+    print(args)
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
 
-    for student in ["ResNet18", "MobileNet", "EfficientNetB0"]:
+
+
+    for student in ["ResNet18", "MobileNet"]:
         for distillation in ["KD", "KD_CE"]:
             for T in [str(i) for i in [1, 5, 10,50, 100, 1000]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp1")#funcionalizar
+                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp3"
+                         "")#funcionalizar
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)
 
@@ -104,7 +91,7 @@ if __name__ == '__main__':
                         record = json.load(fp)
                         e=maj_key(record["test"])
                         print(e)
-                        if e >= 99:
+                        if e >=arg.epochs:
                             continue
                 except:
                     print("hayproblemo")
