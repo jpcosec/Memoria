@@ -72,8 +72,8 @@ def fake_arg(**kwargs):
 
     add_field('lr' ,0.01)
     add_field('epochs' ,50)
-    add_field('train_batch_size',64)
-    add_field('test_batch_size', 64)
+    add_field('train_batch_size',128)
+    add_field('test_batch_size', 128)
     add_field('student' ,"ResNet18")
     add_field('teacher' ,"ResNet101")
     add_field('distillation' ,"nst_linear")
@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
 
     for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
-        for distillation in ["att_max","hint", "PKT", "nst_linear", "nst_poly", "att_mean", ]:
+        for distillation in [ "nst_linear", "nst_poly", "att_mean", ]:#"att_max","hint","PKT",
             for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
                     os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
