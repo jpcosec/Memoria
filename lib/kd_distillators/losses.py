@@ -37,7 +37,7 @@ def parse_distillation_loss(args, string_input=False):
 
             raise NameError("There is an argument error")
     else:
-        return loss(**args)#todo: ordenar
+        return loss(**ar)#todo: ordenar
 
 def KD(T=8):
     """

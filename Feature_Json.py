@@ -134,9 +134,9 @@ if __name__ == '__main__':
                                    teacher_layer=t_layer,
                                    )
 
-                    #print("python feat_distillation.py --distillation=%s --layer=%i --student=%s --student_layer=%i --teacher_layer=%i"%(distillation,layer,student,s_layer,t_layer))
-                    print("TRAINING-%s-%s-%i"%(student,distillation,layer))
-                    experiment_run(arg, device, teacher, testloader, trainloader)
+                    print("python feat_distillation.py --distillation=%s --layer=%i --student=%s --student_layer=%i --teacher_layer=%i"%(distillation,layer,student,s_layer,t_layer))
+                    #print("TRAINING-%s-%s-%i"%(student,distillation,layer))
+                    #experiment_run(arg, device, teacher, testloader, trainloader)
                     torch.cuda.empty_cache()
 
     #print(" ")

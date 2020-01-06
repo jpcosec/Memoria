@@ -10,6 +10,8 @@ from lib.kd_distillators.losses import parse_distillation_loss as last_layer_los
 from lib.kd_distillators.utils import load_student, load_teacher
 from lib.utils.utils import load_cifar10, auto_change_dir, random_return
 
+import os
+
 import torchvision.transforms as transforms
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -18,14 +20,17 @@ def main(args):
 
     trainloader, testloader, classes = load_cifar10(args)
     teacher = load_teacher(args, device)
+
+    #todo: arreglar
+    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/" + "exp4")
     student, best_acc, start_epoch = load_student(args, device)
+
     feat_loss =  parse_distillation_loss(args)
     kd_loss=last_layer_loss_parser(args.last_layer,string_input=True)
 
 
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)#todo: evaluar si mover en exp
-
     flatten = args.student.split("_")[0] == "linear"
     layer = args.layer
     idxs = [layer]
@@ -63,7 +68,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
     parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=20, type=int, help='total number of epochs to train')
+    parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
     parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')

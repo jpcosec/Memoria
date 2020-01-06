@@ -63,8 +63,8 @@ def collect_records(folder):
     return info
 
 if __name__ == '__main__':
-    #folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp1/students"
-    folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
+    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp3/students"
+    #folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
 
     info=collect_records(folder)
 
