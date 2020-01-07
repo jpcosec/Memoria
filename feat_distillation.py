@@ -8,7 +8,7 @@ from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import parse_distillation_loss as last_layer_loss_parser
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10, auto_change_dir, random_return, add_noise
+from lib.utils.utils import load_cifar10, auto_change_dir, random_return, add_noise, load_samples
 
 import os
 
@@ -18,20 +18,22 @@ def main(args):
 
     print("Using device", device)  # todo: cambiar a logger
 
-    transform_train = transforms.Compose([
+    """transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Lambda(add_noise(0.1)),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
-    ])
+    ])"""
 
-    trainloader, testloader, classes = load_cifar10(args,transform_train=transform_train)
+    #trainloader, testloader, classes = load_cifar10(args)
+    trainloader, testloader, classes = load_samples(arg, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
     teacher = load_teacher(args, device)
 
     #todo: arreglar
-    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/" + "exp4")
+    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/" + "exp6")
+
     student, best_acc, start_epoch = load_student(args, device)
 
     feat_loss =  parse_distillation_loss(args)
@@ -77,10 +79,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
     parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
+    parser.add_argument('--epochs', default=30, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
-    parser.add_argument('--train_batch_size', default=64, type=int, help='batch size on train')
-    parser.add_argument('--test_batch_size', default=64, type=int, help='batch size on test')
+    parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
+    parser.add_argument('--test_batch_size', default=128, type=int, help='batch size on test')
     parser.add_argument('--student', default="MobileNet",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "

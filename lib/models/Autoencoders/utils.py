@@ -47,9 +47,12 @@ def save_samples(tensor, start=0, folder="samples"):
         **kwargs: Other arguments are documented in ``make_grid``.
     """
     from PIL import Image
+    from numpy import split, squeeze
     # Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
-    ndarr = tensor.mul_(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
-    for n,arr in enumerate(ndarr.split([32,32,3])):
-        im = Image.fromarray(arr)
+    #print(tensor.shape)
+    ndarr = tensor.mul_(255).add_(0.5).clamp_(0, 255).permute(0,2, 3, 1).to('cpu', torch.uint8).numpy()
+    for n,arr in enumerate(split(ndarr,64)):
+        #print(squeeze(arr).shape)
+        im = Image.fromarray(squeeze(arr))
         im.save(folder+"/"+str(n+start)+".png")
     return n+start

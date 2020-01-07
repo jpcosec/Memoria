@@ -40,7 +40,7 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
 test_loader, train_loader = load_dataset(args, kwargs)
 
-auto_change_dir('VAE_CONV8')
+auto_change_dir('VAE_CONV7')
 auto_change_dir("results")
 os.chdir("..")
 
@@ -116,7 +116,7 @@ def test(epoch):
 
 
 def main():
-    if not args.sample:
+    if not args.sample and False:
         for epoch in range(start_epoch, args.epochs + 1):
             train(epoch)
             test(epoch)
@@ -132,8 +132,11 @@ def main():
             torch.save(state, './checkpoint/ckpt.pth')
     else:
         with torch.no_grad():
-            from .utils import save_samples
-            for start in range(80000 / 64):
+            print("sampling loaded model")
+            os.chdir("..")
+            #os.mkdir("samples")
+            from lib.models.Autoencoders.utils import save_samples
+            for start in range(int(80000 / 64)):
                 sample = torch.randn(64, 128).to(device)
                 sample = model.decode(sample).cpu()
                 save_samples(sample.view(64, 3, 32, 32), start=start * 64)
