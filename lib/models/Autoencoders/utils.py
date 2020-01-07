@@ -36,3 +36,20 @@ def load_dataset(args,kwargs):
     testset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transformc)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, **kwargs)
     return test_loader, train_loader
+
+
+def save_samples(tensor, start=0, folder="samples"):
+    """Save a given Tensor into an image file.
+
+    Args:
+        tensor (Tensor or list): Image to be saved. If given a mini-batch tensor,
+            saves the tensor as a grid of images by calling ``make_grid``.
+        **kwargs: Other arguments are documented in ``make_grid``.
+    """
+    from PIL import Image
+    # Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
+    ndarr = tensor.mul_(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
+    for n,arr in enumerate(ndarr.split([32,32,3])):
+        im = Image.fromarray(arr)
+        im.save(folder+"/"+str(n+start)+".png")
+    return n+start

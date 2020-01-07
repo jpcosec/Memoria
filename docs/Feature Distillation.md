@@ -143,7 +143,11 @@ En el contexto de CNNs, se considera la atencion como mapas espaciales que permi
 
 - **Mapa de atencion basado en activaciones**
 
-  Considerando una capa de una red y su activación $F_{T}$ se define una funcion de mapeo de activacion $ \mathcal{F}: \mathcal{R}^{C \times H \times W} \rightarrow \mathcal{R}^{ H \times W}$. Asumiendo que para una neurona particular, el valor absoluto de su activacion puede ser tomado como una medida de la importancia que da la red a un determinado input, para obtener con respecto a una posicion $h,w$ se pueden usar alguno de los siguientes estadisticos.
+  Considerando una capa de una red y su activación $F_{T}$ se define una funcion de mapeo de activacion 
+  $$
+  $ \mathcal{F}: \mathcal{R}^{C \times H \times W} \rightarrow \mathcal{R}^{ H \times W} $
+  $$
+  . Asumiendo que para una neurona particular, el valor absoluto de su activacion puede ser tomado como una medida de la importancia que da la red a un determinado input, para obtener con respecto a una posicion $h,w$ se pueden usar alguno de los siguientes estadisticos.
 
   1. Suma de los absolutos entre los $C$ canales: $\mathcal{F}_{sum}(A)=\sum_{i=1}^C \mid A_i \mid$
   2. Suma de potencias: $\mathcal{F}^p_{sum}(A)=\sum_{i=1}^C \mid A_i \mid ^p$
