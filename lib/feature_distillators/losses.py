@@ -1,6 +1,14 @@
 import torch
 import torch.nn.functional as F
 
+"""
+    All the losses listed here where adapted from diferent investigations, the cases where the authors (or any other 
+    researcher) where nice enough to share their code are listed before every loss. The structure used in the 
+    experiments class makes the ussage of no internal variable functions needed. So every loss is composed of one
+    interface function that receives parameters and calls a new function with the 
+"""
+
+
 from lib.utils.utils import auto_change_dir
 
 
@@ -83,8 +91,8 @@ def att_max():  # Att(attention):
 
 
 """
-Paper: Learning Deep Representations with Probabilistic Knowledge Transfer
-Code: https://github.com/passalis/probabilistic_kt
+    Paper: Learning Deep Representations with Probabilistic Knowledge Transfer
+    Code: https://github.com/passalis/probabilistic_kt
 """
 
 
@@ -165,9 +173,9 @@ def nst_gauss():
 
 
 """
-Paper: A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
-Code: (not original) https://github.com/sseung0703/KD_methods_with_TF
-TODO: Requiere inicialiacion, Fome
+    Paper: A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
+    Code: (not original) https://github.com/sseung0703/KD_methods_with_TF
+    TODO: requieres using initialization.
 """
 
 
