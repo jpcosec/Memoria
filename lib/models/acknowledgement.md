@@ -1,0 +1,1 @@
+All of the models listed here excepting those in the Autoencoders folder and the mnist_net where copied from the work of kuangliu git-hub user in https://github.com/kuangliu/pytorch-cifar. My thanks to him and the team that contributed in that repository.
