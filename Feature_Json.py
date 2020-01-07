@@ -94,14 +94,7 @@ if __name__ == '__main__':
     print("Using device", device)  # todo: cambiar a logger
     args = fake_arg()
 
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Lambda(add_noise(0.1)),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 
-    ])
 
     trainloader, testloader, classes = load_cifar10(args, transform_train=transform_train)
     teacher = load_teacher(args, device)
@@ -123,7 +116,7 @@ if __name__ == '__main__':
 
 
     for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
-        for distillation in [ "nst_linear", "nst_poly", "att_mean", ]:#"att_max","hint","PKT",
+        for distillation in [ "nst_linear", "nst_poly", "att_mean","att_max","hint","PKT"]:
             for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
                     os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 

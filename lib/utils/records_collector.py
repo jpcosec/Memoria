@@ -16,7 +16,7 @@ def maj_key(d):
         return maj
 
 
-def collect_records(folder):
+def collect_records(folder, correct_epochs=True):
     # Collects all records and returns pandas shaped dict
     list_jsons = glob.glob(folder + "/**/record.json", recursive=True)
 
@@ -50,6 +50,12 @@ def collect_records(folder):
 
         add_entry('epoch', record['epoch'],i,fill_dict)
 
+        if record['epoch'] <49 and correct_epochs:
+            record['epoch'] =49
+            with open(file_name, 'w') as fp:
+                json.dump(record,fp)
+
+
         for key, value in config.items():
             add_entry(key,value,i,fill_dict)
 
@@ -63,7 +69,7 @@ def collect_records(folder):
     return info
 
 if __name__ == '__main__':
-    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp3/students"
+    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp4/students/"
     #folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
 
     info=collect_records(folder)
