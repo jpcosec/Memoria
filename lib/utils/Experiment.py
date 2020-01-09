@@ -121,7 +121,7 @@ class Experiment:
     for key, value in arg_dict.items():
       stats_dict[key] = value
 
-  def save_model(self, save_checkpoints=True, overwrite_record=True, overwrite_epoch=True):
+  def save_model(self, save_checkpoints=True, overwrite_record=True, overwrite_epoch=True, use_regressor=False):
     # Early stoping, # Save checkpoint.
 
     if self.last_acc > self.best_acc or overwrite_epoch:
@@ -129,8 +129,13 @@ class Experiment:
       state = {
         'net': self.net.state_dict(),
         'acc': self.last_acc,
-        'epoch': self.epoch
+        'epoch': self.epoch,
+        'optimizer_state_dict': self.optimizer.state_dict(),
       }
+
+      if use_regressor:
+        state['regressor']=self.regressors.state_dict()
+        state['reg_optim']=self.regressor_optimizers.state_dict()
       self.best_acc = self.last_acc
       self.record.update(dict([("epoch", self.epoch),
                                ("train_step", self.train_step),
