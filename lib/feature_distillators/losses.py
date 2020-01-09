@@ -49,6 +49,7 @@ def parse_distillation_loss(args):
 
 
 def hint():
+	# features are supossed to come with the regressor operation
     def hint_loss(teacher_features, student_features):
         return torch.nn.MSELoss()(teacher_features, student_features)
 
