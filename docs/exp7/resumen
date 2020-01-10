@@ -1,0 +1,2 @@
+En entrenamiento solo aquellos settings que usan CE ademas de KD  logran mejores resultados que su vercion CE sola, sin llegar ninguno a superar el valor de la red tutora, distinguiendo entre modelos, las mejoras de mobileNet tienen a ser mayores qu las de ResNet, variando el resultado de feature transfer a feature transfer. entre distintas FTs no se logra notar un peor o mejor desempeño consistentemente según caso.
+En entrenamiento por otra parte se puede notar que con respecto a su desempeño en C.E., MobileNet tiendee a mejorar mas que ResNet, con respecto a la red tutora

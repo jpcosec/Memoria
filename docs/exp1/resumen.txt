@@ -1,0 +1,7 @@
+Tanto para ResNet como para MobileNet se puede ver que la destilación pura tiende a generalizar mejor que cross entropy solo o cross entropy mas destilacion, entre ellos  ResNet alcanza valores mejores que MobileNet al destilar desde ResNet101, e incluso mejores que la red tutora en ocasiones.
+
+Al ver el dataset de entrenamiento puede verse que para ResNet la red estudiante  puede predecir mejor sobre el dataset de entrenamiento cuando tiene Cross Entropy, sin superar a la red tutora en ningun caso. MobileNet por otra parte tiene un comportamento mas errático, logrando superar su valor en CE solo cuando usa KD solo en una ocasion.
+
+Curiosamente las perdidas tanto en entrenamiento como en test tienden a diverger a medida aumenta T, posiblemente debido a un tema de escala.
+
+

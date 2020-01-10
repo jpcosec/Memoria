@@ -1,0 +1,1 @@
+Las perdidas en entrenamiento y en test siguen un patron similar al caso sin ruido, alcanzando niveles razonablemente bajos como para asegurar que el entrenamiento efectivamente tuvo convergencia. Sin embargo los bajos valores del accuracy en test dan a entender que la red no está aprendiendo información relevante desde el dataset.
