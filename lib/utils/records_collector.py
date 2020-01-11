@@ -69,7 +69,7 @@ def collect_records(folder, correct_epochs=True):
     return info
 
 if __name__ == '__main__':
-    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp5/students/"
+    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp6/students/"
     #folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
 
     info=collect_records(folder)
