@@ -60,6 +60,11 @@ def plot(data,phase,field, center=False, scale=None):
             return (aggregates+bar).properties(width=600,height=400) 
     return bar.properties(width=600,height=400)
 
+
+def load_and_plot(folder="./Cifar10/ResNet101/exp7/students",phase="test",field="acc",**kwargs):
+    return plot(load_data(folder),phase,field,kwargs)
+
+
 def omniplot(folder="./Cifar10/ResNet101/exp7/students",scale='log'):
     data = load_data(folder)
 

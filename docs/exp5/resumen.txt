@@ -1,0 +1,8 @@
+TRAIN LOSS - valores por lo general bajos en ambas redes (en test un pooc mas altos en resnet que en mobileNet con la excepción de los outlayers de Hint en mobileNet). Se puede hablar de alguna forma de convergencia.
+
+train acc - la wea está estancada en 10
+test acc - hay modelos que logran predecir mas allá de 10 pero sin pasar de los 15
+
+Interesantemente en test eval resNet tiene valores mucho mas altos que MobileNet en general, en Train todos estan cerca estables de los 10. Sin correlato en Acc es dificil decir que significa algo.
+
+Algo está aprendiendo
