@@ -28,7 +28,7 @@ def main(args):
     ])"""
 
     #trainloader, testloader, classes = load_cifar10(args)
-    trainloader, testloader, classes = load_samples(arg, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
+    #trainloader, testloader, classes = load_samples(arg, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
     teacher = load_teacher(args, device)
 
     #todo: arreglar

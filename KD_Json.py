@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
-from lib.utils.utils import load_cifar10, auto_change_dir, add_noise
+from lib.utils.utils import load_cifar10, auto_change_dir, add_noise, load_samples
 import torchvision.transforms as transforms
 from lib.utils.records_collector_deprecated import maj_key
 import json
@@ -73,7 +73,8 @@ if __name__ == '__main__':
     print("Using device", device)  # todo: cambiar a logger
     args = fake_arg()
     print(args)
-    trainloader, testloader, classes = load_cifar10(args)
+    #trainloader, testloader, classes = load_cifar10(args)
+    trainloader, testloader, classes = load_samples(args, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
     teacher = load_teacher(args, device)
 
 
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     for student in ["ResNet18", "MobileNet"]:
         for distillation in ["KD", "KD_CE"]:
             for T in [str(i) for i in [1, 5, 10,50, 100, 1000]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp3"
+                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp8"
                          "")#funcionalizar
                 dist = distillation+",T-"+ T
                 arg = fake_arg(distillation=dist, student=student)
