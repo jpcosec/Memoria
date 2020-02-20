@@ -1,1 +1,0 @@
-{"lr": 0.1, "resume": false, "epochs": 15, "pre": 50, "train_batch_size": 64, "test_batch_size": 64, "student": "ResNet18", "teacher": "ResNet101", "distillation": "nst_linear", "last_layer": "KD_CE", "layer": 2}

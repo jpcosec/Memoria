@@ -1,8 +1,0 @@
-exp1: KD json -- Normal
-exp2: KD json ruido 1
-exp3: KD json ruido 0.1
-exp4: feature_json ruido 0.1
-exp5: feature_json ruido 1
-exp6: feature AE
-exp7: feature normal
-exp8: KD json AE
