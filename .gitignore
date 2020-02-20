@@ -21,6 +21,7 @@
  Cifar10/linear_10000,10000,10000,10000,10000,10000/
  Cifar10/linear_10000,10000,10000,10000,10000/
  Cifar10/runs/
+ Cifar10/*
  Mnist/OLD/runs/
 
 *.xml
