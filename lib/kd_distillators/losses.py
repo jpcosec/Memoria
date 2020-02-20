@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from lib.utils.utils import auto_change_dir
-
+from lib.utils.funcs import auto_change_dir
 
 """
 loss_dict = {"input": S_y_pred, "teacher_logits": T_y_pred, "target": targets}

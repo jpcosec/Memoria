@@ -8,31 +8,23 @@ from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import parse_distillation_loss as last_layer_loss_parser
 from lib.kd_distillators.utils import load_student, load_teacher
-from lib.utils.utils import load_cifar10, auto_change_dir, random_return, add_noise, load_samples
+from lib.utils.funcs import auto_change_dir
+from lib.utils.utils import cifar10_parser
 
 import os
 
-import torchvision.transforms as transforms
-def main(args):
+
+def experiment_run(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print("Using device", device)  # todo: cambiar a logger
 
-    """transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Lambda(add_noise(0.1)),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-
-    ])"""
-
-    #trainloader, testloader, classes = load_cifar10(args)
-    #trainloader, testloader, classes = load_samples(arg, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
+    trainloader, testloader, classes = cifar10_parser(args)
     teacher = load_teacher(args, device)
 
-    #todo: arreglar
-    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/" + "exp6")
+    if args.exp_name is not None:
+        os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/")
+        auto_change_dir(args.exp_name)
 
     student, best_acc, start_epoch = load_student(args, device)
 
@@ -63,7 +55,7 @@ def main(args):
                             best_acc=best_acc,
                             idxs=idxs,
                             use_regressor=args.distillation=="hint",
-                            args = args
+                            args=args
                             )
     if exp.epoch+1 < args.epochs:
         print("training",exp.epoch, "-",args.epochs)
@@ -76,8 +68,9 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
-    parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
+    parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
     parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
@@ -98,7 +91,10 @@ if __name__ == '__main__':
     parser.add_argument("--student_layer",type=int,default= 5)# Arreglar para caso multicapa
     parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso
     parser.add_argument("--layer", type=int, default=2)  # solo para el nombre
+    parser.add_argument("--transform",default="none,",help="ej. noise,0.1")
+    parser.add_argument("--dataset", default="cifar10,", help="ej. vae_sample")
+    parser.add_argument("--exp_name")
 
     arg = parser.parse_args()
 
-    main(arg)
+    experiment_run(arg)

@@ -1,13 +1,12 @@
 '''Train CIFAR10 with PyTorch.'''
 import argparse
 
-import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 from lib.utils.Experiment import Experiment
-from lib.utils.utils import load_cifar10
+from lib.utils.data.cifar10 import load_cifar10
 from lib.teacher.utils import *
 
 def main(args):

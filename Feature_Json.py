@@ -1,9 +1,6 @@
 '''Train CIFAR10 with PyTorch.'''
 
-
-import argparse
 import os
-import json
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -11,10 +8,10 @@ from lib.feature_distillators.losses import parse_distillation_loss
 from lib.feature_distillators.utils import *
 from lib.kd_distillators.losses import KD
 from lib.kd_distillators.utils import load_student, load_teacher
+from lib.utils.debug import fake_arg
 
-from lib.utils.utils import load_cifar10, auto_change_dir, add_noise
-import torchvision.transforms as transforms
-
+from lib.utils.funcs import auto_change_dir
+from lib.utils.data.cifar10 import load_cifar10
 
 
 def experiment_run(args, device, teacher, testloader, trainloader):
@@ -60,46 +57,19 @@ def experiment_run(args, device, teacher, testloader, trainloader):
         print("epochs surpassed")
 
 
-def fake_arg(**kwargs):
-    args = argparse.Namespace()
-    d = vars(args)
-
-    def add_field(field,default):
-        if field in kwargs:
-            d[field] = kwargs[field]
-        else:
-            d[field] = default
-
-    add_field('lr' ,0.01)
-    add_field('epochs' ,50)
-    add_field('train_batch_size',128)
-    add_field('test_batch_size', 128)
-    add_field('student' ,"ResNet18")
-    add_field('teacher' ,"ResNet101")
-    add_field('distillation' ,"nst_linear")
-    add_field('last_layer',"KD")
-    add_field("layer", 5)# Arreglar para caso multicapa
-    add_field('pre',50)
-    add_field("student_layer",5)
-    add_field("teacher_layer",26)
-
-    args.resume=True
-    return args
-
-
 if __name__ == '__main__':
     folder = "exp4"
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print("Using device", device)  # todo: cambiar a logger
+    #device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    #print("Using device", device)  # todo: cambiar a logger
     args = fake_arg()
 
 
 
-    trainloader, testloader, classes = load_cifar10(args, transform_train=transform_train)
-    teacher = load_teacher(args, device)
+    #trainloader, testloader, classes = load_cifar10(args, transform_train=transform_train)
+    #teacher = load_teacher(args, device)
 
-    print("Using device", device)  # todo: cambiar a logger
+    #print("Using device", device)  # todo: cambiar a logger
 
 
 
@@ -107,29 +77,50 @@ if __name__ == '__main__':
     #trainloader, testloader, classes = load_cifar10(args)
     #teacher = load_teacher(args, device)
 
-    blocs ={"ResNet101": [26,56,219,239],#Completar
-            "MobileNet": [6,15,26,55],
-            "ResNet18": [10, 23, 35, 46]
-            }
+
+    def make_sh(exp_name):
+
+        f = open(exp_name+".sh", "a")
+
+        blocs ={"ResNet101": [26,56,219,239],#Completar
+                "MobileNet": [6,15,26,55],
+                "ResNet18": [10, 23, 35, 46]
+                }
 
 
 
 
-    for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
-        for distillation in [ "nst_linear", "nst_poly", "att_mean","att_max","hint","PKT"]:
-            for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
-                    os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
-                    arg = fake_arg(distillation=distillation,
-                                   student=student,
-                                   layer=layer,
-                                   student_layer=s_layer,
-                                   teacher_layer=t_layer,
-                                   )
+        for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
+            for distillation in [ "nst_linear", "nst_poly", "att_mean","att_max","hint","PKT"]:
+                for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
+                        #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
-                    print("python feat_distillation.py --distillation=%s --layer=%i --student=%s --student_layer=%i --teacher_layer=%i"%(distillation,layer,student,s_layer,t_layer))
-                    #print("TRAINING-%s-%s-%i"%(student,distillation,layer))
-                    #experiment_run(arg, device, teacher, testloader, trainloader)
-                    torch.cuda.empty_cache()
+                        arg = fake_arg(distillation=distillation,
+                                       student=student,
+                                       layer=layer,
+                                       student_layer=s_layer,
+                                       teacher_layer=t_layer,
+                                       )
 
-    #print(" ")
+                        """print("python feat_distillation.py "
+                              "--distillation=%s "
+                              "--layer=%i "
+                              "--student=%s "
+                              "--student_layer=%i "
+                              "--teacher_layer=%i"
+                              %(distillation,layer,student,s_layer,t_layer))
+                        """
+                        st=f'python feat_distillation.py ' \
+                           f'--distillation={distillation} ' \
+                           f'--layer={layer} ' \
+                           f'--student={student} ' \
+                           f'--student_layer={s_layer} ' \
+                           f'--teacher_layer={t_layer}' \
+                           f' --exp_name={exp_name} \n'
+                        f.write(st)
+
+        f.close()
+
+
+    make_sh("las")

@@ -7,8 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
-from lib.utils.utils import load_cifar10, auto_change_dir, add_noise, load_samples
-import torchvision.transforms as transforms
+from lib.utils.data.cifar10 import load_samples
 from lib.utils.records_collector_deprecated import maj_key
 import json
 

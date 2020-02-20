@@ -4,7 +4,8 @@ import torch
 import torch.optim as optim
 from lib.teacher_model import Net
 
-from lib.utils.utils import teacher_train, acc_test, load_mnist
+from lib.utils.utils import teacher_train, acc_test
+from lib.utils.data.data import load_mnist
 
 
 def main(params):

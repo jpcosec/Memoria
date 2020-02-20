@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
-from lib.utils.utils import load_cifar10
+from lib.utils.data.cifar10 import load_cifar10
 
 
 def main(args):

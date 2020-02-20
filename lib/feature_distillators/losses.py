@@ -8,8 +8,7 @@ import torch.nn.functional as F
     interface function that receives parameters and calls a new function with the 
 """
 
-
-from lib.utils.utils import auto_change_dir
+from lib.utils.funcs import auto_change_dir
 
 
 def parse_distillation_loss(args):

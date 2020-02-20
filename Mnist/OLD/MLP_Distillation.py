@@ -9,7 +9,9 @@ import numpy as np
 import torch
 from lib.dist_model import linear_model
 from lib.dist_utils import dist_loss_gen, train_op
-from lib.utils.utils import sample, load_mnist, acc_test
+from lib.utils.utils import acc_test
+from lib.utils.data.data import load_mnist
+from lib.utils.data.functions import sample
 from lib.teacher_model import Net as TeacherNet
 
 from torch.utils.tensorboard import SummaryWriter

@@ -1,11 +1,3 @@
-import os
-import torch
-import torchvision
-import torchvision.transforms as transforms
-from torch.autograd import Variable
-
-import numpy as np
-
 from lib.models.densenet import DenseNet121
 from lib.models.dpn import DPN92
 from lib.models.efficientnet import EfficientNetB0
@@ -19,23 +11,8 @@ from lib.models.resnext import ResNeXt29_32x4d
 from lib.models.senet import SENet18
 from lib.models.vgg import VGG
 from lib.models.mnist_net import MnistNet
-
-def auto_change_dir(path):
-  print("Moving to", path)#todo: log
-  for folder in path.split("/"):
-    if not os.path.exists(folder):
-      print("Creating", folder)
-      os.mkdir(folder)
-    os.chdir(folder)
-
-def add_noise(t):
-    def tensor_random_noise(input):
-        return input + torch.rand_like(input) * t
-    return tensor_random_noise
-
-def random_return(image):
-    #print(image.getpixel((1, 1)))
-    return np.random.randint(256,size=(32, 32, 3),dtype=np.uint8)
+from lib.utils.data.cifar10 import load_samples, additive_noise, load_cifar10
+from lib.utils.funcs import auto_change_dir
 
 """ Model Stuff"""
 
@@ -67,113 +44,22 @@ def get_model(model_name):
         raise ModuleNotFoundError("Model not found")
 
 
+def cifar10_parser(args):
 
-""" Dataset Loaders"""
-def load_cifar10(args, transform_train=None, transform_test=None):
-    auto_change_dir("Cifar10")
+    print("usando dataset", args.dataset)
 
+    if args.dataset=="vae_sample":
+        return load_samples(args, "VAE_SAMP")
 
-    if transform_train is None:
-      transform_train = transforms.Compose([
-          transforms.RandomCrop(32, padding=4),
-          transforms.RandomHorizontalFlip(),
-          #transforms.Lambda(random_return),
-          transforms.ToTensor(),
-          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    transform, arg= args.transform.split(",")
+    print("usando transformacion", transform, "con args",arg)
+    if transform=="none":
+        transform_train= None
+    else:
+        t_dict={
+            "noise": additive_noise
+        }
 
-      ])
+        transform_train = t_dict[transform](float(arg))
 
-    if transform_test is None:
-      transform_test = transforms.Compose([
-          transforms.ToTensor(),
-          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-      ])
-
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=2)
-
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
-
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    return trainloader, testloader, classes
-
-
-def load_samples(args, samples_folder, transform_train=None, transform_test=None):
-    auto_change_dir("Cifar10")
-
-
-    if transform_train is None:
-      transform_train = transforms.Compose([
-          transforms.RandomCrop(32, padding=4),
-          transforms.RandomHorizontalFlip(),
-          #transforms.Lambda(random_return),
-          transforms.ToTensor(),
-          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-
-      ])
-
-    if transform_test is None:
-      transform_test = transforms.Compose([
-          transforms.ToTensor(),
-          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-      ])
-
-    trainset = torchvision.datasets.ImageFolder(root=samples_folder, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=2)
-
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=args.test_batch_size, shuffle=False, num_workers=2)
-
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-    return trainloader, testloader, classes
-"""
-from lib.utils.utils import load_samples
-from Feature_Json import fake_arg
-arg=fake_arg()
-trainloader,testloader,classes=load_samples(arg,"VAE_SAMP")
-"""
-def load_mnist(args):
-    # Load MNIST
-    auto_change_dir("Mnist")
-
-    train_data = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transforms.Compose([
-        transforms.ToTensor(),  # ToTensor does min-max normalization.
-    ]), )
-
-    test_data = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transforms.Compose([
-        transforms.ToTensor(),  # ToTensor does min-max normalization.
-    ]), )
-
-    # Create DataLoader
-    dataloader_args = dict(shuffle=True, batch_size=args.train_batch_size, num_workers=2)
-    train_loader = torch.utils.data.DataLoader(train_data, **dataloader_args)
-    test_loader = torch.utils.data.DataLoader(test_data, **dataloader_args)
-
-    return train_loader, test_loader, range(10)
-
-
-def sample(loader):  # Deprecated
-    data, target = next(iter(loader))
-    data, target = Variable(data.cuda()), Variable(target.cuda())
-    return data, target
-
-
-
-def register_hooks(net, idxs, feature):# Deprecate
-  """
-  Registers a hook in the module of the net
-  :param net:
-  :param idxs:
-  :param feature:
-  :return:
-  """
-
-  def hook(m, i, o):
-    feature[m] = o
-
-  for name, module in net._modules.items():
-    for id, layer in enumerate(module.children()):
-      if id in idxs:
-        layer.register_forward_hook(hook)
-
+    return load_cifar10(args, transform_train=transform_train)

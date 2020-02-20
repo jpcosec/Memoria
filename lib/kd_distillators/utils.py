@@ -4,7 +4,8 @@ import torch
 import torch.backends.cudnn as cudnn
 
 from lib.utils.Experiment import Experiment
-from lib.utils.utils import get_model, auto_change_dir
+from lib.utils.utils import get_model
+from lib.utils.funcs import auto_change_dir
 
 
 class DistillationExperiment(Experiment):

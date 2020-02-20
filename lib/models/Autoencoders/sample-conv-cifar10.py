@@ -9,8 +9,7 @@ from torch import nn, optim
 from torch.nn import functional as F
 from torchvision.utils import save_image
 
-
-from lib.utils.utils import auto_change_dir
+from lib.utils.funcs import auto_change_dir
 from lib.models.Autoencoders.utils import load_dataset
 from lib.models.Autoencoders.conv_VAE import VAE
 
