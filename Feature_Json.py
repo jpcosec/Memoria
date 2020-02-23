@@ -124,9 +124,9 @@ if __name__ == '__main__':
                            f'--layer={layer} ' \
                            f'--student={student} ' \
                            f'--student_layer={s_layer} ' \
-                           f'--teacher_layer={t_layer}' \
-                           f'--transform={transform}' \
-                           f' --exp_name={transform.replace(",","/")} \n'
+                           f'--teacher_layer={t_layer} ' \
+                           f'--transform={transform} ' \
+                           f'--exp_name={transform.replace(",","/")} \n'
                         f.write(st)
 
         f.close()
