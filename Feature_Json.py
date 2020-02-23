@@ -92,8 +92,14 @@ if __name__ == '__main__':
 
 
         for student in [ "ResNet18", "MobileNet"]:#todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
-            for distillation in [ "nst_linear", "nst_poly", "att_mean","att_max","hint","PKT"]:
+            for distillation in [ "nst_linear",
+                                  #"nst_poly",
+                                  "att_mean",
+                                  "att_max",
+                                  "hint",
+                                  "PKT"]:
                 for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
+                    for sigma in [0.1*i for i in range(10)]:
                         #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
                         arg = fake_arg(distillation=distillation,
@@ -111,16 +117,19 @@ if __name__ == '__main__':
                               "--teacher_layer=%i"
                               %(distillation,layer,student,s_layer,t_layer))
                         """
+                        transform="noise,"+str(sigma)
+
                         st=f'python feat_distillation.py ' \
                            f'--distillation={distillation} ' \
                            f'--layer={layer} ' \
                            f'--student={student} ' \
                            f'--student_layer={s_layer} ' \
                            f'--teacher_layer={t_layer}' \
-                           f' --exp_name={exp_name} \n'
+                           f'--transform={transform}' \
+                           f' --exp_name={transform.replace(",","/")} \n'
                         f.write(st)
 
         f.close()
 
 
-    make_sh("las")
+    make_sh("noise_exp")
