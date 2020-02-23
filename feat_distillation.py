@@ -18,12 +18,13 @@ def experiment_run(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print("Using device", device)  # todo: cambiar a logger
-
     trainloader, testloader, classes = cifar10_parser(args)
     teacher = load_teacher(args, device)
 
+
     if args.exp_name is not None:
-        os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/")
+        #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/") #Linux
+        os.chdir("C:/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/")#Windows
         auto_change_dir(args.exp_name)
 
     student, best_acc, start_epoch = load_student(args, device)

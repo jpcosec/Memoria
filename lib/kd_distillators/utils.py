@@ -107,6 +107,7 @@ def load_teacher(args, device):
     cudnn.benchmark = True
 
   auto_change_dir(args.teacher)
+  print(os.getcwd())
   # Load checkpoint.
   print('==> Resuming from checkpoint..')
   assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
