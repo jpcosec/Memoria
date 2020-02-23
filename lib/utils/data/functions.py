@@ -5,7 +5,7 @@ from torch.autograd import Variable
 
 def add_noise(t):
     def tensor_random_noise(input):
-        return input + torch.rand_like(input) * t
+        return input + (torch.rand_like(input) * t)
     return tensor_random_noise
 
 

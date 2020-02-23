@@ -99,7 +99,7 @@ if __name__ == '__main__':
                                   "hint",
                                   "PKT"]:
                 for layer,(s_layer,t_layer) in enumerate(zip(blocs[student],blocs["ResNet101"])):
-                    for sigma in [0.1*i for i in range(10)]:
+                    for sigma in [0.1*i for i in range(1,11)]:
                         #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
                         arg = fake_arg(distillation=distillation,
