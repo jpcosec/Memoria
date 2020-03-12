@@ -69,9 +69,9 @@ def collect_records(folder, correct_epochs=True):
     return info
 
 if __name__ == '__main__':
-    folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp8/students/"
+    #folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp8/students/" # TODO : add argparse
     #folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
-
+    folder="/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/noise"
     info=collect_records(folder)
 
 
