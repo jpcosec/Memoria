@@ -134,11 +134,6 @@ def main():
             sample = model.decode(sample).cpu()
             save_image(sample.view(64, 3, 32, 32),
                        'results/sample_' + str(epoch) + '.png')
-        state = {
-            'net': model.state_dict(),
-            'epoch': epoch
-        }
-        torch.save(state, './checkpoint/ckpt.pth')
 
 if __name__ == "__main__":
     main()
