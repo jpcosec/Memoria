@@ -5,13 +5,11 @@ import os
 
 import torch
 import torch.utils.data
-from torch import optim
-from torch.nn import functional as F
 from torchvision.utils import save_image
 
 from lib.utils.funcs import auto_change_dir
 from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset
-from lib.Artificial_Dataset_generators.Autoencoders.Deprecated.conv_VAE import VAE
+from lib.Artificial_Dataset_generators.Autoencoders.conv_VAE import VAE
 
 os.chdir("../../../Cifar10")
 print(os.getcwd())
@@ -52,13 +50,13 @@ os.chdir("..")
 
 model = VAE().to(device)
 
-assert os.path.isdir("checkpoint"):  # todo: cambiar a non initialized
-    # Load checkpoint.
-    print('==> Resuming from checkpoint..')
+assert os.path.isdir("checkpoint")  # todo: cambiar a non initialized
+# Load checkpoint.
+print('==> Resuming from checkpoint..')
 
-    checkpoint = torch.load('./checkpoint/ckpt.pth')
-    model.load_state_dict(checkpoint['net'])
-    start_epoch = checkpoint['epoch']
+checkpoint = torch.load('./checkpoint/ckpt.pth')
+model.load_state_dict(checkpoint['net'])
+start_epoch = checkpoint['epoch']
 
 
 
