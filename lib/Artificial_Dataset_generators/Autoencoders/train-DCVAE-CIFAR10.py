@@ -9,7 +9,7 @@ from torch import optim
 from torch.nn import functional as F
 from torchvision.utils import save_image
 
-from lib.utils.funcs import auto_change_dir
+from lib.utils.funcs import auto_change_dir, check_folders
 from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset
 from lib.Artificial_Dataset_generators.Autoencoders.Deprecated.conv_VAE import VAE
 
@@ -46,12 +46,11 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 test_loader, train_loader = load_dataset(args, kwargs)
 
 auto_change_dir(args.folder)
-auto_change_dir("results")
-os.chdir("..")
+check_folders()
 
 model = VAE().to(device)
 
-if os.path.isdir("checkpoint"):  # todo: cambiar a non initialized
+"""if os.path.isdir("checkpoint"):  # todo: cambiar a non initialized
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
 
@@ -61,7 +60,7 @@ if os.path.isdir("checkpoint"):  # todo: cambiar a non initialized
 else:
     auto_change_dir("checkpoint")
     os.chdir("..")
-    start_epoch = 0
+    start_epoch = 0"""
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
@@ -114,26 +113,26 @@ def test(epoch):
                 comparison = torch.cat([data[:n],
                                         recon_batch.view(args.batch_size, 3, 32, )[:n]])
                 save_image(comparison.cpu(),
-                           'results/reconstruction_' + str(epoch) + '.png', nrow=n)
+                           'outs/reconstruction_' + str(epoch) + '.png', nrow=n)
 
     test_loss /= len(test_loader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
 
 
 def main():
-    for epoch in range(start_epoch, args.epochs + 1):
+    for epoch in range(0, args.epochs + 1):
         train(epoch)
         test(epoch)
         with torch.no_grad():
             sample = torch.randn(64, 128).to(device)
             sample = model.decode(sample).cpu()
             save_image(sample.view(64, 3, 32, 32),
-                       'results/sample_' + str(epoch) + '.png')
+                       'outs/sample_' + str(epoch) + '.png')
         state = {
             'net': model.state_dict(),
             'epoch': epoch
         }
-        torch.save(state, './checkpoint/ckpt.pth')
+        torch.save(state, './checkpoints/ckpt%i.pth'%epoch)
 
 
 if __name__ == "__main__":
