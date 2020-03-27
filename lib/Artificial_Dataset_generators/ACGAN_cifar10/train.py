@@ -36,8 +36,6 @@ parser.add_argument('--folder',  default="GAN-Dataset",
                     help='output folder')
 args = parser.parse_args()
 
-auto_change_dir(args.folder)
-check_folders()
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -53,11 +51,6 @@ trainset = torchvision.datasets.CIFAR10(root = './data', train = True, download 
                                      transform = tf)
 
 
-#testset = torchvision.datasets.CIFAR10(root = './data', train = False, download = True,
-#                                    transform = tf)
-
-#dataset = torch.utils.data.ConcatDataset([trainset, testset])
-
 
 trainloader = torch.utils.data.DataLoader(trainset, batch_size = 128, shuffle = True)
 
@@ -65,6 +58,10 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size = 128, shuffle = 
 #print(len(dataset))
 #print(dataset[0][0].size())
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck', 'fake')
+
+auto_change_dir(args.folder)
+check_folders()
+
 
 dataiter = iter(trainloader)
 images,labels = dataiter.next()
