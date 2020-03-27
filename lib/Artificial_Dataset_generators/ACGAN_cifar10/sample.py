@@ -45,11 +45,12 @@ start_epoch = checkpoint['epoch']
 
 
 def main():
+  labels = torch.arange(0, 100, dtype=torch.long, device=device) // 10
   with torch.no_grad():
     for i in range(args.n_samples // 100):
       noise = torch.randn(100, 100, device=device)
-      labels = torch.arange(0, 100, dtype=torch.long, device=device) // 10
       gen_images = gen(noise, labels).cpu()
+      images = images / 2 + 0.5
       save_samples(gen_images,
                    start=i * args.batch_size,
                    batch_size=args.batch_size)

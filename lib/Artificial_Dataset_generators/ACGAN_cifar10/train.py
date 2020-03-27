@@ -185,6 +185,7 @@ for epoch in range(1,args.epochs+1):
         noise = torch.randn(100,100,device = device)
         labels = torch.arange(0,100,dtype = torch.long,device = device)//10
         gen_images = gen(noise, labels).cpu()
+        images = images / 2 + 0.5
         save_image(gen_images,
                    'outs/sample_' + str(epoch) + '.png')
 

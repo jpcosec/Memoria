@@ -97,6 +97,7 @@ def main():
         with torch.no_grad():
             sample = torch.randn(64, 128).to(device)
             sample = model.decode(sample).cpu()
+
             save_image(sample.view(64, 3, 32, 32),
                        'outs/sample_' + str(epoch) + '.png')
         state = {
