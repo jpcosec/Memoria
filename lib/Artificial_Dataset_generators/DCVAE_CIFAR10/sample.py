@@ -28,7 +28,7 @@ parser.add_argument('--folder',  default="VAE-Dataset",
 args = parser.parse_args()
 
 
-device = torch.device("cuda" if args.cuda else "cpu")
+device = torch.device("cuda")
 
 check_folders(["samples"])
 
