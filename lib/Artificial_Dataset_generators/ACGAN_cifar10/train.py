@@ -184,10 +184,8 @@ for epoch in range(1,args.epochs+1):
     with torch.no_grad():
         noise = torch.randn(100,100,device = device)
         labels = torch.arange(0,100,dtype = torch.long,device = device)//10
-        images = gen(noise, labels).cpu()
-        images = images / 2 + 0.5
-        save_image(images,
-                   'outs/sample_' + str(epoch) + '.png')
+        images = gen(noise, labels)
+        showImage(images,epoch)
 
     
     torch.save(gen.state_dict(),'checkpoints/gen_%i.pth'%epoch)
