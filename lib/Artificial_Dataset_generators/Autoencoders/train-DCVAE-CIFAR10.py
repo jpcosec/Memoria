@@ -6,11 +6,10 @@ import os
 import torch
 import torch.utils.data
 from torch import optim
-from torch.nn import functional as F
 from torchvision.utils import save_image
 
 from lib.utils.funcs import auto_change_dir, check_folders
-from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset
+from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset, loss_function
 from lib.Artificial_Dataset_generators.Autoencoders.Deprecated.conv_VAE import VAE
 
 os.chdir("../../../Cifar10")
@@ -66,16 +65,6 @@ optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 
 # Reconstruction + KL divergence losses summed over all elements and batch
-def loss_function(recon_x, x, mu, logvar):
-    BCE = F.binary_cross_entropy(recon_x, x.view(-1, 3072), reduction='sum')
-
-    # see Appendix B from VAE paper:
-    # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
-    # https://arxiv.org/abs/1312.6114
-    # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
-    KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-
-    return BCE + KLD
 
 
 def train(epoch):
@@ -100,29 +89,10 @@ def train(epoch):
         epoch, train_loss / len(train_loader.dataset)))
 
 
-def test(epoch):
-    model.eval()
-    test_loss = 0
-    with torch.no_grad():
-        for i, (data, _) in enumerate(test_loader):
-            data = data.to(device)
-            recon_batch, mu, logvar = model(data)
-            test_loss += loss_function(recon_batch, data, mu, logvar).item()
-            if i == 0:
-                n = min(data.size(0), 8)
-                comparison = torch.cat([data[:n],
-                                        recon_batch.view(args.batch_size, 3, 32, )[:n]])
-                save_image(comparison.cpu(),
-                           'outs/reconstruction_' + str(epoch) + '.png', nrow=n)
-
-    test_loss /= len(test_loader.dataset)
-    print('====> Test set loss: {:.4f}'.format(test_loss))
-
 
 def main():
     for epoch in range(0, args.epochs + 1):
         train(epoch)
-        test(epoch)
         with torch.no_grad():
             sample = torch.randn(64, 128).to(device)
             sample = model.decode(sample).cpu()
