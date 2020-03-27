@@ -18,7 +18,7 @@ from lib.utils.funcs import auto_change_dir, check_folders
 os.chdir("../../../Cifar10")
 print(os.getcwd())
 
-check_folders()
+
 
 
 parser = argparse.ArgumentParser(description='GAN Dataset sampler')
@@ -35,6 +35,9 @@ parser.add_argument('--sample', action='store_true', default=False,
 parser.add_argument('--folder',  default="GAN-Dataset",
                     help='output folder')
 args = parser.parse_args()
+
+auto_change_dir(args.folder)
+check_folders()
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -57,9 +60,6 @@ trainset = torchvision.datasets.CIFAR10(root = './data', train = True, download 
 
 
 trainloader = torch.utils.data.DataLoader(trainset, batch_size = 128, shuffle = True)
-
-auto_change_dir(args.folder)
-
 
 
 #print(len(dataset))
