@@ -39,7 +39,7 @@ def load_dataset(args,kwargs):
     return test_loader, train_loader
 
 
-def save_samples(tensor, start=0, folder="samples"):
+def save_samples(tensor, start=0, folder="samples",batch_size=128):
     """Save a given Tensor into an image file.
 
     Args:
@@ -52,7 +52,7 @@ def save_samples(tensor, start=0, folder="samples"):
     # Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
     #print(tensor.shape)
     ndarr = tensor.mul_(255).add_(0.5).clamp_(0, 255).permute(0,2, 3, 1).to('cpu', torch.uint8).numpy()
-    for n,arr in enumerate(split(ndarr,64)):
+    for n,arr in enumerate(split(ndarr,batch_size)):
         #print(squeeze(arr).shape)
         im = Image.fromarray(squeeze(arr))
         im.save(folder+"/"+str(n+start)+".png")

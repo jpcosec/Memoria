@@ -9,8 +9,9 @@ from torch import optim
 from torchvision.utils import save_image
 
 from lib.utils.funcs import auto_change_dir, check_folders
-from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset, loss_function
-from lib.Artificial_Dataset_generators.Autoencoders.Deprecated.conv_VAE import VAE
+
+from lib.Artificial_Dataset_generators.DCVAE_CIFAR10.utils import load_dataset,loss_function
+from lib.Artificial_Dataset_generators.DCVAE_CIFAR10.conv_VAE import VAE
 
 os.chdir("../../../Cifar10")
 print(os.getcwd())
