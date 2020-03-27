@@ -5,13 +5,13 @@ import os
 
 import torch
 import torch.utils.data
-from torch import nn, optim
+from torch import optim
 from torch.nn import functional as F
 from torchvision.utils import save_image
 
 from lib.utils.funcs import auto_change_dir
-from lib.models.Autoencoders.utils import load_dataset
-from lib.models.Autoencoders.conv_VAE import VAE
+from lib.Artificial_Dataset_generators.Autoencoders.utils import load_dataset
+from lib.Artificial_Dataset_generators.Autoencoders.Deprecated.conv_VAE import VAE
 
 os.chdir("../../../Cifar10")
 print(os.getcwd())
@@ -27,8 +27,8 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
-parser.add_argument('--sample', action='store_true', default=False,
-                    help='samples trained model')
+parser.add_argument('--folder',  default="VAE-Dataset",
+                    help='output folder')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -38,11 +38,17 @@ device = torch.device("cuda" if args.cuda else "cpu")
 print(device)
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
-test_loader, train_loader = load_dataset(args, kwargs)
 
-auto_change_dir('VAE_CONV7')
+test_loader , train_loader = load_dataset(args,kwargs)
+
+
+auto_change_dir(args.folder)
 auto_change_dir("results")
 os.chdir("..")
+
+
+
+
 
 model = VAE().to(device)
 
@@ -59,6 +65,8 @@ else:
     start_epoch = 0
 
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+
 
 
 # Reconstruction + KL divergence losses summed over all elements and batch
@@ -96,6 +104,8 @@ def train(epoch):
         epoch, train_loss / len(train_loader.dataset)))
 
 
+
+
 def test(epoch):
     model.eval()
     test_loss = 0
@@ -107,43 +117,34 @@ def test(epoch):
             if i == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
-                                        recon_batch.view(args.batch_size, 3, 32, )[:n]])
+                                        recon_batch.view(args.batch_size, 3, 32,
+
+                                                         32)[:n]])
                 save_image(comparison.cpu(),
                            'results/reconstruction_' + str(epoch) + '.png', nrow=n)
 
     test_loss /= len(test_loader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
 
-
 def main():
-    if not args.sample and False:
-        for epoch in range(start_epoch, args.epochs + 1):
-            train(epoch)
-            test(epoch)
-            with torch.no_grad():
-                sample = torch.randn(64, 128).to(device)
-                sample = model.decode(sample).cpu()
-                save_image(sample.view(64, 3, 32, 32),
-                           'results/sample_' + str(epoch) + '.png')
-            state = {
-                'net': model.state_dict(),
-                'epoch': epoch
-            }
-            torch.save(state, './checkpoint/ckpt.pth')
-    else:
-        with torch.no_grad():
-            print("sampling loaded model")
-            os.chdir("..")
-            #os.mkdir("samples")
-            from lib.models.Autoencoders.utils import save_samples
-            for start in range(int(80000 / 64)):
-                sample = torch.randn(64, 128).to(device)
-                sample = model.decode(sample).cpu()
-                save_samples(sample.view(64, 3, 32, 32), start=start * 64)
 
+    for epoch in range(start_epoch, args.epochs + 1):
+        train(epoch)
+        test(epoch)
+        with torch.no_grad():
+            sample = torch.randn(64, 128).to(device)
+            sample = model.decode(sample).cpu()
+            save_image(sample.view(64, 3, 32, 32),
+                       'results/sample_' + str(epoch) + '.png')
+        state = {
+            'net': model.state_dict(),
+            'epoch': epoch
+        }
+        torch.save(state, './checkpoint/ckpt.pth')
 
 if __name__ == "__main__":
     main()
+
 
 # © 2019 GitHub, Inc.
 

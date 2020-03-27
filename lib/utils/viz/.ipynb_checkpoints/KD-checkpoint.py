@@ -11,7 +11,7 @@ def load_data(folder="./Cifar10/ResNet101/exp1/students"):
     return data
 
 
-def plot(data,phase,field,center=False):
+def plot(data,phase,field,center=False,scale=None,shape=(400,400)):
     detalle=['test_acc', 'test_teacher/acc', 'test_loss', 'test_eval',
            'train_acc', 'train_teacher/acc', 'train_loss', 'train_eval','distillation', 'temp']
     
@@ -19,13 +19,20 @@ def plot(data,phase,field,center=False):
         
     }
     
+    if scale is None:
+        print(".")
+        scale='log' if field in ['loss','eval'] else 'linear'
+    else:
+        print("scale", scale)
+    
+    print("lasorra")
     #data['train_acc']-=data['test_acc']
     
     
     bar=alt.Chart(data).mark_point().encode(
         alt.X('temp:O', scale=alt.Scale(zero=False,base=10,type='log', ),title="Temperatura"),
         alt.Y('%s_%s'%(phase,field), 
-              scale=alt.Scale(zero=False, type='log' if field in ['loss','eval'] else 'linear'), 
+              scale=alt.Scale(zero=False, type=scale), 
               title=field_dict[field]),
         shape=alt.Shape('distillation', legend=alt.Legend(title="Destilación")),
         color=alt.Color('student', legend=alt.Legend(title="Modelo")),
@@ -46,13 +53,15 @@ def plot(data,phase,field,center=False):
                         y='ce_%s:Q'%phase,
                         color='Model:N',
                         size=alt.value(2))
-            return (aggregates+bar).properties(width=600,height=400) 
-    return bar.properties(width=600,height=400)
+            
+            return (aggregates+bar).properties(width=shape[0],height=shape[1]) 
+        
+    return bar.properties(width=shape[0],height=shape[1])
     
 def load_and_plot(folder="./Cifar10/ResNet101/exp1/students",phase='test',field='acc',**kwargs):
     data = load_data(folder)
 
-    return plot(data,phase,field,kwargs)
+    return plot(data,phase,field,**kwargs)
 
 def omniplot(folder="./Cifar10/ResNet101/exp1/students"):
     data = load_data(folder)
