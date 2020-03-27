@@ -121,30 +121,19 @@ def test(epoch):
 
 
 def main():
-    if not args.sample and False:
-        for epoch in range(start_epoch, args.epochs + 1):
-            train(epoch)
-            test(epoch)
-            with torch.no_grad():
-                sample = torch.randn(64, 128).to(device)
-                sample = model.decode(sample).cpu()
-                save_image(sample.view(64, 3, 32, 32),
-                           'results/sample_' + str(epoch) + '.png')
-            state = {
-                'net': model.state_dict(),
-                'epoch': epoch
-            }
-            torch.save(state, './checkpoint/ckpt.pth')
-    else:
+    for epoch in range(start_epoch, args.epochs + 1):
+        train(epoch)
+        test(epoch)
         with torch.no_grad():
-            print("sampling loaded model")
-            os.chdir("..")
-            #os.mkdir("samples")
-            from lib.Artificial_Dataset_generators.Autoencoders.utils import save_samples
-            for start in range(int(80000 / 64)):
-                sample = torch.randn(64, 128).to(device)
-                sample = model.decode(sample).cpu()
-                save_samples(sample.view(64, 3, 32, 32), start=start * 64)
+            sample = torch.randn(64, 128).to(device)
+            sample = model.decode(sample).cpu()
+            save_image(sample.view(64, 3, 32, 32),
+                       'results/sample_' + str(epoch) + '.png')
+        state = {
+            'net': model.state_dict(),
+            'epoch': epoch
+        }
+        torch.save(state, './checkpoint/ckpt.pth')
 
 
 if __name__ == "__main__":

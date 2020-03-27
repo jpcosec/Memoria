@@ -26,3 +26,11 @@ def register_hooks(net, idxs, feature):# Deprecate
     for id, layer in enumerate(module.children()):
       if id in idxs:
         layer.register_forward_hook(hook)
+
+
+def check_folders(folders=["outs","checkpoints"]):
+  #print("Moving to", path)#todo: log
+  for folder in folders:
+    if not os.path.exists(folder):
+      print("Creating", folder)
+      os.mkdir(folder)

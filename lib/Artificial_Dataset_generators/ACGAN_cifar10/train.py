@@ -10,12 +10,9 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 from lib.Artificial_Dataset_generators.ACGAN_cifar10.model import Generator, Discriminator
-from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import showImage, weights_init, check_folders
+from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import showImage, weights_init
 
-from lib.utils.funcs import auto_change_dir
-
-
-
+from lib.utils.funcs import auto_change_dir, check_folders
 
 os.chdir("../../../Cifar10")
 print(os.getcwd())

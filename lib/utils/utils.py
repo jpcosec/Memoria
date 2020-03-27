@@ -64,3 +64,5 @@ def cifar10_parser(args):
         transform_train = t_dict[transform](float(arg))
 
     return load_cifar10(args, transform_train=transform_train)
+
+
