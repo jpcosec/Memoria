@@ -8,6 +8,7 @@ import torch.optim as optim
 import torchvision
 import torch.nn.functional as F
 import torchvision.transforms as transforms
+from torchvision.utils import save_image
 
 from lib.Artificial_Dataset_generators.ACGAN_cifar10.model import Generator, Discriminator
 from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import showImage, weights_init
@@ -27,7 +28,7 @@ parser.add_argument('--epochs', type=int, default=400, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--log:interval', type=int, default=25, metavar='N',
+parser.add_argument('--log_interval', type=int, default=25, metavar='N',
                     help='how many batches to wait before logging training status')
 parser.add_argument('--sample', action='store_true', default=False,
                     help='samples trained model')
@@ -179,20 +180,19 @@ for epoch in range(1,args.epochs+1):
         D_G_z2 = pvalidity.mean().item()
         
         optimG.step()
-        if idx%20==0:
+        if idx%args.log_interval==0:
         
             print("[{}/{}] [{}/{}] D_x: [{:.4f}] D_G: [{:.4f}/{:.4f}] G_loss: [{:.4f}] D_loss: [{:.4f}] D_label: [{:.4f}] "
-                  .format(epoch,epochs, idx, len(trainloader),D_x, D_G_z1,D_G_z2,errG,errD,
+                  .format(epoch,args.epochs, idx, len(trainloader),D_x, D_G_z1,D_G_z2,errG,errD,
                           errD_real_label + errD_fake_label + errG_label))
-        
 
-    noise = torch.randn(10,100,device = device)
-    labels = torch.arange(0,10,dtype = torch.long,device = device)
+    with torch.no_grad():
+        noise = torch.randn(100,100,device = device)
+        labels = torch.arange(0,100,dtype = torch.long,device = device)//10
+        gen_images = gen(noise, labels).cpu()
+        save_image(gen_images,
+                   'outs/sample_' + str(epoch) + '.png')
 
-    gen_images = gen(noise,labels).detach()
-
-    showImage(make_grid(gen_images), epoch)
-       
     
     torch.save(gen.state_dict(),'checkpoints/gen_%i.pth'%epoch)
     torch.save(disc.state_dict(),'checkpoints/disc%i.pth'%epoch)
