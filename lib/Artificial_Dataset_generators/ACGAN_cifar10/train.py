@@ -40,8 +40,6 @@ args = parser.parse_args()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-os.chdir("../../../Cifar10")
-
 
 tf = transforms.Compose([transforms.Resize(64),
                          transforms.ToTensor(),
