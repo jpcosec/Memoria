@@ -8,7 +8,7 @@ import torch.utils.data
 
 from lib.utils.funcs import check_folders, auto_change_dir
 from lib.Artificial_Dataset_generators.DCVAE_CIFAR10.utils import save_samples
-from lib.Artificial_Dataset_generators.DCVAE_CIFAR10.conv_VAE import VAE
+from lib.Artificial_Dataset_generators.ACGAN_cifar10.model import Generator
 
 os.chdir("../../../Cifar10")
 print(os.getcwd())
@@ -22,8 +22,10 @@ parser.add_argument('--n_samples', type=int, default=100000, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--folder', default="VAE-Dataset",
+parser.add_argument('--folder', default="GAN-Dataset",
                     help='output folder')
+
+args = parser.parse_args()
 args = parser.parse_args()
 
 device = torch.device("cuda")
@@ -32,23 +34,23 @@ check_folders(["samples"])
 
 """ Load dataset
 """
-model = VAE().to(device)
-
+gen = Generator().to(device)
 assert os.path.isdir("checkpoints")  # todo: cambiar a non initialized
 # Load checkpoint.
 print('==> Resuming from checkpoint..')
 
 checkpoint = torch.load('./checkpoints/ckpt%i.pth' % args.epoch)
-model.load_state_dict(checkpoint['net'])
+gen.load_state_dict(checkpoint['net'])
 start_epoch = checkpoint['epoch']
 
 
 def main():
   with torch.no_grad():
-    for i in range(args.n_samples // args.batch_size):
-      sample = torch.randn(args.batch_size, 128).to(device)
-      sample = model.decode(sample).cpu()
-      save_samples(sample.view(args.batch_size, 3, 32, 32),
+    for i in range(args.n_samples // 100):
+      noise = torch.randn(100, 100, device=device)
+      labels = torch.arange(0, 100, dtype=torch.long, device=device) // 10
+      gen_images = gen(noise, labels).cpu()
+      save_samples(gen_images,
                    start=i * args.batch_size,
                    batch_size=args.batch_size)
 
