@@ -24,7 +24,7 @@ def save_samples(tensor, start=0,folder="samples",batch_size=128):
     # Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
     #print(tensor.shape)
     ndarr = tensor.mul_(127.5).add_(0.5).clamp_(0, 255).permute(0,2,3,1).to('cpu', torch.uint8).numpy()
-    print(ndarr.shape)
+    #print(ndarr.shape)
     for n,arr in enumerate(split(ndarr,batch_size)):
         #print(squeeze(arr).shape)
         im = Image.fromarray(squeeze(arr)).resize((32,32))
