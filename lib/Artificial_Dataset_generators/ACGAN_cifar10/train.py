@@ -8,10 +8,10 @@ import torch.optim as optim
 import torchvision
 import torch.nn.functional as F
 import torchvision.transforms as transforms
-from torchvision.utils import save_image
+
 
 from lib.Artificial_Dataset_generators.ACGAN_cifar10.model import Generator, Discriminator
-from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import showImage, weights_init
+from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import showImage, weights_init, save_samples
 
 from lib.utils.funcs import auto_change_dir, check_folders
 
@@ -164,6 +164,7 @@ for epoch in range(1,args.epochs+1):
         validity_label.fill_(1)
         
         fakes = gen(noise,sample_labels)
+
         pvalidity,plabels = disc(fakes)
         
         errG_val = validity_loss(pvalidity, validity_label)        

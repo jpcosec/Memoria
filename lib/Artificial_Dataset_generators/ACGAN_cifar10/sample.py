@@ -7,7 +7,7 @@ import torch
 import torch.utils.data
 
 from lib.utils.funcs import check_folders, auto_change_dir
-from lib.Artificial_Dataset_generators.DCVAE_CIFAR10.utils import save_samples
+from lib.Artificial_Dataset_generators.ACGAN_cifar10.utils import save_samples
 from lib.Artificial_Dataset_generators.ACGAN_cifar10.model import Generator
 
 os.chdir("../../../Cifar10")
@@ -49,8 +49,7 @@ def main():
   with torch.no_grad():
     for i in range(args.n_samples // 100):
       noise = torch.randn(100, 100, device=device)
-      gen_images = gen(noise, labels).cpu()
-      images = images / 2 + 0.5
+      gen_images = gen(noise, labels)
       save_samples(gen_images,
                    start=i * args.batch_size,
                    batch_size=args.batch_size)
