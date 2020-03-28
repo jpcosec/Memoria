@@ -183,7 +183,7 @@ for epoch in range(1,args.epochs+1):
 
     with torch.no_grad():
         noise = torch.randn(100,100,device = device)
-        labels = torch.arange(0,100,dtype = torch.long,device = device)//10
+        labels = torch.arange(0,100,dtype = torch.long,device = device)
         gen_images = gen(noise, labels).detach()
         showImage(make_grid(gen_images), epoch)
 
