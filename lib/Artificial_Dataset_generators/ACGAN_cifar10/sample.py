@@ -39,9 +39,8 @@ assert os.path.isdir("checkpoints")  # todo: cambiar a non initialized
 # Load checkpoint.
 print('==> Resuming from checkpoint..')
 
-checkpoint = torch.load('./checkpoints/ckpt%i.pth' % args.epoch)
-gen.load_state_dict(checkpoint['net'])
-start_epoch = checkpoint['epoch']
+checkpoint = torch.load('./checkpoints/gen_%i.pth' % args.epoch)
+gen.load_state_dict(checkpoint)
 
 
 def main():
@@ -52,7 +51,7 @@ def main():
       gen_images = gen(noise, labels)
       save_samples(gen_images,
                    start=i * args.batch_size,
-                   batch_size=args.batch_size)
+                   batch_size=100)
 
 
 if __name__ == "__main__":
