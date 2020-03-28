@@ -9,7 +9,7 @@ class Generator(nn.Module):
     super(Generator, self).__init__()
 
     self.layer0 = nn.Sequential(nn.Linear(110, 1024, bias=False),
-                                # nn.BatchNorm(1024),
+                                nn.BatchNorm1d(1024),
                                 nn.ReLU(True))
 
     # input 100*1*1
