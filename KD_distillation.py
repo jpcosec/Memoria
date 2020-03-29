@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from lib.kd_distillators.losses import parse_distillation_loss
 from lib.kd_distillators.utils import *
-from lib.utils.data.cifar10 import load_cifar10
+from lib.utils.utils import cifar10_parser
 
 
 def main(args):
@@ -15,10 +15,16 @@ def main(args):
 
     print("Using device", device)  # todo: cambiar a logger
 
-    trainloader, testloader, classes = load_cifar10(args)# CD a teacher
+    trainloader, testloader, classes = cifar10_parser(args)# CD a teacher
     teacher = load_teacher(args, device)
     student, best_acc, start_epoch = load_student(args, device)# CD a student
     writer = SummaryWriter("tb_logs")
+
+
+    if args.exp_name is not None:
+        #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/") #Linux
+        os.chdir("C:/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/")#Windows
+        auto_change_dir(args.exp_name)
 
     criterion = parse_distillation_loss(args)#  CD a distillation
     eval_criterion = torch.nn.CrossEntropyLoss()
@@ -63,6 +69,9 @@ if __name__ == '__main__':
     parser.add_argument('--distillation', default="KD,T-4.0",
                         help="default=T-3.5, chose one method from lib.kd_distillators an put the numerical params "
                              "separated by , using - instead of =.")
+    parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
+    parser.add_argument("--dataset", default="cifar10,", help="ej. vae_sample")
+    parser.add_argument("--exp_name", default=None, help='Where to run the experiments')
     arg = parser.parse_args()
 
     main(arg)

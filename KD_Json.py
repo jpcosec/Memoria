@@ -1,100 +1,101 @@
 '''Train CIFAR10 with PyTorch.'''
 
-import argparse
+from lib.utils.debug import fake_arg
 
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
-
-from lib.kd_distillators.losses import parse_distillation_loss
-from lib.kd_distillators.utils import *
-from lib.utils.data.cifar10 import load_samples
-from lib.utils.records_collector_deprecated import maj_key
-import json
+blocs = {"ResNet101": [26, 56, 219, 239],  # Completar
+         "MobileNet": [6, 15, 26, 55],
+         "ResNet18": [10, 23, 35, 46]
+         }
 
 
-def experiment_run(args, device, teacher, testloader, trainloader):
+def make_noise_sh(exp_name=""):
+  f = open(exp_name + ".sh", "a")
+  for student in ["ResNet18",
+                  "MobileNet"]:  # todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
+    for distillation in ["nst_linear",
+                         # "nst_poly",
+                         "att_mean",
+                         "att_max",
+                         "hint",
+                         "PKT"]:
+      for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
+        for sigma in [0.1 * i for i in range(1, 11)]:
+          # os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/"+folder)
 
-    student, best_acc, start_epoch = load_student(args, device)
-
-
-    criterion = parse_distillation_loss(args)
-    eval_criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(student.parameters(), lr=args.lr)
-
-    flatten = args.student.split("_")[0] == "linear"
-    writer = SummaryWriter("tb_logs")
-    exp = DistillationExperiment(device=device,  # Todo mover arriba
-                                 student=student,
-                                 teacher=teacher,
-                                 optimizer=optimizer,
-                                 criterion=criterion,
-                                 eval_criterion=eval_criterion,
-                                 linear=flatten,
-                                 writer=writer,
-                                 testloader=testloader,
-                                 trainloader=trainloader,
-                                 best_acc=best_acc,
-                                 args=args
-                                 )
-    print("training from epoch",start_epoch, "to", args.epochs)
-    for epoch in range(start_epoch, args.epochs):
-        exp.train_epoch()
-        exp.test_epoch()
-    exp.save_model()
-
-def fake_arg(**kwargs):
-    args = argparse.Namespace()
-    d = vars(args)
-
-    def add_field(field,default):
-        if field in kwargs:
-            d[field] = kwargs[field]
-        else:
-            d[field] = default
-
-    add_field('lr' ,0.01)
-    add_field('epochs' ,50)
-    add_field('train_batch_size' ,128)
-    add_field('test_batch_size' ,100)
-    add_field('student' ,"ResNet18")
-    add_field('teacher' ,"ResNet101")
-    add_field('distillation' ,"KD,T-8")
+          arg = fake_arg(distillation=distillation,
+                         student=student,
+                         layer=layer,
+                         student_layer=s_layer,
+                         teacher_layer=t_layer,
+                         )
 
 
-    args.resume=True
-    return args
+          transform = "noise," + str(sigma)
 
+          st = f'python feat_distillation.py ' \
+            f'--distillation={distillation} ' \
+            f'--layer={layer} ' \
+            f'--student={student} ' \
+            f'--student_layer={s_layer} ' \
+            f'--teacher_layer={t_layer} ' \
+            f'--transform={transform} ' \
+            f'--exp_name={transform.replace(",", "/")} \n'
+          f.write(st)
+
+  f.close()
+
+
+
+def make_sh(exp_name="",dataset="cifar10"):
+  f = open(exp_name + ".sh", "a")
+  dist_list=["nst_linear",
+             # "nst_poly",
+             "att_mean",
+             "att_max",
+             "hint",
+             "PKT"]
+
+  for student in ["ResNet18",
+                  "MobileNet"]:
+    for distillation in dist_list:
+      for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
+
+          st = f'python feat_distillation.py ' \
+            f'--distillation={distillation} ' \
+            f'--layer={layer} ' \
+            f'--student={student} ' \
+            f'--student_layer={s_layer} ' \
+            f'--teacher_layer={t_layer} ' \
+            f'--dataset={dataset} ' \
+            f'--exp_name={exp_name} \n'
+
+          f.write(st)
+
+  f.close()
+
+
+def kd_sh(exp_name="",dataset="cifar10"):
+  f = open(exp_name + ".sh", "a")
+
+  for student in ["ResNet18", "MobileNet"]:
+    for distillation in ["KD", "KD_CE"]:
+      for T in [str(i) for i in [1, 5, 10, 50, 100, 1000]]:
+        #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp8"
+         #        "")  # funcionalizar
+        dist = distillation + ",T-" + T
+        st = f'python kd_distillation.py '\
+            f'--distillation={dist} ' \
+            f'--dataset={dataset} ' \
+            f'--exp_name={exp_name} \n'
+
+        f.write(st)
+
+  f.close()
 
 
 if __name__ == '__main__':
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    print("Using device", device)  # todo: cambiar a logger
-    args = fake_arg()
-    print(args)
-    #trainloader, testloader, classes = load_cifar10(args)
-    trainloader, testloader, classes = load_samples(args, "/home/jp/Memoria/repo/Cifar10/VAE_SAMP")
-    teacher = load_teacher(args, device)
+    #args = fake_arg()
 
 
 
-    for student in ["ResNet18", "MobileNet"]:
-        for distillation in ["KD", "KD_CE"]:
-            for T in [str(i) for i in [1, 5, 10,50, 100, 1000]]:
-                os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp8"
-                         "")#funcionalizar
-                dist = distillation+",T-"+ T
-                arg = fake_arg(distillation=dist, student=student)
-
-                try:
-                    with open("students/"+student+"/"+distillation+"/T-"+T+'/record.json', 'r') as fp:
-                        record = json.load(fp)
-                        e=maj_key(record["test"])
-                        print(e)
-                        if e >=arg.epochs:
-                            continue
-                except:
-                    print("hayproblemo")
-
-                print("TRAINING")
-                experiment_run(arg, device, teacher, testloader, trainloader)
+    kd_sh("KD_normal")#,dataset="")

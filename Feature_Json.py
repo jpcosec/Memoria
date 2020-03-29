@@ -35,14 +35,7 @@ def make_noise_sh(exp_name=""):
                          teacher_layer=t_layer,
                          )
 
-          """print("python feat_distillation.py "
-                "--distillation=%s "
-                "--layer=%i "
-                "--student=%s "
-                "--student_layer=%i "
-                "--teacher_layer=%i"
-                %(distillation,layer,student,s_layer,t_layer))
-          """
+
           transform = "noise," + str(sigma)
 
           st = f'python feat_distillation.py ' \
@@ -71,7 +64,6 @@ def make_sh(exp_name="",dataset="cifar10"):
   for student in ["ResNet18",
                   "MobileNet"]:
     for distillation in dist_list:
-
       for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
 
           st = f'python feat_distillation.py ' \
