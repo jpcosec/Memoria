@@ -71,7 +71,7 @@ def collect_records(folder, correct_epochs=True):
 if __name__ == '__main__':
     #folder="/home/jp/Memoria/repo/Cifar10/ResNet101/exp8/students/" # TODO : add argparse
     #folder = "/home/jp/Memoria/repo/Cifar10/ResNet101/students/ResNet18-random"
-    folder="/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/noise"
+    folder="/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/GAN_exp"
     info=collect_records(folder)
 
 
