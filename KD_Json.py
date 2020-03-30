@@ -8,7 +8,7 @@ blocs = {"ResNet101": [26, 56, 219, 239],  # Completar
          }
 
 
-def make_noise_sh(exp_name=""):
+def feat_noise_sh(exp_name=""):
   f = open(exp_name + ".sh", "a")
   for student in ["ResNet18",
                   "MobileNet"]:  # todo: terminar nst poly 3 y hint 1 desde 0"MobileNet", Hint3 en resnet (y 1 si no hayrecupere)
@@ -46,7 +46,7 @@ def make_noise_sh(exp_name=""):
 
 
 
-def make_sh(exp_name="",dataset="cifar10"):
+def feat_sh(exp_name="",dataset="cifar10"):
   f = open(exp_name + ".sh", "a")
   dist_list=["nst_linear",
              # "nst_poly",
@@ -73,13 +73,32 @@ def make_sh(exp_name="",dataset="cifar10"):
 
   f.close()
 
+def kd_noise_sh(exp_name=""):
+  f = open(exp_name + ".sh", "a")
+
+  for student in ["ResNet18", "MobileNet"]:
+    for distillation in ["KD"]:
+      for T in [str(i) for i in [8]]:#[1, 5, 8, 10, 50, 100]]:
+        for sigma in [0.1 * i for i in range(1, 11)]:
+              
+          transform = "noise," + str(sigma)
+          dist = distillation + ",T-" + T
+          st = f'python kd_distillation.py '\
+              f'--student={student} ' \
+              f'--distillation={dist} ' \
+              f'--transform={transform} ' \
+              f'--exp_name={transform.replace(",", "/")} \n'
+    
+          f.write(st)
+
+  f.close()
 
 def kd_sh(exp_name="",dataset="cifar10"):
   f = open(exp_name + ".sh", "a")
 
   for student in ["ResNet18", "MobileNet"]:
     for distillation in ["KD", "KD_CE"]:
-      for T in [str(i) for i in [1, 5, 8, 10, 50, 100]]:
+      for T in [str(i) for i in [8]]:#[1, 5, 8, 10, 50, 100]]:
         #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp8"
          #        "")  # funcionalizar
         dist = distillation + ",T-" + T
@@ -97,5 +116,6 @@ def kd_sh(exp_name="",dataset="cifar10"):
 if __name__ == '__main__':
     #args = fake_arg()
 
-    kd_sh("KD_normal", dataset=None)
+    #kd_sh("KD_normal", dataset=None)
     #kd_sh("KD_GAN",dataset="GAN")
+    kd_noise_sh("kd_noise")
