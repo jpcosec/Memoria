@@ -79,9 +79,40 @@ def make_sh(exp_name="",dataset="cifar10"):
 
   f.close()
 
+
+def make_whole_sh(exp_name="",dataset="cifar10"):
+  f = open(exp_name + ".sh", "a")
+  dist_list=["nst_linear",
+             # "nst_poly",
+             "att_mean",
+             "att_max",
+             "hint",
+             "PKT"]
+
+  for student in ["ResNet18",
+                  "MobileNet"]:
+    for last_layer in ["CE"]:
+      for distillation in dist_list:
+        for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
+
+            st = f'python feat_distillation.py ' \
+              f'--distillation={distillation} ' \
+              f'--layer={layer} ' \
+              f'--student={student} ' \
+              f'--student_layer={s_layer} ' \
+              f'--teacher_layer={t_layer} ' \
+              f'--dataset={dataset} ' \
+              f'--dataset={last_layer} ' \
+              f'--exp_name={exp_name} \n'
+
+            f.write(st)
+
+  f.close()
+
 if __name__ == '__main__':
     #args = fake_arg()
 
 
 
-    make_sh("GAN_exp",dataset="GAN-Dataset")
+    make_whole_sh("feat_CE")
+
