@@ -79,11 +79,12 @@ def kd_sh(exp_name="",dataset="cifar10"):
 
   for student in ["ResNet18", "MobileNet"]:
     for distillation in ["KD", "KD_CE"]:
-      for T in [str(i) for i in [1, 5, 10, 50, 100, 1000]]:
+      for T in [str(i) for i in [1, 5, 8, 10, 50, 100]]:
         #os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/exp8"
          #        "")  # funcionalizar
         dist = distillation + ",T-" + T
         st = f'python kd_distillation.py '\
+            f'--student={student} ' \
             f'--distillation={dist} ' \
             f'--dataset={dataset} ' \
             f'--exp_name={exp_name} \n'
@@ -96,6 +97,5 @@ def kd_sh(exp_name="",dataset="cifar10"):
 if __name__ == '__main__':
     #args = fake_arg()
 
-
-
-    kd_sh("KD_GAN")#,dataset="")
+    kd_sh("KD_normal", dataset=None)
+    #kd_sh("KD_GAN",dataset="GAN")
