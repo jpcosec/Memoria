@@ -98,4 +98,4 @@ if __name__ == '__main__':
 
 
 
-    kd_sh("KD_normal")#,dataset="")
+    kd_sh("KD_GAN")#,dataset="")

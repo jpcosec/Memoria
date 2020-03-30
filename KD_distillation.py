@@ -17,8 +17,6 @@ def main(args):
 
     trainloader, testloader, classes = cifar10_parser(args)# CD a teacher
     teacher = load_teacher(args, device)
-    student, best_acc, start_epoch = load_student(args, device)# CD a student
-    writer = SummaryWriter("tb_logs")
 
 
     if args.exp_name is not None:
@@ -26,12 +24,16 @@ def main(args):
         os.chdir("C:/Users/PC/PycharmProjects/Memoria/Cifar10/ResNet101/")#Windows
         auto_change_dir(args.exp_name)
 
+
+    student, best_acc, start_epoch = load_student(args, device)# CD a student
+
     criterion = parse_distillation_loss(args)#  CD a distillation
     eval_criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(student.parameters(), lr=args.lr)
 
     flatten = args.student.split("_")[0] == "linear"
 
+    writer = SummaryWriter("tb_logs")
     exp = DistillationExperiment(device=device,  # Todo mover arriba
                                  student=student,
                                  teacher=teacher,
