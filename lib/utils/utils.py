@@ -49,9 +49,11 @@ def cifar10_parser(args):
     print("usando dataset", args.dataset)
 
     if args.dataset=="VAE":
+        print("usando VAE")
         return load_samples(args, "VAE-Dataset")
     elif args.dataset=="GAN":
-      return load_samples(args, "GAN-Dataset")
+        print("usando GAN")
+        return load_samples(args, "GAN-Dataset")
 
 
     transform, arg= args.transform.split(",")
