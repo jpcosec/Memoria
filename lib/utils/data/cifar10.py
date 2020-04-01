@@ -5,6 +5,7 @@ from torchvision import transforms as transforms
 from lib.utils.data.functions import add_noise
 from lib.utils.funcs import auto_change_dir
 
+import os
 """
     DATA TRANSFORMS
 """
@@ -72,6 +73,8 @@ def load_samples(args, samples_folder, transform_train=None, transform_test=None
           transforms.ToTensor(),
           transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
       ])
+
+    print(os.listdir())
 
     trainset = torchvision.datasets.ImageFolder(root="./"+samples_folder+"/samples", transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=0)
