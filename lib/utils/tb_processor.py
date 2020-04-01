@@ -4,7 +4,7 @@ import glob
 from lib.utils.funcs import auto_make_dir
 def extract_tb_scalars(exp,folder,file):
 
-  ea = event_accumulator.EventAccumulator(exp+folder, file)
+  ea = event_accumulator.EventAccumulator(folder, file)
 
   ea.Reload()
 
@@ -27,7 +27,7 @@ def extract_tb_scalars(exp,folder,file):
 
 
 
-  np.savez_compressed("./"+folder+"arrs_comp",**test_dict,**train_dict)
+  np.savez_compressed(folder+"arrs_comp",**test_dict,**train_dict)
 
 
 def scallars_collector(folder):
@@ -38,10 +38,14 @@ def scallars_collector(folder):
       print("problwmo")
     else:
       file=filez[0].replace(path,"")
-      extract_tb_scalars(folder,path.replace(folder,""),file)
+      extract_tb_scalars(folder,path.replace(folder,"").replace("\\","/"),file)
 
 if __name__ == '__main__':
+
+    #experiments=[""]
+    import os
+    os.chdir("../..")
     scallars_collector("./Cifar10/")
     #auto_make_dir("la/so/rra")
-
+    #print(glob.glob("../../*"))
     #list_jsons = glob.glob("../Cifar10/" + "/**/record.json", recursive=True)
