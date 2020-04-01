@@ -9,6 +9,17 @@ def auto_change_dir(path):
       os.mkdir(folder)
     os.chdir(folder)
 
+def auto_make_dir(path):
+  print("creating", path)#todo: log
+
+  temp_path=""
+  for folder in path.split("/"):
+    temp_path+=folder
+    temp_path+="/"
+    if not os.path.exists(temp_path):
+      print("Creating", temp_path)
+      os.mkdir(temp_path)
+
 
 def register_hooks(net, idxs, feature):# Deprecate
   """
