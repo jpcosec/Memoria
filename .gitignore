@@ -46,7 +46,6 @@ default/version_0/meta_tags.csv
 default/version_0/meta.experiment
 **/teacher_trainer/**
 **/checkpoint/**
-**/tb_logs/**
 /Mnist/OLD/runs/
 /Cifar10/data/cifar-10-batches-py/
 /Cifar10/eficcientnet/runs/Oct03_13-17-28_pcjpteacher_trainer/

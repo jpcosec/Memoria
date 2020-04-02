@@ -7,7 +7,7 @@ def load_data(folder):
     source['student last_layer']=[row['student']+","+row['last_layer'] for i,row in source.iterrows()]
     return source
 
-def plot(data,phase,field, center=False, scale=None):
+def plot(data,phase,field, center=False, scale=None,shape=(400,400)):
     detalle=['test_acc', 'test_teacher/acc', 'test_loss', 'test_eval',
            'train_acc', 'train_teacher/acc', 'train_loss', 'train_eval','distillation','last_layer','layer']
     
@@ -57,8 +57,14 @@ def plot(data,phase,field, center=False, scale=None):
                         size=alt.value(2))
 
         
-            return (aggregates+bar).properties(width=600,height=400) 
-    return bar.properties(width=600,height=400)
+            return (aggregates+bar).properties(width=shape[0],height=shape[1])
+    return bar.properties(width=shape[0],height=shape[1])
+
+def load_and_plot(folder="./Cifar10/ResNet101/exp1/students",phase='test',field='acc',**kwargs):
+    data = load_data(folder)
+
+    return plot(data,phase,field,**kwargs)
+
 
 def omniplot(folder="./Cifar10/ResNet101/exp7/students",scale='log'):
     data = load_data(folder)
@@ -83,3 +89,4 @@ def omniplot(folder="./Cifar10/ResNet101/exp7/students",scale='log'):
     )
     
     return chart
+

@@ -48,8 +48,13 @@ def cifar10_parser(args):
 
     print("usando dataset", args.dataset)
 
-    if args.dataset=="vae_sample":
-        return load_samples(args, "VAE_SAMP")
+    if args.dataset=="VAE":
+        print("usando VAE")
+        return load_samples(args, "VAE-Dataset")
+    elif args.dataset=="GAN":
+        print("usando GAN")
+        return load_samples(args, "GAN-Dataset")
+
 
     transform, arg= args.transform.split(",")
     print("usando transformacion", transform, "con args",arg)
@@ -64,3 +69,5 @@ def cifar10_parser(args):
         transform_train = t_dict[transform](float(arg))
 
     return load_cifar10(args, transform_train=transform_train)
+
+

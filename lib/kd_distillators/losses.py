@@ -17,7 +17,7 @@ def parse_distillation_loss(args, string_input=False):
         ar[k] = float(v)
 
     print("Perdida", method, "con parametros", ar)
-    losses_list=[KD, KD_CE]
+    losses_list=[KD, KD_CE, CE]
     d = dict([(func.__name__, func) for func in losses_list])
 
 
@@ -72,4 +72,11 @@ def KD_CE(alpha=0.5, T=8):
 
     return KD_CE_loss
 
+def CE():
+    """
+    "hard label loss" i.e. ye olde cross entropy loss
+    """
+    def CE_loss(input,target):
+        return  nn.CrossEntropyLoss()(input.squeeze(), target)
 
+    return CE_loss
