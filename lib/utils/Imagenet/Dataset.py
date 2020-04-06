@@ -7,7 +7,7 @@ import pandas as pd
 torch.manual_seed(0)
 
 
-def get_imageNet(class_file="/home/jpruiz/PycharmProjects/ImageNet-Datasets-Downloader/Imagenet_classes",
+def get_imageNet(class_file="lib/utils/Imagenet/Imagenet_classes",
                  image_folder="/home/jpruiz/PycharmProjects/ImageNet-Datasets-Downloader/imagenet_images"):
 
 
