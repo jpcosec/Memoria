@@ -31,7 +31,7 @@ model_names = sorted(name for name in models.__dict__
                      and callable(models.__dict__[name]))
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
 parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
 parser.add_argument('--batch_size', default=8, type=int, help='batch size on train')
@@ -43,7 +43,7 @@ parser.add_argument('--teacher', default="ResNet151",
                     help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                          "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                          "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-parser.add_argument('--distillation', default="KD,T-4.0",
+parser.add_argument('--distillation', default="KD,T-8.0",
                     help="default=T-3.5, chose one method from lib.kd_distillators an put the numerical params "
                          "separated by , using - instead of =.")
 parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
