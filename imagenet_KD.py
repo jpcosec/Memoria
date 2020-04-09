@@ -31,10 +31,10 @@ model_names = sorted(name for name in models.__dict__
                      and callable(models.__dict__[name]))
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
 parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
-parser.add_argument('--batch_size', default=8, type=int, help='batch size on train')
+parser.add_argument('--batch_size', default=16, type=int, help='batch size on train')
 parser.add_argument('--student', default="ResNet18",
                     help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                          "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "

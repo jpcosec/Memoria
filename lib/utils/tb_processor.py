@@ -8,26 +8,29 @@ def extract_tb_scalars(exp,folder,file):
 
   ea.Reload()
 
-
-  train_kw=['train/acc',
-            'train/loss',
-            'train/eval']
-  train_dict=dict([(kw,np.array([i.value for i in ea.Scalars(kw)])) for kw in train_kw] )
-
-  train_dict["train/wall_time"]=np.array([i.wall_time for i in ea.Scalars("train/acc")])
-
-
-  test_kw=['test/acc',
-           'test/loss',
-           'test/eval']
-  test_dict=dict([(kw,np.array([i.value for i in ea.Scalars(kw)])) for kw in test_kw] )
-  test_dict["test/wall_time"]=np.array([i.wall_time for i in ea.Scalars("test/acc")])
-  folder="arrs_collect/"+folder.replace("tb_logs/","").replace("students/","")
+  folder = "arrs_collect/" + folder.replace("tb_logs/", "").replace("students/", "")
   auto_make_dir(folder)
 
+  try:
+
+    train_kw=['train/acc',
+              'train/loss',
+              'train/eval']
+    train_dict=dict([(kw,np.array([i.value for i in ea.Scalars(kw)])) for kw in train_kw] )
+
+    train_dict["train/wall_time"]=np.array([i.wall_time for i in ea.Scalars("train/acc")])
 
 
-  np.savez_compressed(folder+"arrs_comp",**test_dict,**train_dict)
+    test_kw=['test/acc',
+             'test/loss',
+             'test/eval']
+    test_dict=dict([(kw,np.array([i.value for i in ea.Scalars(kw)])) for kw in test_kw] )
+    test_dict["test/wall_time"]=np.array([i.wall_time for i in ea.Scalars("test/acc")])
+
+    np.savez_compressed("./"+folder+"arrs_comp",**test_dict,**train_dict)
+  except:
+    print(folder)
+
 
 
 def scallars_collector(folder):
@@ -35,7 +38,7 @@ def scallars_collector(folder):
   for path in tb_logs:
     filez=glob.glob(path+"/*")
     if len(filez)>1:
-      print("problwmo")
+      print("problwmo", path)
     else:
       file=filez[0].replace(path,"")
       extract_tb_scalars(folder,path.replace(folder,"").replace("\\","/"),file)
