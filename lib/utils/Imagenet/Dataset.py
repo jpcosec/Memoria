@@ -7,8 +7,11 @@ import pandas as pd
 torch.manual_seed(0)
 
 
-def get_imageNet(class_file="lib/utils/Imagenet/Imagenet_classes",
-                 image_folder="/home/jpruiz/PycharmProjects/ImageNet-Datasets-Downloader/imagenet_images"):
+def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Imagenet/Imagenet_classes",
+                #class_file="./lib/utils/Imagenet/Imagenet_classes",
+
+                 image_folder="C:/Users/PC/PycharmProjects/ImageNet-Datasets-Downloader/dataset/imagenet_images"):
+                 #image_folder="/home/jpruiz/PycharmProjects/ImageNet-Datasets-Downloader/imagenet_images"):
 
 
 
@@ -34,7 +37,9 @@ def get_imageNet(class_file="lib/utils/Imagenet/Imagenet_classes",
 
     def get_I2012_class(path):
         # global serie
-        classname = path.split("/")[-2]
+        #classname = path.split("/")[-2]
+        classname = path.split("\\")[-2]
+        #print("class",classname,path)
         return serie.index[serie.str.contains(classname)][0]
 
     class Dataset_final(Dataset):

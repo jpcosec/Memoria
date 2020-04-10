@@ -33,9 +33,9 @@ model_names = sorted(name for name in models.__dict__
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
-parser.add_argument('--batch_size', default=16, type=int, help='batch size on train')
-parser.add_argument('--student', default="ResNet18",
+parser.add_argument('--epochs', default=200, type=int, help='total number of epochs to train')
+parser.add_argument('--batch_size', default=100, type=int, help='batch size on train')
+parser.add_argument('--student', default="MobileNetV2",
                     help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                          "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                          "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
@@ -48,8 +48,8 @@ parser.add_argument('--distillation', default="KD,T-8.0",
                          "separated by , using - instead of =.")
 parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
 parser.add_argument("--dataset", default="ImageNet,", help="ej. vae_sample")
-#parser.add_argument("--exp_name", default=None, help='Where to run the experiments')
-#args = parser.parse_args()
+parser.add_argument("--exp_name", default="test_mobilenet", help='Where to run the experiments')
+args = parser.parse_args()
 
 def maim():
 
@@ -59,18 +59,23 @@ def maim():
     args = parser.parse_args()
 
     teacher = models.resnet152(pretrained=True, progress=True, )
-    teacher = torch.nn.DataParallel(teacher).cuda()
+    teacher = teacher.to(device)
 
-    student = models.resnet18(pretrained=False)
+    for param in teacher.parameters():
+        param.requires_grad = False
+
+    if device == 'cuda':
+        teacher = torch.nn.DataParallel(teacher)
+
+
+    student = models.mobilenet_v2(pretrained=False)
     student = torch.nn.DataParallel(student).cuda()
 
     trainset,testset=get_imageNet()
     trainloader = torch.utils.data.DataLoader(trainset,
-        batch_size=args.batch_size, shuffle=True,
-        num_workers=4, pin_memory=True)
+        batch_size=args.batch_size, shuffle=True,num_workers=0)
     testloader = torch.utils.data.DataLoader(testset,
-        batch_size=args.batch_size, shuffle=False,
-        num_workers=4, pin_memory=True)
+        batch_size=args.batch_size, shuffle=False,num_workers=0)
 
     teacher.eval()
     student.train()
@@ -80,7 +85,7 @@ def maim():
     #rgs.exp_name is not None:
     # os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/") #Linux
     #os.chdir("test")  # Windows
-    auto_change_dir("test_5")
+    auto_change_dir(args.exp_name)
 
     best_acc=0
     start_epoch=0
