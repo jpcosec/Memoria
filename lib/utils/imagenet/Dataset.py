@@ -4,16 +4,16 @@ import torchvision.datasets as datasets
 from torch.utils.data.dataset import random_split, Dataset
 import pandas as pd
 
+from lib.utils.funcs import auto_change_dir
+
 torch.manual_seed(0)
 
 
-def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Imagenet/Imagenet_classes",
-                #class_file="./lib/utils/Imagenet/Imagenet_classes",
+def get_imageNet(#class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Imagenet/Imagenet_classes",
+                 class_file="/home/jpruiz/PycharmProjects/Memoria/lib/utils/imagenet/Imagenet_classes",
 
-                 image_folder="C:/Users/PC/PycharmProjects/ImageNet-Datasets-Downloader/dataset/imagenet_images"):
-                 #image_folder="/home/jpruiz/PycharmProjects/ImageNet-Datasets-Downloader/imagenet_images"):
-
-
+                 #image_folder="C:/Users/PC/PycharmProjects/ImageNet-Datasets-Downloader/dataset/imagenet_images"):
+                image_folder="/home/jpruiz/PycharmProjects/ImageNet-datasets-downloader/dataset/imagenet_images"):
 
     classes = [i.split(":")[-1] for i in open(class_file).read().replace("}", "").split('\n')]
     classes = [i.replace("'", '') for i in classes]
@@ -37,9 +37,9 @@ def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Image
 
     def get_I2012_class(path):
         # global serie
-        #classname = path.split("/")[-2]
-        classname = path.split("\\")[-2]
-        #print("class",classname,path)
+        classname = path.split("/")[-2]
+        #classname = path.split("\\")[-2]
+        # print("class",classname,path)
         return serie.index[serie.str.contains(classname)][0]
 
     class Dataset_final(Dataset):
@@ -65,3 +65,14 @@ def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Image
     trainset = Dataset_final(trainset, transform=train_transform)
     testset = Dataset_final(testset, transform=test_transform)
     return trainset, testset
+
+
+def get_dataloaders(batch_size, folder=None):
+    trainset, testset = get_imageNet()
+
+    auto_change_dir("Imagenet")
+    trainloader = torch.utils.data.DataLoader(trainset,
+                                              batch_size=batch_size, shuffle=True, num_workers=0)
+    testloader = torch.utils.data.DataLoader(testset,
+                                             batch_size=batch_size, shuffle=False, num_workers=0)
+    return trainloader, testloader
