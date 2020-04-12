@@ -39,7 +39,7 @@ ngf = 64
 weights_folder = "./EXP2/weights/"
 epoch = 56
 
-n_samples = 10000
+n_samples = 1000
 
 # Initialization
 

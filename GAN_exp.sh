@@ -1,4 +1,4 @@
-python feat_distillation.py --distillation=nst_linear --layer=0 --student=ResNet18 --student_layer=10 --teacher_layer=26 --dataset=GAN-Dataset --exp_name=GAN_e
+python feat_distillation.py --distillation=nst_linear --layer=0 --student=ResNet18 --student_layer=10 --teacher_layer=26 --dataset=GAN-Dataset --exp_name=GAN_exp
 python feat_distillation.py --distillation=nst_linear --layer=1 --student=ResNet18 --student_layer=23 --teacher_layer=56 --dataset=GAN-Dataset --exp_name=GAN_exp
 python feat_distillation.py --distillation=nst_linear --layer=2 --student=ResNet18 --student_layer=35 --teacher_layer=219 --dataset=GAN-Dataset --exp_name=GAN_exp
 python feat_distillation.py --distillation=nst_linear --layer=3 --student=ResNet18 --student_layer=46 --teacher_layer=239 --dataset=GAN-Dataset --exp_name=GAN_exp
