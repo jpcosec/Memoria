@@ -82,10 +82,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=50, type=int, help='total number of epochs to train')
+    parser.add_argument('--epochs', default=200, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
-    parser.add_argument('--batch_size', default=64, type=int, help='batch size on train and test')
-    parser.add_argument('--student', default="ResNet18",
+    parser.add_argument('--batch_size', default=128, type=int, help='batch size on train and test')
+    parser.add_argument('--student', default="MobileNetV2",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
@@ -96,11 +96,11 @@ if __name__ == '__main__':
     parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
     parser.add_argument("--dataset", default="ImageNet,", help="ej. vae_sample")
     parser.add_argument("--exp_name", default="exp_feats", help='Where to run the experiments')
-    parser.add_argument('--distillation', default="nst_linear",
+    parser.add_argument('--distillation', default="PKT",
                         help="feature-alpha")
     parser.add_argument('--last_layer', default="KD,T-8",
                         help="")
-    parser.add_argument("--student_layer", type=int, default=17)  # Arreglar para caso multicapa
+    parser.add_argument("--student_layer", type=int, default=30)  # Arreglar para caso multicapa
     parser.add_argument("--teacher_layer", type=int, default=39)  # Arreglar para caso
     parser.add_argument("--layer", type=int, default=1)  # cambiar a block
     parser.add_argument("--shape", type=int, default=224)

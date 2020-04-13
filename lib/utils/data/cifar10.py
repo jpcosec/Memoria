@@ -76,7 +76,7 @@ def load_samples(args, samples_folder, transform_train=None, transform_test=None
 
     print(os.listdir())
 
-    trainset = torchvision.datasets.ImageFolder(root="./"+samples_folder, transform=transform_train)
+    trainset = torchvision.datasets.ImageFolder(root="C:\\Users\\PC\\PycharmProjects\\Memoria\\Cifar10\\"+samples_folder, transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=0)
 
     testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
