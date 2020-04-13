@@ -81,7 +81,7 @@ def make_sh(exp_name="",dataset="cifar10"):
 
 
 def make_whole_sh(exp_name="",dataset="cifar10"):
-  f = open(exp_name + ".sh", "a")
+  f = open(exp_name + ".sh", "w")
   dist_list=["nst_linear",
              # "nst_poly",
              "att_mean",
@@ -91,7 +91,7 @@ def make_whole_sh(exp_name="",dataset="cifar10"):
 
   for student in ["ResNet18",
                   "MobileNet"]:
-    for last_layer in ["CE"]:
+    for last_layer in ["KD"]:
       for distillation in dist_list:
         for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
 
@@ -102,17 +102,20 @@ def make_whole_sh(exp_name="",dataset="cifar10"):
               f'--student_layer={s_layer} ' \
               f'--teacher_layer={t_layer} ' \
               f'--dataset={dataset} ' \
-              f'--dataset={last_layer} ' \
+              f'--last_layer={last_layer} ' \
               f'--exp_name={exp_name} \n'
 
             f.write(st)
 
+
   f.close()
 
 if __name__ == '__main__':
+
     #args = fake_arg()
 
 
 
-    make_whole_sh("feat_CE")
+
+    make_whole_sh("feat_VAE",dataset="VAE")
 
