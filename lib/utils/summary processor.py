@@ -50,7 +50,7 @@ def doc2Json(string):
                         block += 1
                         last_dim = arr[-2]
 
-                        di["id"] = int(layer_info[1])
+                        di["id"] = int(arr[-1].split(",")[-1])
                         di["n_params"] = int(arr[-1])
                         di["dimensions"] = arr[1:-1]
                         di["block"] = block
@@ -73,14 +73,21 @@ def doc2Json(string):
     d["param_count"] = dict(
         [(key, reduce(lambda x, y: x + y, [i["n_params"] for i in value])) for key, value in d['layers'].items()])
     d['blocks'] = blocks[1:]
+
+    d["layers"] = ""
     return d
 
 
 if __name__ == '__main__':
-    paths = glob.glob("/home/jpruiz/PycharmProjects/Memoria/docs/model_summaries/**/*.txt", recursive=True)
+    folder="/home/jpruiz/PycharmProjects/Memoria/docs/model_summaries/"
+    paths = glob.glob(folder+"**/*.txt", recursive=True)
     # import os
+    import pandas as pd
 
-    layers_json={}
+    block_json={}
+    keys=["key",'layers', 'block_changes', 'Total params', 'Trainable params', 'Non-trainable params', 'Input size (MB)', 'Forward/backward pass size (MB)', 'Params size (MB)', 'Estimated Total Size (MB)', 'layer_count', 'param_count']
+    data_pandas=dict([(k,[]) for k in keys])
+
 
 
     for path in paths:
@@ -88,9 +95,19 @@ if __name__ == '__main__':
             print(path)
             string = f.read()
             d = doc2Json(string)
-            d["layers"] = ""
-            print(d.keys())
+            #print(d.keys())
 
+            key=path.replace(folder,"")
+            block_json[key]=d['blocks']
+            d['blocks']=""
+            d["key"]=key
+            for k in keys:
+                data_pandas[k].append(d[k])
+
+
+
+    print(data_pandas)
+    print(block_json)
 
 
 
