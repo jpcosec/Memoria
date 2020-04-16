@@ -1,6 +1,6 @@
 from functools import reduce
 import glob
-
+from torchsummary import summary
 import pandas as pd
 
 
@@ -83,6 +83,7 @@ if __name__ == '__main__':
     paths = glob.glob(folder+"**/*.txt", recursive=True)
     # import os
     import pandas as pd
+    import json
 
     block_json={}
     keys=["key",'layers', 'block_changes', 'Total params', 'Trainable params', 'Non-trainable params', 'Input size (MB)', 'Forward/backward pass size (MB)', 'Params size (MB)', 'Estimated Total Size (MB)', 'layer_count', 'param_count']
@@ -106,8 +107,12 @@ if __name__ == '__main__':
 
 
 
+
     print(data_pandas)
+    data=pd.DataFrame.from_dict(data_pandas)
+    data.to_csv(folder+"summary.csv")
     print(block_json)
+    json.dump(block_json,fp=open(folder+"wea.json","w"),indent=4)
 
 
 

@@ -1,127 +1,131 @@
-
-'''Train CIFAR10 with PyTorch.'''
-
-from collections import OrderedDict
-import argparse
-#from torchsummary import summary
 import torch
-from lib.kd_distillators.utils import silent_load
 import torch.nn as nn
-import numpy as np
+from collections import OrderedDict
+
+import logging
 
 
+logging.basicConfig(filename='inspection.log', level=logging.DEBUG)
 
-class FeatureInspector:
+class inspector():
+    def __init__(self, model):
+        self.model=model
+        self.model_keys = [29]
+        device = 'cuda'
 
-  def __init__(self, **kwargs):
-    self.teacher = kwargs['teacher']
-    self.student = kwargs['student']
-    self.device = kwargs['device']
+    def inspect(self):
+        self.model_features = OrderedDict()
+        self.model_keys = OrderedDict()
+        self.model_layers = 1
+        hooks=[]
 
-    self.teacher_keys=[26]
-    self.student_keys = [5]
+        def register_model_hook(module):
+            #global self.model_layers
+            class_name = str(module.__class__).split(".")[-1].split("'")[0]
+            #m_key = "%s-%i" % (class_name, self.model_layers)
+            #self.model_layers += 1
 
-    self.teacher_features = OrderedDict()
-    self.teacher_layers=1
+            module_idx = len(self.model_keys)
 
-    def register_teacher_hook(module):
-      class_name = str(module.__class__).split(".")[-1].split("'")[0]
-      m_key = "%s-%i" % (class_name, self.teacher_layers)
+            m_key = "%s-%i" % (class_name, module_idx + 1)
 
-      def hook(mod, inp, out):
-          self.teacher_features[m_key] = out
+            self.model_features[m_key] = 1
 
-      if (
-          not isinstance(module, nn.Sequential)
-          and not isinstance(module, nn.ModuleList)
-          and not (module == self.teacher)
-      ):
-        print(m_key)
-        if self.teacher_layers in self.teacher_keys:
-          module.register_forward_hook(hook)
-        self.teacher_layers += 1
+            def hook(mod, inp, out):
+                #logging.debug(m_key+":"+str(out.shape[-1]))
 
-    self.teacher.apply(register_teacher_hook)
+                self.model_features[m_key] = out
+
+            if (
+                    not isinstance(module, nn.Sequential)
+                    and not isinstance(module, nn.ModuleList)
+                    and not (module == self.model)
+            ):
+                # logging.debug(str(module))
+                #logging.debug(str(m_key))
+                # logging.debug(str())
+                # print(m_key)
+                if self.model_layers in self.model_keys:
+                    module.register_forward_hook(hook)
+
+        self.model.apply(register_model_hook)
+
+        inp = torch.rand(1, 3, 224, 224).to(device)
+
+        self.model.eval()
+
+        _ = self.model(inp)
+
+        print(self.model_features)
+
+        sizes = [(k,tensor.shape[-1]) for k,tensor in self.model_features.items()]
+
+        print(sizes)
+
+def summary(model, input_size, key,batch_size=-1, device="cuda"):
+
+    def register_hook(module):
+
+        def hook(module, input, output):
+
+            #print(m_key)
+            summary[m_key] = output.shape
+            #if key==m_key:
+            #    summary[m_key] = output
+            #else:
+            #    summary[m_key] = None
+
+        if (
+            not isinstance(module, nn.Sequential)
+            and not isinstance(module, nn.ModuleList)
+            and not (module == model)
+        ):
+            class_name = str(module.__class__).split(".")[-1].split("'")[0]
+            module_idx = len(summary)
+
+            m_key = "%s-%i" % (class_name, module_idx + 1)
+            #hooks.append(module.register_forward_hook(hook))
+            module.register_forward_hook(hook)
 
 
-    self.student_features = OrderedDict()
-    self.student_layers = 1
-    def register_student_hook(module):
-      class_name = str(module.__class__).split(".")[-1].split("'")[0]
-      m_key = "%s-%i" % (class_name, self.student_layers)
+    summary = OrderedDict()
 
-      def hook(mod, inp, out):
-        self.student_features[m_key] = out
+    # register hook
+    model.apply(register_hook)
 
-      if (
-          not isinstance(module, nn.Sequential)
-          and not isinstance(module, nn.ModuleList)
-          and not (module == self.student)
-      ):
-        print(m_key)
-        if self.student_layers in self.student_keys:
-          module.register_forward_hook(hook)
-        self.student_layers += 1
+    # make a forward pass
+    # print(x.shape)
 
-    self.student.apply(register_student_hook)
+    x = [torch.rand(2,3,224,224)+1]
+    model(*x)
 
-    inp = torch.rand(128, 3, 32, 32).to(self.device)
+    # remove these hooks
+    #for h in hooks:
+    #    h.remove()
+    #print(summary["ReLU-39"].mean())
 
-    self.teacher.eval()
-    self.student.eval()
+    print(summary)
 
-    _ = self.teacher(inp)
-    _ = self.student(inp)
-
-    s_sizes =[tensor.shape for tensor in  list(self.student_features.values())]
-    t_sizes=[tensor.shape for tensor in  list(self.teacher_features.values())]
-
-    print(t_sizes)
-    print(s_sizes)
-
-
-def main(args):
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    print("Using device", device)  # todo: cambiar a logger
-
-    #trainloader, testloader, classes = load_cifar10(args)
-    teacher = silent_load(args.teacher, device)
-    student = silent_load(args.student, device)
-    flatten = args.student.split("_")[0] == "linear"
-    layer = args.layer
-
-    exp = FeatureInspector(device=device,
-                           student=student,
-                           teacher=teacher,
-                           linear=flatten,
-                           use_regressor=args.distillation=="hint",
-                           args = args
-                           )
-
+    return model,summary
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
-    parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
-    parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
-    parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
-    parser.add_argument('--train_batch_size', default=128, type=int, help='batch size on train')
-    parser.add_argument('--test_batch_size', default=100, type=int, help='batch size on test')
-    parser.add_argument('--student', default="ResNet18",
-                        help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
-                             "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
-                             "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--teacher', default="ResNet101",
-                        help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
-                             "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
-                             "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
-    parser.add_argument('--distillation', default="nst_linear",
-                        help="feature-alpha")
-    parser.add_argument('--last_layer', default="KD-CE",
-                        help="")
-    parser.add_argument("--layer",type=int,default= 5)# Arreglar para caso multicapa
-    arg = parser.parse_args()
+    from lib.utils.imagenet.utils import load_model
 
-    main(arg)
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+
+    model=load_model("MobileNetV2")
+
+    model,s=summary(model,(3,224,224),"ReLU-39")
+    print(s["ReLU-39"].mean())
+
+    x = [torch.rand(2,3,224,224)+1]
+    # print(type(x[0]))
+
+    # make a forward pass
+    # print(x.shape)
+    model(*x)
+
+    print(s["ReLU-39"].mean())

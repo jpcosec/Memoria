@@ -4,6 +4,9 @@ import torch.nn as nn
 from collections import OrderedDict
 
 from lib.kd_distillators.utils import DistillationExperiment
+import logging
+
+logging.basicConfig(filename='inspection.log', level=logging.DEBUG)
 
 
 class FeatureExperiment(DistillationExperiment):
@@ -11,11 +14,6 @@ class FeatureExperiment(DistillationExperiment):
     def __init__(self, **kwargs):
         self.teacher_keys = [kwargs["args"].teacher_layer]  # todo: arreglar para multicapa
         self.student_keys = [kwargs["args"].student_layer]
-
-        if "shape" in kwargs:
-            self.shape = (kwargs["args"].batch_size, 3, kwargs["shape"], kwargs["shape"])
-        else:
-            self.shape = (kwargs["args"].batch_size, 3, 32, 32)
 
         self.kd_criterion = kwargs["kd_criterion"]
 
@@ -27,8 +25,10 @@ class FeatureExperiment(DistillationExperiment):
         else:
             self.alpha = 1.0
 
-        # If self.use_features or self.feature_train:
-        self.idxs = kwargs['idxs']
+        if "shape" in kwargs:
+            self.shape = kwargs['shape']
+        else:
+            self.shape = 32
 
         super(FeatureExperiment, self).__init__(**kwargs, criterion=self.kd_criterion)
 
@@ -46,79 +46,119 @@ class FeatureExperiment(DistillationExperiment):
             self.__create_regressors()
 
     def __create_feature_extraction(self):
+
         self.teacher_features = {}
-        self.teacher_layers = 1
-
-        def register_teacher_hook(module):
-            class_name = str(module.__class__).split(".")[-1].split("'")[0]
-            m_key = "%s-%i" % (class_name, self.teacher_layers)
-
-            def hook(mod, inp, out):
-                self.teacher_features[m_key] = out
-
-            if (
-                    not isinstance(module, nn.Sequential)
-                    and not isinstance(module, nn.ModuleList)
-                    and not (module == self.teacher)
-            ):
-                # print(m_key)
-                if self.teacher_layers in self.teacher_keys:
-                    module.register_forward_hook(hook)
-                self.teacher_layers += 1
-
-        self.teacher.apply(register_teacher_hook)
-
         self.student_features = {}
-        self.student_layers = 1
 
-        def register_student_hook(module):
-            class_name = str(module.__class__).split(".")[-1].split("'")[0]
-            m_key = "%s-%i" % (class_name, self.student_layers)
+        def get_modules(model, batch_size=-1):
+            device = self.device
+            input_size = (3, self.shape, self.shape)
 
-            def hook(mod, inp, out):
-                self.student_features[m_key] = out
+            def register_hook(module):
 
-            if (
-                    not isinstance(module, nn.Sequential)
-                    and not isinstance(module, nn.ModuleList)
-                    and not (module == self.student)
-            ):
-                # print(m_key)
-                if self.student_layers in self.student_keys:
-                    module.register_forward_hook(hook)
-                self.student_layers += 1
+                def hook(module, input, output):
+                    class_name = str(module.__class__).split(".")[-1].split("'")[0]
+                    module_idx = len(summary)
 
-        self.student.apply(register_student_hook)
+                    m_key = module_idx + 1  # "%s-%i" % (class_name, module_idx + 1)
+                    summary[m_key] = OrderedDict()
+                    summary[m_key]["input_shape"] = list(input[0].size())
+                    summary[m_key]["input_shape"][0] = batch_size
 
-        inp = torch.rand(*self.shape).to(self.device)
+                    summary[m_key]["module"] = module
+                    if isinstance(output, (list, tuple)):
+                        summary[m_key]["output_shape"] = [
+                            [-1] + list(o.size())[1:] for o in output
+                        ]
+                    else:
+                        summary[m_key]["output_shape"] = list(output.size())
+                        summary[m_key]["output_shape"][0] = batch_size
 
-        self.teacher.eval()
-        self.student.eval()
+                    params = 0
+                    if hasattr(module, "weight") and hasattr(module.weight, "size"):
+                        params += torch.prod(torch.LongTensor(list(module.weight.size())))
+                        summary[m_key]["trainable"] = module.weight.requires_grad
+                    if hasattr(module, "bias") and hasattr(module.bias, "size"):
+                        params += torch.prod(torch.LongTensor(list(module.bias.size())))
+                    summary[m_key]["nb_params"] = params
 
-        _ = self.teacher(inp)
-        _ = self.student(inp)
+                if (
+                        not isinstance(module, nn.Sequential)
+                        and not isinstance(module, nn.ModuleList)
+                        and not (module == model)
+                ):
+                    hooks.append(module.register_forward_hook(hook))
 
-        s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
-        t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
+            device = device.lower()
+            assert device in [
+                "cuda",
+                "cpu",
+            ], "Input device is not valid, please specify 'cuda' or 'cpu'"
 
-        for s, t in zip(s_sizes, t_sizes):
-            if s[-1] != t[-1] or s[-2] != t[-2]:
-                raise AttributeError("size mismatch")
+            if device == "cuda" and torch.cuda.is_available():
+                dtype = torch.cuda.FloatTensor
+            else:
+                dtype = torch.FloatTensor
+
+            # multiple inputs to the network
+            if isinstance(input_size, tuple):
+                input_size = [input_size]
+
+            # batch_size of 2 for batchnorm
+            x = [torch.rand(2, *in_size).type(dtype) for in_size in input_size]
+            # print(type(x[0]))
+
+            # create properties
+            summary = OrderedDict()
+            hooks = []
+
+            # register hook
+            model.apply(register_hook)
+
+            # make a forward pass
+            # print(x.shape)
+            model(*x)
+
+            # remove these hooks
+            for h in hooks:
+                h.remove()
+
+            return summary
+
+        logging.info("Hooking teacher features %s" % str(self.teacher_keys))
+        teacher_modules = get_modules(self.teacher)
+
+        logging.info("Hooking student features %s" % str(self.student_keys))
+        student_modules = get_modules(self.student)
+
+        for key in self.teacher_keys:
+            def hook(module, input, output):
+                self.teacher_features[key] = output
+                pass
+
+            teacher_modules[key]['module'].register_forward_hook(hook)
+
+        for key in self.student_keys:
+            def hook(module, input, output):
+                self.student_features[key] = output
+                pass
+
+            student_modules[key]['module'].register_forward_hook(hook)
 
     def __create_regressors(self):
-        inp = torch.rand(1,*self.shape[2:]).to(self.device)
+        inp = torch.rand(2, 3, self.shape, self.shape).to(self.device)
         self.teacher.eval()
         self.student.eval()
         out = self.teacher(inp)
         out2 = self.student(inp)
 
-        s_sizes = [tensor.shape for tensor in list(self.student_features.values())]
-        t_sizes = [tensor.shape for tensor in list(self.teacher_features.values())]
+        s_sizes = [tensor.shape for tensor in list(self.student_features.values()) if tensor is not None]
+        t_sizes = [tensor.shape for tensor in list(self.teacher_features.values()) if tensor is not None]
 
         self.regressors = [torch.nn.Conv2d(s_sizes[i][1],
                                            t_sizes[i][1],
                                            kernel_size=1
-                                           ).to(self.device) for i in range(len(self.idxs))]
+                                           ).to(self.device) for i in range(len(s_sizes))]
 
         self.regressor_optimizers = [optim.Adam(r.parameters(), lr=0.001) for r in self.regressors]
 
@@ -129,13 +169,21 @@ class FeatureExperiment(DistillationExperiment):
 
         loss = torch.tensor(0.0, requires_grad=True).to(self.device)  # todo: meter alphas
         # todo: meter loss en applt loss
-        if self.feature_train:
-            sf = list(self.student_features.values())[0]  # todo: arreglar para caso multicapa
-            tf = list(self.teacher_features.values())
+        if self.feature_train:  # todo: arreglar para caso multicapa
+            Fs = [tensor for tensor in list(self.student_features.values()) if tensor is not None][0]
+            Ft = [tensor for tensor in list(self.teacher_features.values()) if tensor is not None][0]
+
+            # Fs = list(self.student_features.values())[0]
+            # Ft = list(self.teacher_features.values())
 
             if self.use_regressor:
-                sf = self.regressors[0](sf)  # self.regressors[0](sf[0])
-            floss = self.ft_criterion(tf[0], sf)  # self.alpha*self.ft_criterion(tf[0], sf)
+                Fs = self.regressors[0](Fs)  # self.regressors[0](sf[0])
+
+            floss = self.ft_criterion(Ft, Fs)  # self.alpha*self.ft_criterion(tf[0], sf)# incorporar al tb
+            logging.debug(str(floss))
+            logging.debug(str(Ft[0].mean()))
+            logging.debug(str(Fs[0].mean()))
+            # print(floss)
             loss += floss
             # todo: Cambiar esta wea a iterable
 
