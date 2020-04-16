@@ -1,0 +1,3 @@
+,test_acc,test_teacher/acc,test_loss,test_eval,train_acc,train_teacher/acc,train_loss,train_eval,epoch,lr,resume,epochs,train_batch_size,test_batch_size,student,teacher,distillation,transform,dataset,exp_name
+0,16.61,93.94,0.21943893406210066,15.816096329990822,22.26432970156324,21.43533870203695,0.0009759001074020158,5.745389201424339,50,0.001,False,50,128,128,MobileNet,ResNet101,"KD,T-8","none,",VAE,KD_VAE
+1,16.89,93.94,0.1937740677142445,12.744571009768716,21.672193273330176,21.198484130743722,0.0006693933145001982,5.827494765772964,50,0.001,False,50,128,128,ResNet18,ResNet101,"KD,T-8","none,",VAE,KD_VAE

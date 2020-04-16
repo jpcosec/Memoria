@@ -37,8 +37,8 @@ def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Image
 
     def get_I2012_class(path):
         # global serie
-        classname = path.split("/")[-2]
-        #classname = path.split("\\")[-2]
+        #classname = path.split("/")[-2]
+        classname = path.split("\\")[-2]
         # print("class",classname,path)
         return serie.index[serie.str.contains(classname)][0]
 

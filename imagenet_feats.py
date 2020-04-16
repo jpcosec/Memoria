@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
     parser.add_argument('--epochs', default=200, type=int, help='total number of epochs to train')
     parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
-    parser.add_argument('--batch_size', default=18, type=int, help='batch size on train and test')
+    parser.add_argument('--batch_size', default=128, type=int, help='batch size on train and test')
     parser.add_argument('--student', default="MobileNetV2",#"ResNet18",#
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
