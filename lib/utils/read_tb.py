@@ -64,7 +64,8 @@ def collect_tbs(folder):
         except AssertionError:
             logging.info("mas de 1 wea en len", path)
         except FileNotFoundError as e:
-            logging.info(str(e))
+            logging.info(str(e)
+                         )
 
         except ValueError as e:
             logging.info(str(e) + " " + path)
