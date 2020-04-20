@@ -13,9 +13,10 @@ def epoch_summarize(di, info):
     d = {}
     for k, v in di.items():
         if k.split("/")[-1] == 'wall_time':
-            d[k] = [i[-1] - v[0] for i in np.split(v, info['epochs'])]
+            d[k] = [i[-1] - v[0] for i in np.split(v, info['epoch'])]
+
         else:
-            d[k] = [np.mean(i) for i in np.split(v, info['epochs'])]
+            d[k] = [np.mean(i) for i in np.split(v, info['epoch'])]
 
     return d
 
@@ -32,9 +33,10 @@ def collect_tbs(folder):
     td = {}
     total_dict = {}
     for path in tb_logs:
+        path=path.replace("\\","/")
         try:
-            info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
-            record = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
+            #info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
+            info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
 
             filez = glob.glob(path + "/*")
 
@@ -62,17 +64,17 @@ def collect_tbs(folder):
             total_dict[key] = train_dict
 
         except AssertionError:
-            logging.info("mas de 1 wea en len", path)
+            logging.info("mas de 1 wea en len"+ path)
+
         except FileNotFoundError as e:
-            logging.info(str(e)
-                         )
+            logging.info("[No se encuentra]"+str(e))
 
         except ValueError as e:
             logging.info(str(e) + " " + path)
             # logging.info(len(test_dict["test/wall_time"])/(info["epochs"]),len(test_dict["test/wall_time"]),info["epochs"])
 
-        except Exception as e:
-            logging.info(str(e) + " " + path)
+        #except Exception as e:
+        #    logging.info(str(e) + " " + path)
 
     with open(folder + '/epoch_summary.json', 'w') as outfile:
         json.dump(total_dict, outfile, indent=4)
