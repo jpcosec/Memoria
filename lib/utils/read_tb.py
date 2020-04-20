@@ -29,7 +29,9 @@ def collect_tbs(folder):
     total_dict = {}
     for path in tb_logs:
         path=path.replace("\\","/")
-        if "students" in path:
+        #print(path.split("/")
+        if len(path.split("/")) > 4:
+            print(len(path.split("/")),path)
             test_kw = ['test/acc',
                        'test/loss',
                        'test/eval']
@@ -81,7 +83,7 @@ def collect_tbs(folder):
             test_kw = ['test/acc',
                        'test/loss_']
             train_kw = ['train/acc',
-                        'train/loss']
+                        'train/loss_']
             try:
                 # info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
                 info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
@@ -111,6 +113,8 @@ def collect_tbs(folder):
                 train_dict.update(test_dict)
                 total_dict[key] = train_dict
 
+                print(train_dict)
+
             except AssertionError:
                 logging.info("mas de 1 wea en len" + path)
 
@@ -123,6 +127,8 @@ def collect_tbs(folder):
 
             # except Exception as e:
             #    logging.info(str(e) + " " + path)
+
+
 
     with open(folder + '/epoch_summary.json', 'w') as outfile:
         json.dump(total_dict, outfile, indent=4)
