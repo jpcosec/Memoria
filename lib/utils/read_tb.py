@@ -23,58 +23,106 @@ def epoch_summarize(di, info):
 
 def collect_tbs(folder):
     tb_logs = glob.glob(folder + "/**/tb_logs/", recursive=True)
-    test_kw = ['test/acc',
-               'test/loss',
-               'test/eval']
-    train_kw = ['train/acc',
-                'train/loss',
-                'train/eval']
+
 
     td = {}
     total_dict = {}
     for path in tb_logs:
         path=path.replace("\\","/")
-        try:
-            #info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
-            info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
+        if "students" in path:
+            test_kw = ['test/acc',
+                       'test/loss',
+                       'test/eval']
+            train_kw = ['train/acc',
+                        'train/loss',
+                        'train/eval']
+            try:
+                #info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
+                info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
 
-            filez = glob.glob(path + "/*")
+                filez = glob.glob(path + "/*")
 
-            assert len(filez) == 1, 'more than one ran'
+                assert len(filez) == 1, 'more than one ran'
 
-            file = filez[0].replace(path, "")
-            ea = event_accumulator.EventAccumulator(path, file)
-            ea.Reload()
-            train_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in train_kw])
-            train_dict["train/wall_time"] = np.array([i.wall_time for i in ea.Scalars("train/acc")])
+                file = filez[0].replace(path, "")
+                ea = event_accumulator.EventAccumulator(path, file)
+                ea.Reload()
+                train_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in train_kw])
+                train_dict["train/wall_time"] = np.array([i.wall_time for i in ea.Scalars("train/acc")])
 
-            train_dict = epoch_summarize(train_dict, info)
+                train_dict = epoch_summarize(train_dict, info)
 
-            test_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in test_kw])
-            test_dict["test/wall_time"] = np.array([i.wall_time for i in ea.Scalars("test/acc")])
-            test_dict = epoch_summarize(test_dict, info)
+                test_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in test_kw])
+                test_dict["test/wall_time"] = np.array([i.wall_time for i in ea.Scalars("test/acc")])
+                test_dict = epoch_summarize(test_dict, info)
 
-            # logging.info"problemo en parse", path)
-            # trd.update(ted)
+                # logging.info"problemo en parse", path)
+                # trd.update(ted)
 
-            key = path.replace('/students', "").replace('tb_logs', '')
+                key = path.replace('/students', "").replace('tb_logs', '')
 
-            # td[key]=trd
-            train_dict.update(test_dict)
-            total_dict[key] = train_dict
+                # td[key]=trd
+                train_dict.update(test_dict)
+                total_dict[key] = train_dict
 
-        except AssertionError:
-            logging.info("mas de 1 wea en len"+ path)
+            except AssertionError:
+                logging.info("mas de 1 wea en len"+ path)
 
-        except FileNotFoundError as e:
-            logging.info("[No se encuentra]"+str(e))
+            except FileNotFoundError as e:
+                logging.info("[No se encuentra]"+str(e))
 
-        except ValueError as e:
-            logging.info(str(e) + " " + path)
-            # logging.info(len(test_dict["test/wall_time"])/(info["epochs"]),len(test_dict["test/wall_time"]),info["epochs"])
+            except ValueError as e:
+                logging.info(str(e) + " " + path)
+                # logging.info(len(test_dict["test/wall_time"])/(info["epochs"]),len(test_dict["test/wall_time"]),info["epochs"])
 
-        #except Exception as e:
-        #    logging.info(str(e) + " " + path)
+            #except Exception as e:
+            #    logging.info(str(e) + " " + path)
+        else:
+            test_kw = ['test/acc',
+                       'test/loss_']
+            train_kw = ['train/acc',
+                        'train/loss']
+            try:
+                # info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
+                info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
+
+                filez = glob.glob(path + "/*")
+
+                assert len(filez) == 1, 'more than one ran'
+
+                file = filez[0].replace(path, "")
+                ea = event_accumulator.EventAccumulator(path, file)
+                ea.Reload()
+                train_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in train_kw])
+                train_dict["train/wall_time"] = np.array([i.wall_time for i in ea.Scalars("train/acc")])
+
+                train_dict = epoch_summarize(train_dict, info)
+
+                test_dict = dict([(kw, np.array([i.value for i in ea.Scalars(kw)])) for kw in test_kw])
+                test_dict["test/wall_time"] = np.array([i.wall_time for i in ea.Scalars("test/acc")])
+                test_dict = epoch_summarize(test_dict, info)
+
+                # logging.info"problemo en parse", path)
+                # trd.update(ted)
+
+                key = path.replace('tb_logs', 'teacher')
+
+                # td[key]=trd
+                train_dict.update(test_dict)
+                total_dict[key] = train_dict
+
+            except AssertionError:
+                logging.info("mas de 1 wea en len" + path)
+
+            except FileNotFoundError as e:
+                logging.info("[No se encuentra]" + str(e))
+
+            except ValueError as e:
+                logging.info(str(e) + " " + path)
+                # logging.info(len(test_dict["test/wall_time"])/(info["epochs"]),len(test_dict["test/wall_time"]),info["epochs"])
+
+            # except Exception as e:
+            #    logging.info(str(e) + " " + path)
 
     with open(folder + '/epoch_summary.json', 'w') as outfile:
         json.dump(total_dict, outfile, indent=4)
