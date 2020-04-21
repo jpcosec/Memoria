@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument("--exp_name", default=None, help='Where to run the experiments')
     parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
-    parser.add_argument('--last_layer', default="KD-CE,T-8",
+    parser.add_argument('--last_layer', default="KD_CE,T-8.0",
                         help="")
     parser.add_argument("--student_layer", type=int, default=5)  # Arreglar para caso multicapa
     parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso
@@ -100,4 +100,5 @@ if __name__ == '__main__':
     try:
         experiment_run(arg)
     except Exception as e:
-        logging.info(str(e) + " ".join[arg.distillation,arg.last_layer,arg.layer])
+        print(e)
+        logging.info(str(e) + " ".join([arg.distillation,arg.last_layer,str(arg.layer)]))
