@@ -1,6 +1,4 @@
 INFO:tensorboard:No path found after Cifar10/MobileNet/tb_logs/events.out.tfevents.1582164796.DESKTOP-7N4O036.2028.0
-INFO:tensorboard:No path found after Cifar10/MobileNet/tb_logs/events.out.tfevents.1582164796.DESKTOP-7N4O036.2028.0
-INFO:tensorboard:No path found after Cifar10/MobileNet/tb_logs/events.out.tfevents.1582164796.DESKTOP-7N4O036.2028.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/tb_logs/events.out.tfevents.1582192476.DESKTOP-7N4O036.3992.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/att_max/0/tb_logs/events.out.tfevents.1586892798.DESKTOP-7N4O036.10068.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/att_max/1/tb_logs/events.out.tfevents.1586896111.DESKTOP-7N4O036.16092.0
@@ -10,10 +8,10 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNe
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/att_mean/1/tb_logs/events.out.tfevents.1586882878.DESKTOP-7N4O036.15456.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/att_mean/2/tb_logs/events.out.tfevents.1586886117.DESKTOP-7N4O036.8360.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/att_mean/3/tb_logs/events.out.tfevents.1586889459.DESKTOP-7N4O036.14176.0
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/MobileNet/hint/0/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/MobileNet/hint/1/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/MobileNet/hint/2/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/MobileNet/hint/3/record.json'
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/hint/0/tb_logs/events.out.tfevents.1587354849.DESKTOP-7N4O036.2848.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/hint/1/tb_logs/events.out.tfevents.1587358010.DESKTOP-7N4O036.15260.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/hint/2/tb_logs/events.out.tfevents.1587361120.DESKTOP-7N4O036.13688.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/hint/3/tb_logs/events.out.tfevents.1587364163.DESKTOP-7N4O036.13828.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/nst_linear/0/tb_logs/events.out.tfevents.1586865884.DESKTOP-7N4O036.11816.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/nst_linear/1/tb_logs/events.out.tfevents.1586869275.DESKTOP-7N4O036.11456.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/nst_linear/2/tb_logs/events.out.tfevents.1586872640.DESKTOP-7N4O036.17992.0
@@ -22,21 +20,21 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNe
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/PKT/1/tb_logs/events.out.tfevents.1586909566.DESKTOP-7N4O036.15012.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/PKT/2/tb_logs/events.out.tfevents.1586912930.DESKTOP-7N4O036.15224.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/MobileNet/PKT/3/tb_logs/events.out.tfevents.1586916364.DESKTOP-7N4O036.12428.0
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_max/0/tb_logs/
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_max/1/tb_logs/
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_max/0/tb_logs/events.out.tfevents.1586840127.DESKTOP-7N4O036.14908.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_max/1/tb_logs/events.out.tfevents.1586843291.DESKTOP-7N4O036.16544.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_max/2/tb_logs/events.out.tfevents.1586846504.DESKTOP-7N4O036.12724.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_max/3/tb_logs/events.out.tfevents.1586849703.DESKTOP-7N4O036.7960.0
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_mean/0/tb_logs/
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_mean/1/tb_logs/
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_mean/2/tb_logs/
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/att_mean/3/tb_logs/
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/ResNet18/hint/0/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/ResNet18/hint/1/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/ResNet18/hint/2/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_CE/students/ResNet18/hint/3/record.json'
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_mean/0/tb_logs/events.out.tfevents.1586827275.DESKTOP-7N4O036.13352.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_mean/1/tb_logs/events.out.tfevents.1586830469.DESKTOP-7N4O036.7900.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_mean/2/tb_logs/events.out.tfevents.1586833679.DESKTOP-7N4O036.13672.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/att_mean/3/tb_logs/events.out.tfevents.1586836919.DESKTOP-7N4O036.17112.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/0/tb_logs/events.out.tfevents.1587367177.DESKTOP-7N4O036.15348.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/1/tb_logs/events.out.tfevents.1587370298.DESKTOP-7N4O036.14772.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/2/tb_logs/events.out.tfevents.1587373346.DESKTOP-7N4O036.3540.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/3/tb_logs/events.out.tfevents.1587376426.DESKTOP-7N4O036.12484.0
 INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/0/tb_logs/
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/1/tb_logs/events.out.tfevents.1586817358.DESKTOP-7N4O036.1944.0
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/2/tb_logs/
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/2/tb_logs/events.out.tfevents.1586820590.DESKTOP-7N4O036.16552.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/3/tb_logs/events.out.tfevents.1586823821.DESKTOP-7N4O036.7336.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/PKT/0/tb_logs/events.out.tfevents.1586852957.DESKTOP-7N4O036.9468.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/PKT/1/tb_logs/events.out.tfevents.1586856268.DESKTOP-7N4O036.16292.0
@@ -50,10 +48,10 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileN
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/att_mean/1/tb_logs/events.out.tfevents.1586944033.DESKTOP-7N4O036.13144.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/att_mean/2/tb_logs/events.out.tfevents.1586944735.DESKTOP-7N4O036.4888.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/att_mean/3/tb_logs/events.out.tfevents.1586945437.DESKTOP-7N4O036.7808.0
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/0/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/1/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/2/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/3/record.json'
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/0/tb_logs/events.out.tfevents.1587458555.DESKTOP-7N4O036.9080.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/1/tb_logs/events.out.tfevents.1587459234.DESKTOP-7N4O036.7304.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/2/tb_logs/events.out.tfevents.1587459906.DESKTOP-7N4O036.12780.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/hint/3/tb_logs/events.out.tfevents.1587460580.DESKTOP-7N4O036.13180.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/nst_linear/0/tb_logs/events.out.tfevents.1586940453.DESKTOP-7N4O036.18076.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/nst_linear/1/tb_logs/events.out.tfevents.1586941161.DESKTOP-7N4O036.8152.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/MobileNet/nst_linear/2/tb_logs/events.out.tfevents.1586941866.DESKTOP-7N4O036.12404.0
@@ -70,10 +68,10 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet1
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/att_mean/1/tb_logs/events.out.tfevents.1586932627.DESKTOP-7N4O036.9332.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/att_mean/2/tb_logs/events.out.tfevents.1586933330.DESKTOP-7N4O036.9248.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/att_mean/3/tb_logs/events.out.tfevents.1586934024.DESKTOP-7N4O036.16312.0
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/0/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/1/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/2/record.json'
-INFO:root:[No se encuentra][Errno 2] No such file or directory: 'Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/3/record.json'
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/0/tb_logs/events.out.tfevents.1587461255.DESKTOP-7N4O036.11572.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/1/tb_logs/events.out.tfevents.1587461951.DESKTOP-7N4O036.13760.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/2/tb_logs/events.out.tfevents.1587462649.DESKTOP-7N4O036.6760.0
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/hint/3/tb_logs/events.out.tfevents.1587463341.DESKTOP-7N4O036.14496.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/nst_linear/0/tb_logs/events.out.tfevents.1586928997.DESKTOP-7N4O036.10924.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/nst_linear/1/tb_logs/events.out.tfevents.1586929716.DESKTOP-7N4O036.12312.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_VAE/students/ResNet18/nst_linear/2/tb_logs/events.out.tfevents.1586930433.DESKTOP-7N4O036.3224.0
@@ -121,7 +119,7 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/GAN_exp/students/ResNet18
 INFO:tensorboard:No path found after Cifar10/ResNet101/GAN_exp/students/ResNet18/PKT/1/tb_logs/events.out.tfevents.1585426956.DESKTOP-7N4O036.7672.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/GAN_exp/students/ResNet18/PKT/2/tb_logs/events.out.tfevents.1585430224.DESKTOP-7N4O036.7484.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/GAN_exp/students/ResNet18/PKT/3/tb_logs/events.out.tfevents.1585433496.DESKTOP-7N4O036.2772.0
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/KD_GAN/students/MobileNet/KD/T-8/tb_logs/
+INFO:tensorboard:No path found after Cifar10/ResNet101/KD_GAN/students/MobileNet/KD/T-8/tb_logs/events.out.tfevents.1586716173.DESKTOP-7N4O036.14552.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/KD_GAN/students/ResNet18/KD/T-8/tb_logs/events.out.tfevents.1586709395.DESKTOP-7N4O036.552.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/kd_noise/0.1/students/MobileNet/KD/T-8/tb_logs/events.out.tfevents.1586331123.DESKTOP-7N4O036.16572.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/kd_noise/0.1/students/ResNet18/KD/T-8/tb_logs/events.out.tfevents.1586297463.DESKTOP-7N4O036.5208.0
