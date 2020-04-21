@@ -6,7 +6,7 @@ from collections import OrderedDict
 from lib.kd_distillators.utils import DistillationExperiment
 import logging
 
-logging.basicConfig(filename='inspection.log', level=logging.DEBUG)
+logging.basicConfig(filename='inspection.log', level=logging.INFO)
 
 
 class FeatureExperiment(DistillationExperiment):

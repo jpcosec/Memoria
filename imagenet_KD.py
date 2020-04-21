@@ -75,7 +75,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
-    parser.add_argument('--epochs', default=200, type=int, help='total number of epochs to train')
+    parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
     parser.add_argument('--batch_size', default=100, type=int, help='batch size on train')
     parser.add_argument('--student', default="MobileNetV2",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "

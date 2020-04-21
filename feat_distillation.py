@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument("--exp_name", default=None, help='Where to run the experiments')
     parser.add_argument('--distillation', default="nst_linear",
                         help="feature-alpha")
-    parser.add_argument('--last_layer', default="KD,T-8",
+    parser.add_argument('--last_layer', default="KD-CE,T-8",
                         help="")
     parser.add_argument("--student_layer", type=int, default=5)  # Arreglar para caso multicapa
     parser.add_argument("--teacher_layer", type=int, default=26)  # Arreglar para caso
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     arg = parser.parse_args()
 
-    logging.basicConfig(filename=arg.exp_name+"/inspections.log" if arg.exp_name is not None else "inspections.log", level=logging.info)
+    logging.basicConfig(filename="inspections.log", level=logging.info)
 
     try:
         experiment_run(arg)
