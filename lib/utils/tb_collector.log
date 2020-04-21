@@ -32,7 +32,7 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/1/tb_logs/events.out.tfevents.1587370298.DESKTOP-7N4O036.14772.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/2/tb_logs/events.out.tfevents.1587373346.DESKTOP-7N4O036.3540.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/hint/3/tb_logs/events.out.tfevents.1587376426.DESKTOP-7N4O036.12484.0
-INFO:root:mas de 1 wea en lenCifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/0/tb_logs/
+INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/0/tb_logs/events.out.tfevents.1586814106.DESKTOP-7N4O036.15056.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/1/tb_logs/events.out.tfevents.1586817358.DESKTOP-7N4O036.1944.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/2/tb_logs/events.out.tfevents.1586820590.DESKTOP-7N4O036.16552.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/feat_CE/students/ResNet18/nst_linear/3/tb_logs/events.out.tfevents.1586823821.DESKTOP-7N4O036.7336.0
