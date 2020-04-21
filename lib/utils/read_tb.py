@@ -24,11 +24,17 @@ def epoch_summarize(di, info):
 def collect_tbs(folder):
     tb_logs = glob.glob(folder + "/**/tb_logs/", recursive=True)
 
-
-    td = {}
-    total_dict = {}
+    try:
+        total_dict =json.load(open(folder + '/epoch_summary.json', 'rw') )
+    except:
+        total_dict = {}
     for path in tb_logs:
         path=path.replace("\\","/")
+
+        if path in list(total_dict.keys()):
+            print(path, "ya leido")
+            continue
+
         #print(path.split("/")
         if len(path.split("/")) > 4:
             print(len(path.split("/")),path)
