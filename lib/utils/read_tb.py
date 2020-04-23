@@ -25,9 +25,12 @@ def collect_tbs(folder):
     tb_logs = glob.glob(folder + "/**/tb_logs/", recursive=True)
 
     try:
-        total_dict =json.load(open(folder + '/epoch_summary.json', 'rw') )
+        total_dict =json.load(open(folder + '/epoch_summary.json', 'r'))
+        print("Abriendo total_dict")
     except:
+        print("Creando total_Dict")
         total_dict = {}
+
     for path in tb_logs:
         path=path.replace("\\","/")
 
