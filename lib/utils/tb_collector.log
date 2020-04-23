@@ -656,3 +656,11 @@ INFO:tensorboard:No path found after Cifar10/ResNet101/normal/students/ResNet18/
 INFO:tensorboard:No path found after Cifar10/ResNet101/normal/students/ResNet18/PKT/2/tb_logs/events.out.tfevents.1582330719.DESKTOP-7N4O036.13584.0
 INFO:tensorboard:No path found after Cifar10/ResNet101/normal/students/ResNet18/PKT/3/tb_logs/events.out.tfevents.1582333918.DESKTOP-7N4O036.8948.0
 INFO:tensorboard:No path found after Cifar10/ResNet18/tb_logs/events.out.tfevents.1583941369.DESKTOP-7N4O036.14212.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1587015095.DESKTOP-7N4O036.17976.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/nst_linear/1/tb_logs/events.out.tfevents.1586566906.DESKTOP-7N4O036.13184.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/PKT/1/tb_logs/events.out.tfevents.1586616625.DESKTOP-7N4O036.16924.0
+INFO:tensorboard:No path found after Imagenet/post_wea/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1587143548.DESKTOP-7N4O036.17772.0
+INFO:root:array split does not result in an equal division Imagenet/post_wea/ResNet152/MobileNetV2/PKT/1/tb_logs/
+INFO:root:mas de 1 wea en lenImagenet/test_1/KD/T-8.0/tb_logs/
+INFO:root:mas de 1 wea en lenImagenet/test_5/KD/T-8.0/tb_logs/
+INFO:tensorboard:No path found after Imagenet/test_mobilenet/KD/T-8.0/tb_logs/events.out.tfevents.1586496964.DESKTOP-7N4O036.18024.0
