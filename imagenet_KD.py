@@ -12,7 +12,7 @@ from lib.utils.imagenet.Dataset import get_dataloaders
 from lib.utils.imagenet.utils import load_model
 
 
-def main():
+def main(args):
 
 
     #global args
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
     parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
     parser.add_argument('--batch_size', default=100, type=int, help='batch size on train')
-    parser.add_argument('--student', default="MobileNetV2",
+    parser.add_argument('--student', default="ResNet18",
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
                              "ResNeXt29, DenseNet, PreActResNet18, DPN92, SENet18, EfficientNetB0, GoogLeNet, "
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                              "separated by , using - instead of =.")
     parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
     parser.add_argument("--dataset", default="ImageNet,", help="ej. vae_sample")
-    parser.add_argument("--exp_name", default="test_mobilenet", help='Where to run the experiments')
+    parser.add_argument("--exp_name", default="ultimors", help='Where to run the experiments')
     args = parser.parse_args()
 
     main(args)

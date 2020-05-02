@@ -148,7 +148,7 @@ def collect_tbs(folder):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tb logs collector')
-    parser.add_argument('--folder', default="Cifar10", help='learning rate')
+    parser.add_argument('--folder', default="Imagenet", help='learning rate')
     args=parser.parse_args()
     import os
     os.chdir("../..")

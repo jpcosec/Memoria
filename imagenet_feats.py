@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint', )  # change to restart
     parser.add_argument('--epochs', default=100, type=int, help='total number of epochs to train')
-    parser.add_argument('--pre', default=50, type=int, help='total number of epochs to train')
+    parser.add_argument('--pre', default=100, type=int, help='total number of epochs to train')
     parser.add_argument('--batch_size', default=100, type=int, help='batch size on train and test')
     parser.add_argument('--student', default="MobileNetV2",  # "ResNet18",#
                         help="default ResNet18, other options are VGG, ResNet50, ResNet101, MobileNet, MobileNetV2, "
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                              "ShuffleNetG2, ShuffleNetV2 or linear_laysize1,laysize2,laysizen")
     parser.add_argument("--transform", default="none,", help="ej. noise,0.1")
     parser.add_argument("--dataset", default="ImageNet,", help="ej. vae_sample")
-    parser.add_argument("--exp_name", default="exp_", help='Where to run the experiments')
+    parser.add_argument("--exp_name", default="ultimors", help='Where to run the experiments')
     parser.add_argument('--distillation', default="PKT",
                         help="feature-alpha")
     parser.add_argument('--last_layer', default="KD,T-8",
