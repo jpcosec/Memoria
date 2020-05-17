@@ -13,9 +13,17 @@ def noise_plot(source=data['students']['kd']['noise'],
                student='ResNet18',
                xscale='linear',
                yscale='linear'):
-
+    
+        d=locals()
+        ks=[i for i in d.keys() if i not in ['source','title','xscale','yscale','scale','bs'] ]     
+        vals=[d[i] for  i in ks ]
+        source = source.drop(columns=[i for i in source.columns if i not in vals+['student','noise']])
 
         sou=source[source['student']==student]
+        
+        #reduce data
+
+        
         selection = alt.selection_multi(fields=[color], bind='legend')
 
 
@@ -75,7 +83,6 @@ def noise_plot(source=data['students']['kd']['noise'],
             height=600
         )
         return w
-    
 def grafico_con_barra_xy_CE(source=data['students']['kd']['KD'],
                         title="Ratio entre accuracy en validacion y accuracy en entrenamiento.",
                         y="test/train",
@@ -87,6 +94,14 @@ def grafico_con_barra_xy_CE(source=data['students']['kd']['KD'],
                         xscale='log',
                         yscale='linear'):
     
+    
+            
+        #reduce data
+    d=locals()
+    ks=[i for i in d.keys() if i not in ['source','title','xscale','yscale','scale','bs'] ]     
+    vals=[d[i] for  i in ks ]
+    source = source.drop(columns=[i for i in source.columns if i not in vals])
+        
     ytitle=global_titles[y] if yscale=='linear' else global_titles[y]+" [%s]"%yscale
     xtitle=global_titles[x] if xscale=='linear' else global_titles[x]+" [%s]"%xscale
     encodings={'y':alt.Y(y, type='quantitative',title=ytitle,scale=alt.Scale(zero=False,base=10,type=yscale)),
@@ -131,6 +146,13 @@ def grafico_con_barra_y_CE(source=data['students']['kd']['KD'],
         source=source.copy()
         source['feat,block']=[i+", "+str(j) for i,j in list(zip(source['feat_dist'],source['layer']))]
         
+            
+    #reduce data
+    d=locals()
+    ks=[i for i in d.keys() if i not in ['source','title','xscale','yscale','scale','bs'] ]      
+    vals=[d[i] for  i in ks ]
+    source = source.drop(columns=[i for i in source.columns if i not in vals])
+        
     chart=alt.Chart(source,title=title).mark_point(size=100).encode(
            
             y=alt.Y(y, type='quantitative',scale=alt.Scale(zero=True,base=2,constant=1,type=scale),
@@ -173,6 +195,14 @@ def grafico_con_columnas(source,
                          color='layer',
                          fill=None
                         ):
+    
+            
+    #reduce data
+    d=locals()
+    ks=[i for i in d.keys() if i not in ['source','title','xscale','yscale','scale','bs'] ]       
+    vals=[d[i] for  i in ks ]
+    source = source.drop(columns=[i for i in source.columns if i not in vals])
+        
     encodings={"shape":alt.Shape("%s:O"%shape,legend=alt.Legend(title=global_titles[shape])),
         "y":alt.Y(y,title=global_titles[y]),
         "column":alt.Column('%s:O'%column,title=global_titles[column]),
