@@ -19,18 +19,21 @@ def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     args = parser.parse_args()
 
+    trainloader, testloader = get_dataloaders(args.batch_size)
+    auto_change_dir(args.exp_name)
+
     teacher=load_model(args.teacher, trainable=False,device=device)
     student = load_model(args.student)
 
     teacher.eval()
     student.train()
 
-    trainloader, testloader = get_dataloaders(args.batch_size)
+
 
     #rgs.exp_name is not None:
     # os.chdir("/home/jp/Memoria/repo/Cifar10/ResNet101/") #Linux
     #os.chdir("test")  # Windows
-    auto_change_dir(args.exp_name)
+
 
     best_acc=0
     start_epoch=0
