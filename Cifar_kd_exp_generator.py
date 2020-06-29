@@ -32,7 +32,7 @@ def feat_noise_sh(exp_name=""):
 
           transform = "noise," + str(sigma)
 
-          st = f'python feat_distillation.py ' \
+          st = f'python kd_distillation.py ' \
             f'--distillation={distillation} ' \
             f'--layer={layer} ' \
             f'--student={student} ' \
@@ -60,7 +60,7 @@ def feat_sh(exp_name="",dataset="cifar10"):
     for distillation in dist_list:
       for layer, (s_layer, t_layer) in enumerate(zip(blocs[student], blocs["ResNet101"])):
 
-          st = f'python feat_distillation.py ' \
+          st = f'python kd_distillation.py ' \
             f'--distillation={distillation} ' \
             f'--layer={layer} ' \
             f'--student={student} ' \

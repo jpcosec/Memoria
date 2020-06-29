@@ -61,6 +61,8 @@ def experiment_run(args):
     auto_change_dir(args.exp_name)
 
     print("Using device", device)  # todo: cambiar a logger
+
+    # This will download a model with it's weights. For using another model just instantiate it here.
     teacher = load_model(args.teacher, trainable=False, device=device)
     student = load_model(args.student)
 
