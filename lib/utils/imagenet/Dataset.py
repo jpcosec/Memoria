@@ -7,7 +7,10 @@ import pandas as pd
 from lib.utils.funcs import auto_change_dir
 
 torch.manual_seed(0)
-
+# to use first download a dataset with https://github.com/jpcosec/ImageNet-Datasets-Downloader
+# then modify the class_file and image_folder in order to point to your user.
+# Extremely important to keep the absolute ("/home/{user}/..." or "C:/Users/{user}/..") format
+# Otherwise the dataloader will not work properly
 
 def get_imageNet(class_file="C:/Users/PC/PycharmProjects/Memoria/lib/utils/Imagenet/Imagenet_classes",
                  #class_file="/home/jpruiz/PycharmProjects/Memoria/lib/utils/imagenet/Imagenet_classes",
