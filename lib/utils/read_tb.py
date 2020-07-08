@@ -48,7 +48,7 @@ def collect_tbs(folder):
                         'train/loss',
                         'train/eval']
             try:
-                #info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
+                config = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
                 info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
 
                 filez = glob.glob(path + "/*")
@@ -74,6 +74,7 @@ def collect_tbs(folder):
 
                 # td[key]=trd
                 train_dict.update(test_dict)
+                train_dict.update({"config":config})
                 total_dict[key] = train_dict
 
             except AssertionError:
@@ -94,7 +95,7 @@ def collect_tbs(folder):
             train_kw = ['train/acc',
                         'train/loss_']
             try:
-                # info = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
+                config = json.load(open(path.replace('tb_logs/', "config.json"), 'r'))
                 info = json.load(open(path.replace('tb_logs/', "record.json"), 'r'))
 
                 filez = glob.glob(path + "/*")
@@ -120,6 +121,7 @@ def collect_tbs(folder):
 
                 # td[key]=trd
                 train_dict.update(test_dict)
+                train_dict.update({"config":config})
                 total_dict[key] = train_dict
 
                 print(train_dict)
@@ -139,10 +141,11 @@ def collect_tbs(folder):
 
 
 
+
     with open(folder + '/epoch_summary.json', 'w') as outfile:
         json.dump(total_dict, outfile, indent=4)
 
-    print(total_dict)
+    #print(total_dict)
 
 
 
