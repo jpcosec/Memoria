@@ -1633,27 +1633,6 @@
             "teacher_layer": 39,
             "layer": 1,
             "shape": 224
-        },
-        "record": {
-            "test": {
-                "199": {
-                    "acc": 68.97263810015488,
-                    "teacher/acc": 85.3381517811048,
-                    "loss": 1.3781917773813643e-05,
-                    "eval": 1.640939615436436
-                }
-            },
-            "train": {
-                "199": {
-                    "acc": 67.8704181724316,
-                    "teacher/acc": 77.9246257098606,
-                    "loss": 1.2672628374800588e-05,
-                    "eval": 1.7186099258587533
-                }
-            },
-            "epoch": 200,
-            "train_step": 77600,
-            "test_step": 19400
         }
     },
     "Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/nst_linear/1//": {
@@ -2490,27 +2469,6 @@
             "teacher_layer": 39,
             "layer": 1,
             "shape": 224
-        },
-        "record": {
-            "test": {
-                "99": {
-                    "acc": 64.25400103252453,
-                    "teacher/acc": 84.73928755807951,
-                    "loss": 0.0010870005238470377,
-                    "eval": 1.8912529615979445
-                }
-            },
-            "train": {
-                "99": {
-                    "acc": 65.46721734641197,
-                    "teacher/acc": 77.68198244708312,
-                    "loss": 0.0004745825001141579,
-                    "eval": 1.8180304218833596
-                }
-            },
-            "epoch": 100,
-            "train_step": 30300,
-            "test_step": 7600
         }
     },
     "Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/PKT/1//": {
@@ -4147,27 +4105,6 @@
             "teacher_layer": 39,
             "layer": 1,
             "shape": 224
-        },
-        "record": {
-            "test": {
-                "199": {
-                    "acc": 70.36654620547237,
-                    "teacher/acc": 84.73928755807951,
-                    "loss": 1.356308344886776e-05,
-                    "eval": 1.6156406653554816
-                }
-            },
-            "train": {
-                "199": {
-                    "acc": 71.7320598864223,
-                    "teacher/acc": 77.83169850283944,
-                    "loss": 1.0338442374595976e-05,
-                    "eval": 1.5724531713098582
-                }
-            },
-            "epoch": 200,
-            "train_step": 60600,
-            "test_step": 15200
         }
     },
     "Imagenet/test_1/KD/T-8.0//": {
@@ -5798,27 +5735,6 @@
             "transform": "none,",
             "dataset": "ImageNet,",
             "exp_name": "test_1"
-        },
-        "record": {
-            "test": {
-                "199": {
-                    "acc": 70.31491997934951,
-                    "teacher/acc": 84.73928755807951,
-                    "loss": 1.3596927063094641e-05,
-                    "eval": 1.604415349270168
-                }
-            },
-            "train": {
-                "199": {
-                    "acc": 71.7139907072793,
-                    "teacher/acc": 77.82137325761487,
-                    "loss": 1.0055440569324527e-05,
-                    "eval": 1.5722498624238244
-                }
-            },
-            "epoch": 200,
-            "train_step": 60600,
-            "test_step": 15200
         }
     },
     "Imagenet/test_5/KD/T-8.0//": {
@@ -6248,27 +6164,6 @@
             "distillation": "KD,T-8.0",
             "transform": "none,",
             "dataset": "ImageNet,"
-        },
-        "record": {
-            "test": {
-                "49": {
-                    "acc": 62.168301497160556,
-                    "teacher/acc": 84.73928755807951,
-                    "loss": 2.9318053659735837e-05,
-                    "eval": 2.1251172129765594
-                }
-            },
-            "train": {
-                "49": {
-                    "acc": 57.92720702116675,
-                    "teacher/acc": 77.78007227671657,
-                    "loss": 1.7468880214722767e-05,
-                    "eval": 2.1330721262907018
-                }
-            },
-            "epoch": 50,
-            "train_step": 121100,
-            "test_step": 30300
         }
     },
     "Imagenet/test_mobilenet/KD/T-8.0//": {
@@ -7899,27 +7794,6 @@
             "transform": "none,",
             "dataset": "ImageNet,",
             "exp_name": "test_mobilenet"
-        },
-        "record": {
-            "test": {
-                "199": {
-                    "acc": 69.33402168301497,
-                    "teacher/acc": 85.51368094992256,
-                    "loss": 1.3725320068542059e-05,
-                    "eval": 1.6650463447128374
-                }
-            },
-            "train": {
-                "199": {
-                    "acc": 67.47805885389778,
-                    "teacher/acc": 77.75167785234899,
-                    "loss": 1.2634845341887468e-05,
-                    "eval": 1.722333584864115
-                }
-            },
-            "epoch": 200,
-            "train_step": 77600,
-            "test_step": 19400
         }
     },
     "Imagenet/ultimors/ResNet152/MobileNetV2/KD/T-8.0//": {
@@ -8750,27 +8624,6 @@
             "transform": "none,",
             "dataset": "ImageNet,",
             "exp_name": "ultimors"
-        },
-        "record": {
-            "test": {
-                "99": {
-                    "acc": 60.1588361193886,
-                    "teacher/acc": 76.61158787945523,
-                    "loss": 1.2936767707237758e-05,
-                    "eval": 2.7403142059931564
-                }
-            },
-            "train": {
-                "99": {
-                    "acc": 54.236906126016386,
-                    "teacher/acc": 68.94891143892393,
-                    "loss": 1.1739315479028752e-05,
-                    "eval": 2.93341509524381
-                }
-            },
-            "epoch": 100,
-            "train_step": 581300,
-            "test_step": 145400
         }
     },
     "Imagenet/ultimors/ResNet152/MobileNetV2/PKT/1//": {
@@ -9607,27 +9460,6 @@
             "teacher_layer": 39,
             "layer": 1,
             "shape": 224
-        },
-        "record": {
-            "test": {
-                "99": {
-                    "acc": 59.148561321890895,
-                    "teacher/acc": 76.66251453818467,
-                    "loss": 1.307754860479933e-05,
-                    "eval": 2.740949808085719
-                }
-            },
-            "train": {
-                "99": {
-                    "acc": 51.50973975699642,
-                    "teacher/acc": 68.92688902423498,
-                    "loss": 1.4006349344812988e-05,
-                    "eval": 3.028664510713148
-                }
-            },
-            "epoch": 100,
-            "train_step": 581300,
-            "test_step": 145400
         }
     },
     "Imagenet/ultimors/ResNet152/ResNet18/KD/T-8.0//": {
@@ -10458,27 +10290,6 @@
             "transform": "none,",
             "dataset": "ImageNet,",
             "exp_name": "ultimors"
-        },
-        "record": {
-            "test": {
-                "99": {
-                    "acc": 60.615111453680825,
-                    "teacher/acc": 76.66251453818467,
-                    "loss": 1.2541149622507745e-05,
-                    "eval": 2.731737158454678
-                }
-            },
-            "train": {
-                "99": {
-                    "acc": 54.51889626410381,
-                    "teacher/acc": 68.88353239531611,
-                    "loss": 1.1613880780385179e-05,
-                    "eval": 2.9259618770106206
-                }
-            },
-            "epoch": 100,
-            "train_step": 581300,
-            "test_step": 145400
         }
     },
     "Imagenet/ultimors/ResNet152/ResNet18/PKT/1//": {
@@ -11315,27 +11126,6 @@
             "teacher_layer": 39,
             "layer": 1,
             "shape": 224
-        },
-        "record": {
-            "test": {
-                "99": {
-                    "acc": 60.27995898339378,
-                    "teacher/acc": 76.66251453818467,
-                    "loss": 1.2805470503753219e-05,
-                    "eval": 2.7516494887936065
-                }
-            },
-            "train": {
-                "99": {
-                    "acc": 54.22073341522919,
-                    "teacher/acc": 68.85290747488929,
-                    "loss": 1.1809122817062958e-05,
-                    "eval": 2.9368182131166654
-                }
-            },
-            "epoch": 100,
-            "train_step": 581300,
-            "test_step": 145400
         }
     }
 }

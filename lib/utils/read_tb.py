@@ -74,7 +74,7 @@ def collect_tbs(folder):
 
                 # td[key]=trd
                 train_dict.update(test_dict)
-                train_dict.update({"config":config})
+                train_dict.update({"config":config,'record':info})
                 total_dict[key] = train_dict
 
             except AssertionError:
@@ -121,7 +121,7 @@ def collect_tbs(folder):
 
                 # td[key]=trd
                 train_dict.update(test_dict)
-                train_dict.update({"config":config})
+                train_dict.update({"config":config,'record':info})
                 total_dict[key] = train_dict
 
                 print(train_dict)
