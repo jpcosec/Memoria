@@ -12,7 +12,10 @@ from lib.utils.funcs import auto_change_dir
 
 
 def parse_distillation_loss(args):
-    fields = args.distillation.split(",")
+    try:
+        fields = args.distillation.split(",")
+    except:
+        fields = args.feat_dist.split(",")
     method = fields[0]
     d_args = dict([i.split("-") for i in fields[1:]])
 
