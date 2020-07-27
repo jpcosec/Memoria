@@ -60,3 +60,18 @@ def top_latex(source,titles,n_cases=5,keep=[],drop=[]):
       
     return table.replace("textbackslash ","").replace("\midrule \hline","").replace(" delta\_teacher","$\Delta T$").replace(" delta\_student","$\Delta S$")
 
+def top_tabs(source,titles,n_cases=5,keep=[],drop=[]):
+    keep_cols=keep+['delta_student','delta_teacher']
+    s=source.copy()
+    s_cols=[i for i in s.columns if i not in keep_cols]
+    s['D. logits']= [", ".join([i,str(j)]) for i,j in list(zip(s['log_dist'],s['temp']))]
+    s['D. Conv.']= [", ".join([i,str(j)]) if i !='-' else "" for i,j in list(zip(s['feat_dist'],s['layer'])) ]
+    s['Modelo']= [i for i in s['student']]
+    
+    idx=['Modelo','D. logits','D. Conv.']+keep_cols
+    ixd=[i for i in idx if i not in drop]
+    s=s.drop(columns=s_cols+drop).reindex(idx,axis='columns')
+    j=['delta_student','delta_teacher']
+    t=[s.sort_values(by=j[f], ascending=False).drop(columns=[j[-1-f] ]+drop).head(n_cases).copy() for f in [0,1]]
+
+    return t

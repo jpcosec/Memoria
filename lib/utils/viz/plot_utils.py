@@ -84,7 +84,7 @@ def noise_plot(source=data['students']['kd']['noise'],
         )
         return w
 def grafico_con_barra_xy_CE(source=data['students']['kd']['KD'],
-                        title="Ratio entre accuracy en validacion y accuracy en entrenamiento.",
+                        title="Ratio entre exactitud en validacion y accuracy en entrenamiento.",
                         y="test/train",
                         x="temp",
                         color='student',
@@ -189,7 +189,7 @@ def grafico_con_barra_y_CE(source=data['students']['kd']['KD'],
 
 def grafico_con_columnas(source,
                          y='test_acc',
-                         title="Accuracy en validacion desacoplado segun destilacion",
+                         title="Exactitud en validacion desacoplado segun destilacion",
                          shape='student',
                          column='feat_dist',
                          color='layer',
