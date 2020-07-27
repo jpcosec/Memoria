@@ -738,3 +738,15 @@ INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/MobileNetV2/KD/
 INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1588214601.DESKTOP-7N4O036.9028.0
 INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/ResNet18/KD/T-8.0/tb_logs/events.out.tfevents.1589673837.DESKTOP-7N4O036.9888.0
 INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/ResNet18/PKT/1/tb_logs/events.out.tfevents.1590164019.DESKTOP-7N4O036.8852.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1587015095.DESKTOP-7N4O036.17976.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/nst_linear/1/tb_logs/events.out.tfevents.1586566906.DESKTOP-7N4O036.13184.0
+INFO:tensorboard:No path found after Imagenet/exp_feats/ResNet152/ResNet18/Imagenet/PKT/1/tb_logs/events.out.tfevents.1586616625.DESKTOP-7N4O036.16924.0
+INFO:tensorboard:No path found after Imagenet/post_wea/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1587143548.DESKTOP-7N4O036.17772.0
+INFO:root:array split does not result in an equal division Imagenet/post_wea/ResNet152/MobileNetV2/PKT/1/tb_logs/
+INFO:tensorboard:No path found after Imagenet/test_1/KD/T-8.0/tb_logs/events.out.tfevents.1586437872.DESKTOP-7N4O036.10956.0
+INFO:tensorboard:No path found after Imagenet/test_5/KD/T-8.0/tb_logs/events.out.tfevents.1586404288.DESKTOP-7N4O036.2208.0
+INFO:tensorboard:No path found after Imagenet/test_mobilenet/KD/T-8.0/tb_logs/events.out.tfevents.1586496964.DESKTOP-7N4O036.18024.0
+INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/MobileNetV2/KD/T-8.0/tb_logs/events.out.tfevents.1595173464.DESKTOP-7N4O036.6636.0
+INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/MobileNetV2/PKT/1/tb_logs/events.out.tfevents.1588214601.DESKTOP-7N4O036.9028.0
+INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/ResNet18/KD/T-8.0/tb_logs/events.out.tfevents.1589673837.DESKTOP-7N4O036.9888.0
+INFO:tensorboard:No path found after Imagenet/ultimors/ResNet152/ResNet18/PKT/1/tb_logs/events.out.tfevents.1590164019.DESKTOP-7N4O036.8852.0
