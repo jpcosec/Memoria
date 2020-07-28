@@ -1,0 +1,1 @@
+{"lr": 0.001, "resume": false, "epochs": 100, "batch_size": 100,  "teacher": "ResNet18", "distillation": "CE", "transform": "none,", "dataset": "ImageNet,", "exp_name": "ultimors"}

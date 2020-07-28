@@ -7,7 +7,8 @@ def load_model(model_name, trainable=True, device="cuda"):
     model_dict = {
         "ResNet18": models.resnet18,
         "ResNet152": models.resnet152,
-        "MobileNetV2": models.mobilenet_v2
+        "MobileNetV2": models.mobilenet_v2,
+        "squeezenet1": models.squeezenet1_0
     }
 
     model = model_dict[model_name]
